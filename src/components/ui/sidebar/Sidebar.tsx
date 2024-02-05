@@ -54,42 +54,42 @@ export const Sidebar = () => {
         </div>
         <Dropdown title='Mantenimiento'>
           <Link
-            href={'/admin/articles'}
+            href={'/admin/brands'}
             onClick={() => toggleMenu()}
             className={`flex items-center p-2 hover:bg-gray-100 rounded transition-all cursor-pointer ${titleFont.className} antialiased`}
           >
             Marcas
           </Link>
           <Link
-            href={'/admin/articles'}
+            href={'/admin/input-categories'}
             onClick={() => toggleMenu()}
             className={`flex items-center p-2 hover:bg-gray-100 rounded transition-all cursor-pointer ${titleFont.className} antialiased`}
           >
             Categorias de insumo
           </Link>
           <Link
-            href={'/admin/articles'}
+            href={'/admin/inputs'}
             onClick={() => toggleMenu()}
             className={`flex items-center p-2 hover:bg-gray-100 rounded transition-all cursor-pointer ${titleFont.className} antialiased`}
           >
             Insumos
           </Link>
           <Link
-            href={'/admin/articles'}
+            href={'/admin/preparations'}
             onClick={() => toggleMenu()}
             className={`flex items-center p-2 hover:bg-gray-100 rounded transition-all cursor-pointer ${titleFont.className} antialiased`}
           >
             Preparaciones
           </Link>
           <Link
-            href={'/admin/articles'}
+            href={'/admin/recipes'}
             onClick={() => toggleMenu()}
             className={`flex items-center p-2 hover:bg-gray-100 rounded transition-all cursor-pointer ${titleFont.className} antialiased`}
           >
             Recetas
           </Link>
           <Link
-            href={'/admin/articles'}
+            href={'/admin/providers'}
             onClick={() => toggleMenu()}
             className={`flex items-center p-2 hover:bg-gray-100 rounded transition-all cursor-pointer ${titleFont.className} antialiased`}
           >
