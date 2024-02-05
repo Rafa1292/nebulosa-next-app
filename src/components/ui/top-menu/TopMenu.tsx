@@ -1,0 +1,45 @@
+'use client'
+
+import { titleFont } from '@/config/fonts'
+import { useUIStore } from '@/store'
+import Link from 'next/link'
+import React, { useEffect, useState } from 'react'
+import { IoSearchOutline, IoCartOutline } from 'react-icons/io5'
+
+export const TopMenu = () => {
+  const toggleMenu = useUIStore((state) => state.toggleMenu)
+  const [loader, setLoader] = useState(false)
+
+  useEffect(() => {
+    setLoader(true)
+  }, [])
+
+  return (
+    <nav className='flex px-5 justify-between items-center w-full'>
+      {/* logo */}
+      <div>
+        <Link href={'/'}>
+          <span className={`${titleFont.className} antialiased font-bold`}>Nebulosa</span>
+          <span> | Admin</span>
+        </Link>
+      </div>
+
+      {/* center menu */}
+
+      <div className='hidden sm:block'>
+      </div>
+
+      {/* search, cart, menu */}
+
+      <div className='flex items-center'>
+        {/* <Link href={'/search'} className='mx-2'>
+          <IoSearchOutline className='w-5 h-5'></IoSearchOutline>
+        </Link> */}
+
+        <button onClick={toggleMenu} className='m-2 p-2 rounded-md transition-all hover:bg-gray-900 hover:text-white hover:drop-shadow-2xl'>
+          Menu
+        </button>
+      </div>
+    </nav>
+  )
+}
