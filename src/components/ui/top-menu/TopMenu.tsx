@@ -4,7 +4,7 @@ import { titleFont } from '@/config/fonts'
 import { useUIStore } from '@/store'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
-import { IoSearchOutline, IoCartOutline } from 'react-icons/io5'
+import { RiMenu3Line } from "react-icons/ri";
 
 export const TopMenu = () => {
   const toggleMenu = useUIStore((state) => state.toggleMenu)
@@ -36,7 +36,12 @@ export const TopMenu = () => {
           <IoSearchOutline className='w-5 h-5'></IoSearchOutline>
         </Link> */}
 
-        <button onClick={toggleMenu} className='m-2 p-2 rounded-md transition-all hover:bg-gray-900 hover:text-white hover:drop-shadow-2xl'>
+        <button onClick={toggleMenu} className={`${titleFont.className} 
+        flex antialiased font-bold m-2 p-2 rounded-md transition-all items-center gap-1
+        hover:bg-gray-900 
+        hover:text-white 
+        hover:drop-shadow-2xl`}>
+        <RiMenu3Line />
           Menu
         </button>
       </div>

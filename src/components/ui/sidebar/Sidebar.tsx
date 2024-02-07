@@ -5,14 +5,8 @@ import { useUIStore } from '@/store'
 import clsx from 'clsx'
 import Link from 'next/link'
 import {
-  IoCloseOutline,
-  IoLogInOutline,
-  IoLogOutOutline,
-  IoPeopleOutline,
-  IoPersonOutline,
+  IoCloseCircleOutline ,
   IoSearchOutline,
-  IoShirtOutline,
-  IoTicketOutline,
 } from 'react-icons/io5'
 import { Dropdown } from '@/components'
 
@@ -43,7 +37,7 @@ export const Sidebar = () => {
           }
         )}
       >
-        <IoCloseOutline className='absolute top-5 right-5 text-2xl cursor-pointer' onClick={() => toggleMenu()} />
+        <IoCloseCircleOutline  className='absolute top-5 right-5 text-4xl cursor-pointer hover:bg-gray-900 hover:text-white rounded-3xl transition-all' onClick={() => toggleMenu()} />
         <div className='relative my-10'>
           <IoSearchOutline size={20} className='absolute top-3 left-2 text-gray-300' />
           <input

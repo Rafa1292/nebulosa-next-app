@@ -1,0 +1,145 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+enum Role {
+    admin
+    user
+}
+
+enum Magnitude {
+    Masa
+    Volumen
+    Unidad
+}
+
+enum Route {
+    L
+    K
+    M
+    J
+    V
+    S
+    D
+}
+
+model Article {
+    id           String   @id @default(uuid())
+    name         String   
+    description  String?
+    needsCommand Boolean? @default(false)
+    active       Boolean? @default(true)
+    recipeId     String
+    recipe       Recipe   @relation(fields: [recipeId], references: [id])
+}
+
+model Recipe {
+    id                String              @id @default(uuid())
+    name              String              @unique
+    cost              Float
+    articles          Article[]
+    RecipeInput       RecipeInput[]
+    RecipePreparation RecipePreparation[]
+}
+
+model Brand {
+    id   String @id @default(uuid())
+    name String @unique
+}
+
+model InputCategory {
+    id    String  @id @default(uuid())
+    name  String  @unique
+    Input Input[]
+}
+
+model Input {
+    id                String             @id @default(uuid())
+    name              String             @unique
+    lowerPrice        Float              @default(0)
+    upperPrice        Float              @default(0)
+    currentPrice      Float              @default(0)
+    lastPrice         Float              @default(0)
+    expectedPrice     Float              @default(0)
+    stock             Float              @default(0)
+    presentation      Float              @default(0)
+    suggestedStock    Float              @default(0)
+    currentProviderId String
+    currentProvider   Provider           @relation(fields: [currentProviderId], references: [id])
+    inputCategoryId   String
+    inputCategory     InputCategory      @relation(fields: [inputCategoryId], references: [id])
+    measureSlug       String
+    ProviderInput     ProviderInput[]
+    PreparationInput  PreparationInput[]
+    RecipeInput       RecipeInput[]
+}
+
+model Provider {
+    id            String          @id @default(uuid())
+    name          String          @unique
+    phone         String          @unique
+    email         String          @unique
+    route         Route[]
+    fixedExpense  Boolean?        @default(false)
+    Input         Input[]
+    ProviderInput ProviderInput[]
+}
+
+model ProviderInput {
+    id            String   @id @default(uuid())
+    providerId    String
+    inputId       String
+    lowerPrice    Float    @default(0)
+    upperPrice    Float    @default(0)
+    currentPrice  Float    @default(0)
+    lastPrice     Float    @default(0)
+    expectedPrice Float    @default(0)
+    presentation  Float    @default(0)
+    measureSlug   String
+    provider      Provider @relation(fields: [providerId], references: [id])
+    input         Input    @relation(fields: [inputId], references: [id])
+}
+
+model Preparation {
+    id                String              @id @default(uuid())
+    name              String              @unique
+    cost              Float
+    presentation      Int
+    PreparationInput  PreparationInput[]
+    RecipePreparation RecipePreparation[]
+}
+
+model PreparationInput {
+    id            String      @id @default(uuid())
+    preparationId String
+    inputId       String
+    quantity      Float
+    measureSlug   String
+    preparation   Preparation @relation(fields: [preparationId], references: [id])
+    input         Input       @relation(fields: [inputId], references: [id])
+}
+
+model RecipeInput {
+    id          String @id @default(uuid())
+    recipeId    String
+    inputId     String
+    quantity    Float
+    measureSlug String
+    recipe      Recipe @relation(fields: [recipeId], references: [id])
+    input       Input  @relation(fields: [inputId], references: [id])
+}
+
+model RecipePreparation {
+    id            String      @id @default(uuid())
+    recipeId      String
+    preparationId String
+    quantity      Float
+    measureSlug   String
+    recipe        Recipe      @relation(fields: [recipeId], references: [id])
+    preparation   Preparation @relation(fields: [preparationId], references: [id])
+}
