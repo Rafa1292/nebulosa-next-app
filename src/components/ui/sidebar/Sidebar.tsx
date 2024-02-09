@@ -14,10 +14,6 @@ export const Sidebar = () => {
   const isMenuOpen = useUIStore((state) => state.isMenuOpen)
   const toggleMenu = useUIStore((state) => state.toggleMenu)
 
-  const signOutProcess = async () => {
-    toggleMenu()
-  }
-
   return (
     <div>
       {isMenuOpen && (

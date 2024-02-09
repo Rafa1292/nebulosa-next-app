@@ -1,6 +1,6 @@
 'use client'
 
-import { subTitleFont, titleFont } from '@/config/fonts'
+import { subTitleFont } from '@/config/fonts'
 import clsx from 'clsx'
 import { useState } from 'react'
 
