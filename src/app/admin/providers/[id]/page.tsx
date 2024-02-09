@@ -12,7 +12,7 @@ interface Props {
 
 export default async function ProviderPage({ params }: Props) {
   const { id } = params
-  const {inputCategory: provider} = await getProviderById(id)
+  const {provider} = await getProviderById(id)
   const title = id === 'add' ? 'Agregar proveedor' : 'Editar proveedor' 
 
 

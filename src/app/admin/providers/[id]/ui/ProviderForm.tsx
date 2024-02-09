@@ -53,7 +53,7 @@ export const ProviderForm = ({ provider }: Props) => {
     formData.append('route', data.route.toString())
     formData.append('fixedExpense', data.fixedExpense.toString() ?? 'false')
 
-    const { ok, message} = await createUpdateProvider(formData)
+    const { ok, message } = await createUpdateProvider(formData)
     if (ok) {
       router.push('/admin/providers')
     } else {
@@ -75,7 +75,7 @@ export const ProviderForm = ({ provider }: Props) => {
     <form onSubmit={handleSubmit(onSubmit)} className='grid  grid-cols-1 w-full px-8 md:px-48'>
       <div className='mt-5'>
         <div className='flex flex-col mb-4'>
-          <span className='font-bold antialiased'>Nombre</span>
+          <span className='font-bold text-sm antialiased'>Nombre</span>
           <input
             {...register('name', { required: 'El nombre es obligatorio' })}
             type='text'
@@ -95,7 +95,7 @@ export const ProviderForm = ({ provider }: Props) => {
           />
         </div>
         <div className='flex flex-col mb-4'>
-          <span className='font-bold antialiased'>Telefono</span>
+          <span className='font-bold text-sm antialiased'>Telefono</span>
           <input
             {...register('phone', { required: 'El telefono es obligatorio' })}
             type='text'
@@ -115,7 +115,7 @@ export const ProviderForm = ({ provider }: Props) => {
           />
         </div>
         <div className='flex flex-col mb-4'>
-          <span className='font-bold antialiased'>Correo</span>
+          <span className='font-bold text-sm antialiased'>Correo</span>
           <input
             {...register('email', {
               required: 'El correo es obligatorio',
@@ -141,7 +141,7 @@ export const ProviderForm = ({ provider }: Props) => {
           />
         </div>
         <div className='flex flex-col mb-6'>
-          <span className='font-bold antialiased'>Ruta</span>
+          <span className='font-bold text-sm antialiased'>Ruta</span>
           <div className='flex flex-wrap'>
             {routes.map((route) => (
               // bg-blue-500 text-white <--- si está seleccionado
@@ -159,11 +159,9 @@ export const ProviderForm = ({ provider }: Props) => {
                 <span>{route}</span>
               </div>
             ))}
-            {
-              !isValid && getValues('route').length < 1 && (
-                <p className='text-red-900 text-sm font-bold pt-2'>Debe seleccionar almenos 1 dia</p>
-              )
-            }
+            {!isValid && getValues('route').length < 1 && (
+              <p className='text-red-900 text-sm font-bold pt-2'>Debe seleccionar almenos 1 dia</p>
+            )}
           </div>
         </div>
         <div className='flex items-center mb-4'>
@@ -173,11 +171,21 @@ export const ProviderForm = ({ provider }: Props) => {
             {...register('fixedExpense')}
             className='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-3xl focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600'
           />
-          <label htmlFor='fixedExpense' className='ms-2 mr-4 text-gray-900 font-bold cursor-pointer select-none'>
+          <label
+            htmlFor='fixedExpense'
+            className='ms-2 text-sm mr-4 text-gray-900 font-bold cursor-pointer select-none'
+          >
             Gasto fijo
           </label>
         </div>
-        <button type='submit' disabled={!isValid} className='w-full p-2 bg-blue-500 text-white rounded-md'>
+        <button
+          type='submit'
+          disabled={!isValid}
+          className={clsx('text-white font-bold py-2 px-4  rounded', {
+            'bg-blue-600 hover:bg-blue-500 cursor-pointer': isValid,
+            'btn-secondary cursor-not-allowed': !isValid,
+          })}
+        >
           Guardar
         </button>
       </div>

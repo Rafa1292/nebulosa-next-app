@@ -27,10 +27,10 @@ export default async function ProvidersPage({ searchParams }: Props) {
       >
         {providers.map((provider) => (
           <tr key={provider.id} className='bg-white border-b transition duration-300 ease-in-out hover:bg-gray-100'>
-            <td className='text-sm font-bold text-gray-900 px-6 py-4 whitespace-nowrap'>{provider.name}</td>
-            <td className='text-sm font-bold text-gray-900 px-6 py-4 whitespace-nowrap'>{provider.email}</td>
-            <td className='text-sm font-bold text-gray-900 px-6 py-4 whitespace-nowrap'>{provider.phone}</td>
-            <td className='text-sm font-bold text-gray-900 px-6 py-4  flex gap-6'>
+            <td className='text-sm font-bold text-gray-900 px-6 py-4 text-center whitespace-nowrap'>{provider.name}</td>
+            <td className='text-sm font-bold text-gray-900 px-6 py-4 text-center whitespace-nowrap'>{provider.email}</td>
+            <td className='text-sm font-bold text-gray-900 px-6 py-4 text-center whitespace-nowrap'>{provider.phone}</td>
+            <td className='text-sm font-bold text-gray-900 px-6 py-4 justify-center flex gap-6'>
               <Link href={`/admin/providers/${provider.id}`} className='font-bold text-2xl cursor-pointer'>
                 <CiEdit className='font-bold text-2xl cursor-pointer' />
               </Link>
