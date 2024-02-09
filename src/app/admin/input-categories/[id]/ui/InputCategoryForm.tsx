@@ -1,15 +1,15 @@
 'use client'
 
-import { InputCategory} from '@/interfaces'
+import { InputCategory } from '@/interfaces'
 import { useForm } from 'react-hook-form'
 import { ErrorMessage } from '@hookform/error-message'
 import { useRouter } from 'next/navigation'
 import { createUpdateInputCategory } from '@/actions'
+import clsx from 'clsx'
 
 interface Props {
   inputCategory: Partial<InputCategory>
 }
-
 
 interface FormInputs {
   id: string
@@ -21,14 +21,13 @@ export const InputCategoryForm = ({ inputCategory }: Props) => {
   const {
     handleSubmit,
     register,
-    formState: { isValid, errors }
+    formState: { isValid, errors },
   } = useForm<FormInputs>({
     criteriaMode: 'all',
     defaultValues: {
-      ...inputCategory
+      ...inputCategory,
     },
   })
-
 
   const onSubmit = async (data: FormInputs) => {
     const formData = new FormData()
@@ -38,7 +37,7 @@ export const InputCategoryForm = ({ inputCategory }: Props) => {
     }
     formData.append('name', data.name)
 
-    const { ok, message} = await createUpdateInputCategory(formData)
+    const { ok, message } = await createUpdateInputCategory(formData)
     if (ok) {
       router.push('/admin/input-categories')
     } else {
@@ -69,8 +68,15 @@ export const InputCategoryForm = ({ inputCategory }: Props) => {
             }
           />
         </div>
-       
-        <button type='submit' disabled={!isValid} className='w-full p-2 bg-blue-500 text-white rounded-md'>
+
+        <button
+          type='submit'
+          disabled={!isValid}
+          className={clsx('text-white font-bold py-2 px-4  rounded', {
+            'bg-blue-600 hover:bg-blue-500 cursor-pointer': isValid,
+            'btn-secondary cursor-not-allowed': !isValid,
+          })}
+        >
           Guardar
         </button>
       </div>

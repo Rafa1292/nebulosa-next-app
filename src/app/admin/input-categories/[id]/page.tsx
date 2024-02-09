@@ -10,7 +10,7 @@ interface Props {
   }
 }
 
-export default async function ProviderPage({ params }: Props) {
+export default async function InputCategoryPage({ params }: Props) {
   const { id } = params
   const {inputCategory} = await getInputCategoryById(id)
   const title = id === 'add' ? 'Agregar categoria' : 'Editar categoria' 

@@ -27,8 +27,8 @@ export default async function InputCategoriesPage({ searchParams }: Props) {
       >
         {inputCategories.map((category) => (
           <tr key={category.id} className='bg-white border-b transition duration-300 ease-in-out hover:bg-gray-100'>
-            <td className='text-sm font-bold text-gray-900 px-6 py-4 whitespace-nowrap'>{category.name}</td>
-            <td className='text-sm font-bold text-gray-900 px-6 py-4  flex gap-6'>
+            <td className='text-sm font-bold text-gray-900 px-6 py-4 whitespace-nowrap text-center'>{category.name}</td>
+            <td className='text-sm font-bold text-gray-900 px-6 py-4 justify-center flex gap-6'>
               <Link href={`/admin/input-categories/${category.id}`} className='font-bold text-2xl cursor-pointer'>
                 <CiEdit className='font-bold text-2xl cursor-pointer' />
               </Link>
