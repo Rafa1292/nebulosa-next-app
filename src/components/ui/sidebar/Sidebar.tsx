@@ -31,7 +31,7 @@ export const Sidebar = () => {
       )}
       <nav
         className={clsx(
-          'fixed p-5 right-0 top-0 w-full sm:w-[500px] h-screen bg-white z-20 shadow-2xl transform transition-all duration-300',
+          'fixed p-5 right-0 top-0 w-full sm:w-[500px] h-screen bg-white z-20 shadow-2xl fade-in transform transition-all duration-300',
           {
             'translate-x-full': !isMenuOpen,
           }

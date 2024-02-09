@@ -85,7 +85,7 @@ model Provider {
     phone         String          @unique
     email         String          @unique
     route         Route[]
-    fixedExpense  Boolean?        @default(false)
+    fixedExpense  Boolean        @default(false)
     Input         Input[]
     ProviderInput ProviderInput[]
 }

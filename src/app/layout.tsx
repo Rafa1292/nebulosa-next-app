@@ -18,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='es'>
-      <body className={`${inter.className} min-h-screen px-2`}>
+      <body className={`${inter.className} min-h-screen px-2 overflow-x-hidden w-full`}>
         <TopMenu />
         <Sidebar />
         {children}
