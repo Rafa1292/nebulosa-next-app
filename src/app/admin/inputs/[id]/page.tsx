@@ -1,6 +1,6 @@
 import React from 'react'
 import { redirect } from 'next/navigation'
-import { ProviderForm } from './ui/ProviderForm'
+import { InputForm } from './ui/inputForm'
 import { Title } from '@/components'
 import { getProviderById } from '@/actions'
 
@@ -10,20 +10,20 @@ interface Props {
   }
 }
 
-export default async function ProviderPage({ params }: Props) {
+export default async function InputPage({ params }: Props) {
   const { id } = params
   const {inputCategory: provider} = await getProviderById(id)
-  const title = id === 'add' ? 'Agregar proveedor' : 'Editar proveedor' 
+  const title = id === 'add' ? 'Agregar insumo' : 'Editar insumo' 
 
 
   if (!provider && id !== 'add') {
-    redirect('/admin/providers')
+    redirect('/admin/inputs')
   }
 
   return (
     <div className='w-100 justify-center flex-wrap flex'>
       <Title title={title} />
-      <ProviderForm provider={provider ?? {}} />
+      <InputForm input={provider ?? {}} />
     </div>
   )
 }

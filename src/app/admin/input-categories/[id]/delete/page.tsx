@@ -1,8 +1,8 @@
 'use client'
-import { deleteProvider, getProviderById } from '@/actions'
+import { deleteInputCategory, getInputCategoryById } from '@/actions'
 import { Title } from '@/components'
 import clsx from 'clsx'
-import { redirect, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 interface Props {
@@ -11,26 +11,25 @@ interface Props {
   }
 }
 
-export default function DeleteProviderPage({ params }: Props) {
+export default function DeleteInputCategoryPage({ params }: Props) {
   const { id } = params
   const [deleting, setDeleting] = useState(false)
   const router = useRouter()
-  const [providerName, setProviderName] = useState('')
+  const [categoryName, setCategoryName] = useState('')
 
   useEffect(() => {
-    getProviderById(id).then((res) => {
-        if (res.inputCategory) {
-            setProviderName(res.inputCategory.name)
-        }
-        })
-    }, [id])
-
+    getInputCategoryById(id).then((res) => {
+      if (res.inputCategory) {
+        setCategoryName(res.inputCategory.name)
+      }
+    })
+  }, [id])
 
   const onDelete = () => {
     setDeleting(true)
-    deleteProvider(id).then((res) => {
+    deleteInputCategory(id).then((res) => {
       if (res.ok) {
-        router.push('/admin/providers')
+        router.push('/admin/input-categories')
       } else {
         setDeleting(false)
       }
@@ -39,8 +38,8 @@ export default function DeleteProviderPage({ params }: Props) {
 
   return (
     <div className='w-full justify-center flex flex-wrap mt-10'>
-      <Title title='Eliminar proveedor' />
-      <span className='w-full text-center my-8'>¿Estas seguro que deseas eliminar el proveedor {providerName}?</span>
+      <Title title='Eliminar categoria' />
+      <span className='w-full text-center my-8'>¿Estas seguro que deseas eliminar la categoria {categoryName}?</span>
       <button
         disabled={deleting}
         onClick={() => onDelete()}

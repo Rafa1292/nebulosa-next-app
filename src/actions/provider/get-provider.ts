@@ -13,7 +13,7 @@ export const getProviderById = async (id: string) => {
     console.log('provider', provider)
     return {
       ok: true,
-      provider,
+      inputCategory: provider,
     }
   } catch (error) {
     console.log(error)
