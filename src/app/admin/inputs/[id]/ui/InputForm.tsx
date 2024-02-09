@@ -1,6 +1,6 @@
 'use client'
 
-import { Input, InputCategory, Route, measures } from '@/interfaces'
+import { Input, InputCategory, measures } from '@/interfaces'
 import clsx from 'clsx'
 import { useForm } from 'react-hook-form'
 import { ErrorMessage } from '@hookform/error-message'
@@ -66,7 +66,7 @@ export const InputForm = ({ input, inputCategories }: Props) => {
     <form onSubmit={handleSubmit(onSubmit)} className='grid  grid-cols-1 w-full px-8 md:px-48'>
       <div className='mt-5'>
         <div className='flex flex-col mb-4'>
-          <span className='font-bold antialiased'>Nombre</span>
+          <span className='font-bold text-sm antialiased'>Nombre</span>
           <input
             {...register('name', { required: 'El nombre es obligatorio' })}
             type='text'
@@ -86,19 +86,19 @@ export const InputForm = ({ input, inputCategories }: Props) => {
           />
         </div>
         <div className='flex flex-col mb-4'>
-          <span className='font-bold antialiased'>Precio</span>
+          <span className='font-bold text-sm antialiased'>Precio</span>
           <input {...register('expectedPrice')} type='number' className='p-2 border rounded-md bg-gray-100' />
         </div>
         <div className='flex flex-col mb-4'>
-          <span className='font-bold antialiased'>Stock</span>
+          <span className='font-bold text-sm antialiased'>Stock</span>
           <input {...register('stock')} type='number' className='p-2 border rounded-md bg-gray-100' />
         </div>
         <div className='flex flex-col mb-4'>
-          <span className='font-bold antialiased'>Presentación</span>
+          <span className='font-bold text-sm antialiased'>Presentación</span>
           <input {...register('presentation')} type='number' className='p-2 border rounded-md bg-gray-100' />
         </div>
         <div className='flex flex-col mb-4'>
-          <span className='font-bold antialiased'>Categoria</span>
+          <span className='font-bold text-sm antialiased'>Categoria</span>
           <select {...register('inputCategoryId', { required: true })} className='p-2 border rounded-md bg-gray-100'>
             <option value=''>[Seleccione]</option>
             {inputCategories.map((category) => (
@@ -109,7 +109,7 @@ export const InputForm = ({ input, inputCategories }: Props) => {
           </select>
         </div>
         <div className='flex flex-col mb-4'>
-          <span className='font-bold antialiased'>Medida</span>
+          <span className='font-bold text-sm antialiased'>Medida</span>
           <select {...register('measureSlug', { required: true })} className='p-2 border rounded-md bg-gray-100'>
             <option value=''>[Seleccione]</option>
             {measures.map((measure) => (

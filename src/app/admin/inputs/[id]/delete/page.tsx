@@ -2,7 +2,7 @@
 import { deleteInput, getInputById } from '@/actions'
 import { Title } from '@/components'
 import clsx from 'clsx'
-import { redirect, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 interface Props {

@@ -28,7 +28,7 @@ export const TableList = ({ buttonTitle, heads, children, buttonRef = '/', table
             <tr>
               {
               heads.map((head, index) => (
-                <th key={index} scope='col' className='text-sm text-center font-medium text-gray-900 px-6 py-4 text-left'>
+                <th key={index} scope='col' className='text-sm text-center font-medium text-gray-900 px-6 py-4'>
                   {head}
                 </th>
               ))
