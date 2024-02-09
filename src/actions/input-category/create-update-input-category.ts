@@ -14,7 +14,7 @@ export const createUpdateInputCategory = async (formData: FormData) => {
     const data = Object.fromEntries(formData)
     const parse = inputCategorySchema.safeParse(data)
     if (!parse.success) {
-      throw new Error('Error en la integridad de los datos')
+      throw new Error(parse.error.message)
     }
     const { id, ...inputCategory } = parse.data
 

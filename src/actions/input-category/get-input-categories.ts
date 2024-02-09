@@ -7,8 +7,6 @@ export const getInputCategories = async () => {
     const inputCategories = await prisma.inputCategory.findMany({
     })
 
-    const totalInputCategories = await prisma.inputCategory.count({})
-
     return {
       ok: true,
       inputCategories: inputCategories ?? [],

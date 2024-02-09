@@ -11,7 +11,7 @@ export const getInputCategoryById = async (id: string) => {
     })
     return {
       ok: true,
-      inputCategory: inputCategory,
+      inputCategory,
     }
   } catch (error) {
     console.log(error)

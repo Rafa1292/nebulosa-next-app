@@ -1,6 +1,5 @@
 'use server'
 
-import { Route } from '@/interfaces'
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
@@ -20,7 +19,6 @@ export const createUpdateInput = async (formData: FormData) => {
   try {
     const data = Object.fromEntries(formData)
     const parse = inputSchema.safeParse(data)
-    console.log(parse)
     if (!parse.success) {
       throw new Error(parse.error.message)
     }

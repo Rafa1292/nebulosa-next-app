@@ -1,6 +1,6 @@
 'use server'
 
-import { Provider, Route } from '@/interfaces'
+import { Route } from '@/interfaces'
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
@@ -19,7 +19,7 @@ export const createUpdateProvider = async (formData: FormData) => {
     const data = Object.fromEntries(formData)
     const parse = providerSchema.safeParse(data)
     if (!parse.success) {
-      throw new Error('Error en la integridad de los datos')
+      throw new Error(parse.error.message)
     }
     const { id, ...provider } = parse.data
 
