@@ -1,45 +1,43 @@
 'use client'
 
-import { Input, Route, measures } from '@/interfaces'
+import { Input, InputCategory, Route, measures } from '@/interfaces'
 import clsx from 'clsx'
 import { useForm } from 'react-hook-form'
 import { ErrorMessage } from '@hookform/error-message'
-import { createUpdateProvider } from '@/actions'
+import { createUpdateInput } from '@/actions'
 import { useRouter } from 'next/navigation'
 
 interface Props {
+  inputCategories: InputCategory[]
   input: Partial<Input>
 }
 
-
 interface FormInputs {
-    id: string;
-    name: string;
-    lowerPrice: number;
-    upperPrice: number;
-    currentPrice: number;
-    lastPrice: number;
-    expectedPrice: number;
-    stock: number;
-    presentation: number;
-    suggestedStock: number;
-    currentProviderId: string;
-    inputCategoryId: string;
-    measureSlug: string;
+  id: string
+  name: string
+  lowerPrice: number
+  upperPrice: number
+  currentPrice: number
+  lastPrice: number
+  expectedPrice: number
+  stock: number
+  presentation: number
+  suggestedStock: number
+  currentProviderId: string
+  inputCategoryId: string
+  measureSlug: string
 }
 
-export const InputForm = ({ input }: Props) => {
+export const InputForm = ({ input, inputCategories }: Props) => {
   const router = useRouter()
   const {
     handleSubmit,
     register,
     formState: { isValid, errors },
-    getValues,
-    setValue,
   } = useForm<FormInputs>({
     criteriaMode: 'all',
     defaultValues: {
-      ...input
+      ...input,
     },
   })
 
@@ -50,17 +48,19 @@ export const InputForm = ({ input }: Props) => {
       formData.append('id', input.id)
     }
     formData.append('name', data.name)
+    formData.append('expectedPrice', data.expectedPrice.toString())
+    formData.append('stock', data.stock.toString())
+    formData.append('presentation', data.presentation.toString())
+    formData.append('inputCategoryId', data.inputCategoryId)
+    formData.append('measureSlug', data.measureSlug)
 
-
-    const { ok, message} = await createUpdateProvider(formData)
+    const { ok, message } = await createUpdateInput(formData)
     if (ok) {
-      router.push('/admin/providers')
+      router.push('/admin/inputs')
     } else {
       alert(message)
     }
   }
-
-
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className='grid  grid-cols-1 w-full px-8 md:px-48'>
@@ -87,30 +87,47 @@ export const InputForm = ({ input }: Props) => {
         </div>
         <div className='flex flex-col mb-4'>
           <span className='font-bold antialiased'>Precio</span>
-          <input
-            {...register('expectedPrice')}
-            type='number'
-            className='p-2 border rounded-md bg-gray-100'
-          />
+          <input {...register('expectedPrice')} type='number' className='p-2 border rounded-md bg-gray-100' />
         </div>
         <div className='flex flex-col mb-4'>
           <span className='font-bold antialiased'>Stock</span>
-          <input
-            {...register('stock')}
-            type='number'
-            className='p-2 border rounded-md bg-gray-100'
-          />
+          <input {...register('stock')} type='number' className='p-2 border rounded-md bg-gray-100' />
         </div>
         <div className='flex flex-col mb-4'>
           <span className='font-bold antialiased'>Presentación</span>
-          <input
-            {...register('presentation')}
-            type='number'
-            className='p-2 border rounded-md bg-gray-100'
-          />
+          <input {...register('presentation')} type='number' className='p-2 border rounded-md bg-gray-100' />
+        </div>
+        <div className='flex flex-col mb-4'>
+          <span className='font-bold antialiased'>Categoria</span>
+          <select {...register('inputCategoryId', { required: true })} className='p-2 border rounded-md bg-gray-100'>
+            <option value=''>[Seleccione]</option>
+            {inputCategories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className='flex flex-col mb-4'>
+          <span className='font-bold antialiased'>Medida</span>
+          <select {...register('measureSlug', { required: true })} className='p-2 border rounded-md bg-gray-100'>
+            <option value=''>[Seleccione]</option>
+            {measures.map((measure) => (
+              <option key={measure.slug} value={measure.slug}>
+                {measure.name}
+              </option>
+            ))}
+          </select>
         </div>
 
-        <button type='submit' disabled={!isValid} className='w-full p-2 bg-blue-500 text-white rounded-md'>
+        <button
+          type='submit'
+          disabled={!isValid}
+          className={clsx('text-white font-bold py-2 px-4  rounded', {
+            'bg-blue-600 hover:bg-blue-500 cursor-pointer': isValid,
+            'btn-secondary cursor-not-allowed': !isValid,
+          })}
+        >
           Guardar
         </button>
       </div>

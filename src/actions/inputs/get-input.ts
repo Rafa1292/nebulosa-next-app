@@ -2,22 +2,22 @@
 
 import prisma from '@/lib/prisma'
 
-export const getProviderById = async (id: string) => {
+export const getInputById = async (id: string) => {
   try {
-    const provider = await prisma.provider.findUnique({
+    const input = await prisma.input.findUnique({
       where: {
         id,
       },
     })
     return {
       ok: true,
-      provider: provider,
+      input
     }
   } catch (error) {
     console.log(error)
     return {
       ok: false,
-      message: 'No se pudo obtener el proveedor',
+      message: 'No se pudo obtener el insumo',
     }
   }
 }

@@ -1,8 +1,8 @@
 import React from 'react'
 import { redirect } from 'next/navigation'
-import { InputForm } from './ui/inputForm'
+import { InputForm } from './ui/InputForm'
 import { Title } from '@/components'
-import { getProviderById } from '@/actions'
+import { getInputById, getInputCategories } from '@/actions'
 
 interface Props {
   params: {
@@ -12,18 +12,18 @@ interface Props {
 
 export default async function InputPage({ params }: Props) {
   const { id } = params
-  const {inputCategory: provider} = await getProviderById(id)
+  const {input} = await getInputById(id)
   const title = id === 'add' ? 'Agregar insumo' : 'Editar insumo' 
+  const {inputCategories} = await getInputCategories()
 
-
-  if (!provider && id !== 'add') {
+  if (!input && id !== 'add') {
     redirect('/admin/inputs')
   }
 
   return (
     <div className='w-100 justify-center flex-wrap flex'>
       <Title title={title} />
-      <InputForm input={provider ?? {}} />
+      <InputForm inputCategories={inputCategories??[]} input={input ?? {}} />
     </div>
   )
 }

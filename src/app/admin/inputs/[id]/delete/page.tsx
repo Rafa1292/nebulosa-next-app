@@ -1,5 +1,5 @@
 'use client'
-import { deleteProvider, getProviderById } from '@/actions'
+import { deleteInput, getInputById } from '@/actions'
 import { Title } from '@/components'
 import clsx from 'clsx'
 import { redirect, useRouter } from 'next/navigation'
@@ -11,16 +11,16 @@ interface Props {
   }
 }
 
-export default function DeleteProviderPage({ params }: Props) {
+export default function DeleteInputPage({ params }: Props) {
   const { id } = params
   const [deleting, setDeleting] = useState(false)
   const router = useRouter()
-  const [providerName, setProviderName] = useState('')
+  const [inputName, setInputName] = useState('')
 
   useEffect(() => {
-    getProviderById(id).then((res) => {
-        if (res.provider) {
-            setProviderName(res.provider.name)
+    getInputById(id).then((res) => {
+        if (res.input) {
+            setInputName(res.input.name)
         }
         })
     }, [id])
@@ -28,9 +28,9 @@ export default function DeleteProviderPage({ params }: Props) {
 
   const onDelete = () => {
     setDeleting(true)
-    deleteProvider(id).then((res) => {
+    deleteInput(id).then((res) => {
       if (res.ok) {
-        router.push('/admin/providers')
+        router.push('/admin/inputs')
       } else {
         setDeleting(false)
       }
@@ -39,8 +39,8 @@ export default function DeleteProviderPage({ params }: Props) {
 
   return (
     <div className='w-full justify-center flex flex-wrap mt-10'>
-      <Title title='Eliminar proveedor' />
-      <span className='w-full text-center my-8'>¿Estas seguro que deseas eliminar el proveedor {providerName}?</span>
+      <Title title='Eliminar insumo' />
+      <span className='w-full text-center my-8'>¿Estas seguro que deseas eliminar el insumo {inputName}?</span>
       <button
         disabled={deleting}
         onClick={() => onDelete()}

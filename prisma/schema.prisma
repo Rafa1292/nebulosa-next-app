@@ -70,7 +70,6 @@ model Input {
     presentation      Float              @default(0)
     suggestedStock    Float              @default(0)
     currentProviderId String
-    currentProvider   Provider           @relation(fields: [currentProviderId], references: [id])
     inputCategoryId   String
     inputCategory     InputCategory      @relation(fields: [inputCategoryId], references: [id])
     measureSlug       String
@@ -86,7 +85,6 @@ model Provider {
     email         String          @unique
     route         Route[]
     fixedExpense  Boolean        @default(false)
-    Input         Input[]
     ProviderInput ProviderInput[]
 }
 

@@ -3,24 +3,24 @@
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 
-export const deleteProvider = async (id: string) => {
+export const deleteInput = async (id: string) => {
   try {
-    await prisma.provider.delete({
+    await prisma.input.delete({
       where: {
         id: id,
       },
     })
-    revalidatePath(`/admin/providers`)
+    revalidatePath(`/admin/inputs`)
 
     return {
       ok: true,
-      message: 'Proveedor eliminado',
+      message: 'Insumo eliminado',
     }
   } catch (error) {
     console.log(error)
     return {
       ok: false,
-      message: 'Error al eliminar el proveedor',
+      message: 'Error al eliminar el insumo',
     }
   }
 }
