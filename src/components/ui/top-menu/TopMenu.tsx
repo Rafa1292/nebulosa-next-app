@@ -3,16 +3,12 @@
 import { titleFont } from '@/config/fonts'
 import { useUIStore } from '@/store'
 import Link from 'next/link'
-import React, { useEffect, useState } from 'react'
 import { RiMenu3Line } from "react-icons/ri";
 
 export const TopMenu = () => {
   const toggleMenu = useUIStore((state) => state.toggleMenu)
-  const [loader, setLoader] = useState(false)
 
-  useEffect(() => {
-    setLoader(true)
-  }, [])
+  
 
   return (
     <nav className='flex px-5 justify-between items-center w-full'>

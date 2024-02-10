@@ -49,7 +49,7 @@ export const InputCategoryForm = ({ inputCategory }: Props) => {
     <form onSubmit={handleSubmit(onSubmit)} className='grid  grid-cols-1 w-full px-8 md:px-48'>
       <div className='mt-5'>
         <div className='flex flex-col mb-4'>
-          <span className='font-bold antialiased'>Nombre</span>
+          <span className='font-bold antialiased text-sm'>Nombre</span>
           <input
             {...register('name', { required: 'El nombre es obligatorio' })}
             type='text'
