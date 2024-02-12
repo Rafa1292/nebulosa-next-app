@@ -9,7 +9,6 @@ const preparationSchema = z.object({
   name: z.string(),
   cost: z.coerce.number(),
   presentation: z.coerce.number(),
-  price: z.coerce.number()
 })
 
 export const createUpdatePreparation = async (formData: FormData) => {

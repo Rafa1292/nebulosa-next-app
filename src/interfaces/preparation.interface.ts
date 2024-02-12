@@ -4,5 +4,4 @@ export interface Preparation {
     name: string;
     cost: number;
     presentation: number;
-    price: number;
 }
