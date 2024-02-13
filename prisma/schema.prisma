@@ -106,10 +106,11 @@ model ProviderInput {
 model Preparation {
     id                String              @id @default(uuid())
     name              String              @unique
+    measureSlug       String 
     cost              Float
     presentation      Int
-    PreparationInput  PreparationInput[]
-    RecipePreparation RecipePreparation[]
+    PreparationInputs  PreparationInput[]
+    RecipePreparations RecipePreparation[]
 }
 
 model PreparationInput {

@@ -1,5 +1,6 @@
 import { getPaginatedPreparations } from '@/actions'
 import { TableList } from '@/components/view-data/table/TableList'
+import { measures } from '@/interfaces'
 import Link from 'next/link'
 import { CiEdit } from 'react-icons/ci'
 import { FaTrashCan } from 'react-icons/fa6'
@@ -23,13 +24,14 @@ export default async function PreparationsPage({ searchParams }: Props) {
         tableTitle='Preparaciones'
         buttonTitle='Agregar Preparacion'
         buttonRef='/admin/preparations/add'
-        heads={['Nombre', 'Costo', 'Presentacion', '']}
+        heads={['Nombre', 'Costo', 'Presentacion', 'Medida', '']}
       >
         {preparations.map((preparation) => (
           <tr key={preparation.id} className='bg-white border-b transition duration-300 ease-in-out hover:bg-gray-100'>
             <td className='text-sm font-bold text-gray-900 px-6 py-4 text-center whitespace-nowrap'>{preparation.name}</td>
             <td className='text-sm font-bold text-gray-900 px-6 py-4 text-center whitespace-nowrap'>{preparation.cost}</td>
             <td className='text-sm font-bold text-gray-900 px-6 py-4 text-center whitespace-nowrap'>{preparation.presentation}</td>
+            <td className='text-sm font-bold text-gray-900 px-6 py-4 text-center whitespace-nowrap'>{measures.find(x => x.slug === preparation.measureSlug)?.name}</td>
             <td className='text-sm font-bold text-gray-900 px-6 py-4 justify-center flex gap-6'>
               <Link href={`/admin/preparations/${preparation.id}`} className='font-bold text-2xl cursor-pointer'>
                 <CiEdit className='font-bold text-2xl cursor-pointer' />

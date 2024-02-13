@@ -8,7 +8,22 @@ export const getPreparationById = async (id: string) => {
       where: {
         id,
       },
+      include: {
+        PreparationInputs: {
+          include: {
+            input: true,
+          },
+        },
+      },
     })
+
+    if (!preparation) {
+      return {
+        ok: false,
+        message: 'No se pudo obtener la preparacion',
+      }
+    }
+
     return {
       ok: true,
       preparation,

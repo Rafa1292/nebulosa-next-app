@@ -1,3 +1,4 @@
+import { Input } from ".";
 
 export  interface PreparationInput {
     id: string;
@@ -5,4 +6,5 @@ export  interface PreparationInput {
     inputId: string;
     quantity: number;
     measureSlug: string;
+    input?: Input;
 }
