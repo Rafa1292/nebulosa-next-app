@@ -14,20 +14,17 @@ const preparationInputSchema = z.object({
 })
 //get a parameter of type PreparationInput and a transaction
 
-export const createUpdatePreparationInput = async (data: PreparationInput, tx?: any) => {
+export const createUpdatePreparationInput = async (data: PreparationInput) => {
   try {
-    console.log(data)
-    const transaction = tx || prisma
     const parse = preparationInputSchema.safeParse(data)
     if (!parse.success) {
       throw new Error(parse.error.message)
     }
     const { id, ...preparationInput } = parse.data
-    console.log('preparationInput', preparationInput)
 
     if (id) {
       // update
-      await transaction.preparationInput.update({
+      await prisma.preparationInput.update({
         where: {
           id,
         },
@@ -35,7 +32,7 @@ export const createUpdatePreparationInput = async (data: PreparationInput, tx?: 
       })
     } else {
       // create
-      await transaction.preparationInput.create({
+      await prisma.preparationInput.create({
         data: preparationInput,
       })
     }

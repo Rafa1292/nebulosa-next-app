@@ -1,3 +1,4 @@
+import { Recipe } from ".";
 
 export interface Article {
     id: string;
@@ -5,5 +6,5 @@ export interface Article {
     description?: string;
     needsCommand: boolean;
     active: boolean;
-    recipeId: string;
+    Recipe: Recipe
 }
