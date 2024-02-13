@@ -21,7 +21,6 @@ const preparationSchema = z.object({
   cost: z.coerce.number(),
   presentation: z.coerce.number(),
   measureSlug: z.string(),
-  preparationInputs: z.coerce.string().transform((val) => JSON.parse(val) as PreparationInput[]),
 })
 
 export const createUpdatePreparation = async (formData: FormData) => {
@@ -35,7 +34,7 @@ export const createUpdatePreparation = async (formData: FormData) => {
 
     let preparationId = ''
     await prisma.$transaction(async (tx) => {
-      const { id, preparationInputs: tmpPreparationInputs, ...preparation } = parse.data
+      const { id, ...preparation } = parse.data
 
       if (id !== null && id !== undefined) {
         // update

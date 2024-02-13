@@ -10,6 +10,7 @@ import { Title } from '@/components'
 import { PreparationInputForm } from './PreparationInputForm'
 import { CiEdit } from 'react-icons/ci'
 import { IoClose } from 'react-icons/io5'
+import Link from 'next/link'
 
 interface Props {
   inputs: Input[]
@@ -212,6 +213,15 @@ export const PreparationForm = ({ inputs, title, id }: Props) => {
           >
             Guardar
           </button>
+          <Link href='/admin/preparations'>
+          <button
+            type='button'
+            className={clsx('text-white mx-2 bg-blue-700 font-bold cursor-pointer py-2 px-4  rounded', {
+            })}
+          >
+            Volver
+          </button>
+          </Link>
           <div className='flex flex-col mb-4 mt-5' onClick={() => setShowInputForm(!showInputForm)}>
             <span className='w-full select-none cursor-pointer text-sm text-left hover:text-blue-600 text-blue-800'>
               + Agregar insumo
