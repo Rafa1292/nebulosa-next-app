@@ -30,19 +30,19 @@ enum Route {
 
 model Article {
     id           String   @id @default(uuid())
-    name         String   
+    name         String
     description  String?
     needsCommand Boolean? @default(false)
     active       Boolean? @default(true)
-    recipeId     String
-    recipe       Recipe   @relation(fields: [recipeId], references: [id])
+    Recipe       Recipe?
 }
 
 model Recipe {
     id                String              @id @default(uuid())
     name              String              @unique
     cost              Float
-    articles          Article[]
+    articleId         String              @unique
+    article           Article             @relation(fields: [articleId], references: [id])
     RecipeInput       RecipeInput[]
     RecipePreparation RecipePreparation[]
 }
@@ -84,7 +84,7 @@ model Provider {
     phone         String          @unique
     email         String          @unique
     route         Route[]
-    fixedExpense  Boolean        @default(false)
+    fixedExpense  Boolean         @default(false)
     ProviderInput ProviderInput[]
 }
 
@@ -104,11 +104,11 @@ model ProviderInput {
 }
 
 model Preparation {
-    id                String              @id @default(uuid())
-    name              String              @unique
-    measureSlug       String 
-    cost              Float
-    presentation      Int
+    id                 String              @id @default(uuid())
+    name               String              @unique
+    measureSlug        String
+    cost               Float
+    presentation       Int
     PreparationInputs  PreparationInput[]
     RecipePreparations RecipePreparation[]
 }
