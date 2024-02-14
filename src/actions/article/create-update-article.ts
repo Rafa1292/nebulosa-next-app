@@ -8,8 +8,8 @@ const articleSchema = z.object({
   id: z.string().uuid().optional().nullable(),
   name: z.string(),
   description: z.string().optional(),
-  needsCommand: z.boolean(),
-  active: z.boolean()
+  needsCommand: z.string().transform((val) => (val === 'true' ? true : false)),
+  active: z.string().transform((val) => (val === 'true' ? true : false))
 })
 
 export const createUpdateArticle = async (formData: FormData) => {
