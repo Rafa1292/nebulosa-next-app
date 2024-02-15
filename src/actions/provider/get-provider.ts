@@ -1,8 +1,9 @@
 'use server'
 
+import { Provider } from '@/interfaces'
 import prisma from '@/lib/prisma'
 
-export const getProviderById = async (id: string) => {
+export const getProviderById = async (id: string)=> {
   try {
     const provider = await prisma.provider.findUnique({
       where: {

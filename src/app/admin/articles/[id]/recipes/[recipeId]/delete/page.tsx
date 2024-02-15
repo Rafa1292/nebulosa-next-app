@@ -1,26 +1,27 @@
 'use client'
-import { deleteArticle, deleteProvider, getArticleById, getProviderById } from '@/actions'
+import { deleteProvider, deleteRecipe, getProviderById, getRecipeById } from '@/actions'
 import { Title } from '@/components'
 import clsx from 'clsx'
-import { useRouter } from 'next/navigation'
+import { redirect, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 interface Props {
   params: {
     id: string
+    recipeId: string
   }
 }
 
-export default function DeleteArticlePage({ params }: Props) {
-  const { id } = params
+export default function DeleteRecipePage({ params }: Props) {
+  const { id, recipeId } = params
   const [deleting, setDeleting] = useState(false)
   const router = useRouter()
-  const [articleName, setArticleName] = useState('')
+  const [recipeName, setRecipeName] = useState('')
 
   useEffect(() => {
-    getArticleById(id).then((res) => {
-        if (res.article) {
-            setArticleName(res.article.name)
+    getRecipeById(recipeId).then((res) => {
+        if (res.recipe) {
+            setRecipeName(res.recipe.name)
         }
         })
     }, [id])
@@ -28,9 +29,9 @@ export default function DeleteArticlePage({ params }: Props) {
 
   const onDelete = () => {
     setDeleting(true)
-    deleteArticle(id).then((res) => {
+    deleteRecipe(recipeId, id).then((res) => {
       if (res.ok) {
-        router.push('/admin/articles')
+        router.push(`/admin/articles/${id}/recipes`)
       } else {
         setDeleting(false)
       }
@@ -39,8 +40,8 @@ export default function DeleteArticlePage({ params }: Props) {
 
   return (
     <div className='w-full justify-center flex flex-wrap mt-10'>
-      <Title title='Eliminar articulo' />
-      <span className='w-full text-center my-8'>¿Estas seguro que deseas eliminar el articulo {articleName}?</span>
+      <Title title='Eliminar receta' />
+      <span className='w-full text-center my-8'>¿Estas seguro que deseas eliminar la receta {recipeName}?</span>
       <button
         disabled={deleting}
         onClick={() => onDelete()}

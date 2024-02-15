@@ -9,9 +9,10 @@ interface Props {
   buttonRef?: string
   heads: string[]
   children: ReactNode
+  showPagination?: boolean
 }
 
-export const TableList = ({ buttonTitle, heads, children, buttonRef = '/', tableTitle = '', totalPages = 1 }: Props) => {
+export const TableList = ({ buttonTitle, heads, children, buttonRef = '/', tableTitle = '', totalPages = 1, showPagination = true }: Props) => {
   return (
     <>
       <Title title={tableTitle} />
@@ -42,7 +43,10 @@ export const TableList = ({ buttonTitle, heads, children, buttonRef = '/', table
             {children}
           </tbody>
         </table>
-        <Pagination totalPages={totalPages} />
+        {
+          showPagination && (
+            <Pagination totalPages={totalPages} />
+          )}
       </div>
     </>
   )
