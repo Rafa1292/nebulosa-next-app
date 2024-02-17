@@ -8,6 +8,13 @@ export const getRecipeById = async (id: string)=> {
       where: {
         id
       },
+      include: {
+        RecipePreparation: {
+          include: {
+            preparation: true,
+          },
+        },
+      },
     })
     return {
       ok: true,

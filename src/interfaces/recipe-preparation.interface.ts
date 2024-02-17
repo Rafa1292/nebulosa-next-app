@@ -1,3 +1,4 @@
+import { Preparation } from ".";
 
 export interface RecipePreparation {
     id: string;
@@ -5,4 +6,5 @@ export interface RecipePreparation {
     preparationId: string;
     quantity: number;
     measureSlug: string;
+    preparation?: Preparation;
 }

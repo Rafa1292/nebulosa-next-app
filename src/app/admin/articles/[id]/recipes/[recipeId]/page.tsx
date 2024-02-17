@@ -1,7 +1,7 @@
 import React from 'react'
 import { redirect } from 'next/navigation'
 import { Title } from '@/components'
-import { getRecipeById } from '@/actions'
+import { getInputs, getPreparations, getRecipeById } from '@/actions'
 import { RecipeForm } from './ui/RecipeForm'
 
 interface Props {
@@ -14,6 +14,8 @@ interface Props {
 export default async function ProviderPage({ params }: Props) {
   const { recipeId } = params
   const { recipe } = await getRecipeById(recipeId)
+  const { inputs } = await getInputs()
+  const { preparations } = await getPreparations()
   const title = recipeId === 'add' ? 'Agregar receta' : 'Editar receta'
 
   if (!recipe && recipeId !== 'add') {
@@ -23,7 +25,7 @@ export default async function ProviderPage({ params }: Props) {
   return (
     <div className='w-100 justify-center flex-wrap flex'>
       <Title title={title} />
-      <RecipeForm articleId={params.id} recipe={recipe ?? {}} />
+      <RecipeForm preparations={preparations ?? []} inputs={inputs ?? []} articleId={params.id} recipe={recipe ?? {}} />
     </div>
   )
 }

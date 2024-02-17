@@ -3,7 +3,12 @@
 import clsx from 'clsx'
 import { useForm } from 'react-hook-form'
 import { ErrorMessage } from '@hookform/error-message'
-import { createUpdatePreparation, createUpdatePreparationInput, deletePreparationInput, getPreparationById } from '@/actions'
+import {
+  createUpdatePreparation,
+  createUpdatePreparationInput,
+  deletePreparationInput,
+  getPreparationById,
+} from '@/actions'
 import { Input, PreparationInput, measures } from '@/interfaces'
 import { useEffect, useState } from 'react'
 import { Title } from '@/components'
@@ -73,7 +78,7 @@ export const PreparationForm = ({ inputs, title, id }: Props) => {
 
   const addPreparationInput = async (preparationInput: PreparationInput) => {
     if (id) {
-      const { ok } = await createUpdatePreparationInput({...preparationInput, preparationId: id})
+      const { ok } = await createUpdatePreparationInput({ ...preparationInput, preparationId: id })
       if (ok && id) {
         getPreparation(id)
       }
@@ -82,7 +87,7 @@ export const PreparationForm = ({ inputs, title, id }: Props) => {
   }
 
   const deleteCurrentPreparationInput = async (preparationInputId: string) => {
-    const {ok} = await deletePreparationInput(preparationInputId)
+    const { ok } = await deletePreparationInput(preparationInputId)
 
     if (ok && id) {
       await getPreparation(id)
@@ -214,19 +219,21 @@ export const PreparationForm = ({ inputs, title, id }: Props) => {
             Guardar
           </button>
           <Link href='/admin/preparations'>
-          <button
-            type='button'
-            className={clsx('text-white mx-2 bg-blue-700 font-bold cursor-pointer py-2 px-4  rounded', {
-            })}
-          >
-            Volver
-          </button>
+            <button
+              type='button'
+              className={clsx('text-white mx-2 bg-blue-700 font-bold cursor-pointer py-2 px-4  rounded', {})}
+            >
+              Volver
+            </button>
           </Link>
-          <div className='flex flex-col mb-4 mt-5' onClick={() => setShowInputForm(!showInputForm)}>
-            <span className='w-full select-none cursor-pointer text-sm text-left hover:text-blue-600 text-blue-800'>
-              + Agregar insumo
-            </span>
-          </div>
+          {
+          id !== 'add' && (
+            <div className='flex flex-col mb-4 mt-5' onClick={() => setShowInputForm(!showInputForm)}>
+              <span className='w-full select-none cursor-pointer text-sm text-left hover:text-blue-600 text-blue-800'>
+                + Agregar insumo
+              </span>
+            </div>
+          )}
           <div className='w-full flex flex-wrap'>
             {preparationInputs.map((tmpPreparationInput, index) => (
               <div
@@ -242,8 +249,9 @@ export const PreparationForm = ({ inputs, title, id }: Props) => {
                     className='font-bold text-2xl cursor-pointer hover:text-gray-700'
                   />
                   <IoClose
-                  onClick={() => deleteCurrentPreparationInput(tmpPreparationInput.id)}
-                  className='font-bold text-xl text-red-800 cursor-pointer hover:text-red-600 hover:shadow-2xl transition-all' />
+                    onClick={() => deleteCurrentPreparationInput(tmpPreparationInput.id)}
+                    className='font-bold text-xl text-red-800 cursor-pointer hover:text-red-600 hover:shadow-2xl transition-all'
+                  />
                 </span>
               </div>
             ))}
