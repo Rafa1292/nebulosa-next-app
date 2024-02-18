@@ -1,3 +1,4 @@
+import { RecipeInput } from ".";
 import { RecipePreparation } from "./recipe-preparation.interface";
 
 export interface Recipe {
@@ -5,4 +6,5 @@ export interface Recipe {
     name: string;
     cost: number;
     RecipePreparation: RecipePreparation[];
+    RecipeInput: RecipeInput[];
 }

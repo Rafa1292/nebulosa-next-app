@@ -1,7 +1,7 @@
 'use client'
 
 import { Title } from '@/components'
-import { Input, PreparationInput, RecipePreparation, measures } from '@/interfaces'
+import { Input, Preparation, RecipeInput, RecipePreparation, measures } from '@/interfaces'
 import { ErrorMessage } from '@hookform/error-message'
 import clsx from 'clsx'
 import React, { useEffect, useState } from 'react'
@@ -9,30 +9,31 @@ import { useForm } from 'react-hook-form'
 import { IoCloseCircleOutline } from 'react-icons/io5'
 
 interface Props {
-  //   setPreparationInput: (preparationInput: PreparationInput | null) => void
-    addRecipePreparation: (preparationInput: RecipePreparation) => void
+  addRecipeInput: (recipeInput: RecipeInput) => void
   setShowForm: (show: boolean) => void
   showForm: boolean
-  preparationInput: PreparationInput | null
+  recipeInput: RecipeInput | null
   inputs: Input[]
+  recipeId?: string
 }
 
 interface FormInputs {
   id: string
-  preparationId: string
+  inputId: string
   recipeId: string
   measureSlug: string
   quantity: number
 }
 
 export const RecipeInputForm = ({
-  addRecipePreparation,
-  preparationInput,
+  addRecipeInput,
+  recipeId,
+  recipeInput,
   inputs,
   showForm,
   setShowForm,
-}: //   setPreparationInput
-Props) => {
+//   setPreparationInput
+}: Props) => {
   const {
     handleSubmit,
     register,
@@ -42,13 +43,12 @@ Props) => {
   } = useForm<FormInputs>({
     criteriaMode: 'all',
     defaultValues: {
-      ...preparationInput,
+      ...recipeInput,
     },
   })
   const [btnText, setBtnText] = useState('Agregar')
-  const [loader, setLoader] = useState(true)
   const onSubmit = (data: FormInputs) => {
-    addRecipePreparation({ ...data })
+    addRecipeInput({ ...data, recipeId: recipeId ?? ''})
     setBtnText('Agregar')
     reset()
   }
@@ -59,43 +59,41 @@ Props) => {
     setShowForm(false)
   }
 
-
   useEffect(() => {
-    if (preparationInput !== null) {
-      if (preparationInput.id) {
+    if (recipeInput !== null) {
+      if (recipeInput.id) {
         setBtnText('Actualizar')
-        setValue('id', preparationInput.id)
+        setValue('id', recipeInput.id)
       }
-      setValue('preparationId', preparationInput.inputId)
-      setValue('quantity', preparationInput.quantity)
-      setValue('measureSlug', preparationInput.measureSlug)
+      setValue('inputId', recipeInput.inputId)
+      setValue('quantity', recipeInput.quantity)
+      setValue('measureSlug', recipeInput.measureSlug)
     }
-    setLoader(false)
-  }, [preparationInput])
+  }, [recipeInput])
 
   return (
     <>
-        <div
-          className={clsx(
-            'w-full transition-all z-50 h-fit right-0 py-14 px-4 md:w-2/5 mt-16 flex absolute justify-center flex-wrap rounded shadow-2xl bg-gray-100',
-            {
-              'translate-x-full': !showForm,
-            }
-          )}
-        >
-          <IoCloseCircleOutline
-            onClick={() => setShowForm(false)}
-            className=' cursor-pointer text-4xl absolute text-red-800 left-3 top-3 hover:text-red-700'
-          />
-          <Title className='w-full text-center my-10' title='Insumos disponibles' />
+      <div
+        className={clsx(
+          'w-full transition-all z-50 h-fit right-0 py-14 px-4 md:w-2/5 mt-16 flex absolute justify-center flex-wrap rounded shadow-2xl bg-gray-100',
+          {
+            'translate-x-full': !showForm,
+          }
+        )}
+      >
+        <IoCloseCircleOutline
+          onClick={() => setShowForm(false)}
+          className=' cursor-pointer text-4xl absolute text-red-800 left-3 top-3 hover:text-red-700'
+        />
+        <Title className='w-full text-center my-10' title='Insumos disponibles' />
           <form onSubmit={handleSubmit(onSubmit)} className='grid grid-cols-1 w-full'>
             <div className='flex flex-col mb-4'>
               <span className='font-bold text-sm antialiased'>Insumos</span>
               <div className='grid grid-cols-1 gap-4'>
                 <div className='flex flex-col'>
                   <select
-                    disabled={preparationInput?.id !== undefined}
-                    {...register('recipeId', { required: 'El insumo es obligatorio' })}
+                  disabled={recipeInput?.id !== undefined}
+                    {...register('inputId', { required: 'El insumo es obligatoria' })}
                     className='p-2 border rounded-md bg-gray-100'
                   >
                     <option value=''>[Seleccione]</option>
@@ -104,15 +102,17 @@ Props) => {
                         {input.name}
                       </option>
                     ))}
-                    {preparationInput !== null ? (
-                      <option key={preparationInput.inputId} value={preparationInput.inputId}>
-                        {preparationInput.input?.name}
-                      </option>
-                    ) : null}
+                    {
+                      recipeInput !== null ? (
+                        <option key={recipeInput.inputId} value={recipeInput.inputId}>
+                          {recipeInput.input?.name}
+                        </option>
+                      ) : null
+                    }
                   </select>
                   <ErrorMessage
                     errors={errors}
-                    name='preparationId'
+                    name='inputId'
                     render={({ messages }) =>
                       messages &&
                       Object.entries(messages).map(([type, message]) => (
@@ -195,7 +195,7 @@ Props) => {
               </button>
             </div>
           </form>
-        </div>
+      </div>
     </>
   )
 }

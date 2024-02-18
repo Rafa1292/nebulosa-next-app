@@ -14,6 +14,11 @@ export const getRecipeById = async (id: string)=> {
             preparation: true,
           },
         },
+        RecipeInput: {
+          include: {
+            input: true,
+          },
+        },
       },
     })
     return {

@@ -1,20 +1,20 @@
 'use client'
 
-import { Input, Preparation, Recipe, RecipePreparation, measures } from '@/interfaces'
+import { Input, Preparation, Recipe, RecipeInput, RecipePreparation, measures } from '@/interfaces'
 import clsx from 'clsx'
 import { useForm } from 'react-hook-form'
 import { ErrorMessage } from '@hookform/error-message'
 import {
   createUpdateRecipe,
+  createUpdateRecipeInput,
   createUpdateRecipePreparation,
+  deleteRecipeInput,
   deleteRecipePreparation,
-  getInputs,
-  getPreparations,
   getRecipeById,
 } from '@/actions'
 import { useRouter } from 'next/navigation'
 import { RecipePreparationForm } from './RecipePreparationForm'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { RecipeInputForm } from './RecipeInputForm'
 import { CiEdit } from 'react-icons/ci'
 import { IoClose } from 'react-icons/io5'
@@ -43,6 +43,8 @@ export const RecipeForm = ({ recipe, articleId, inputs, preparations }: Props) =
     formState: { isValid, errors },
   } = useForm<FormInputs>({ criteriaMode: 'all', defaultValues: { ...currentRecipe } })
   const [recipePreparation, setRecipePreparation] = useState<RecipePreparation | null>(null)
+  const [recipeInput, setRecipeInput] = useState<RecipeInput | null>(null)
+
   const onSubmit = async (data: FormInputs) => {
     const formData = new FormData()
 
@@ -65,6 +67,15 @@ export const RecipeForm = ({ recipe, articleId, inputs, preparations }: Props) =
     const { ok } = await createUpdateRecipePreparation(recipePreparation, articleId)
     if (ok) {
       getRecipe()
+      setRecipePreparation(null)
+    }
+  }
+
+  const addRecipeInput = async (recipeInput: RecipeInput) => {
+    const { ok } = await createUpdateRecipeInput(recipeInput, articleId)
+    if (ok) {
+      getRecipe()
+      setRecipeInput(null)
     }
   }
 
@@ -76,8 +87,23 @@ export const RecipeForm = ({ recipe, articleId, inputs, preparations }: Props) =
     }
   }
 
+  const setRecipeInputToEdit = (recipeInputId: string) => {
+    const recipeInput = currentRecipe.RecipeInput?.find((x) => x.id === recipeInputId)
+    if (recipeInput) {
+      setRecipeInput(recipeInput)
+      setShowInputForm(true)
+    }
+  }
+
   const deleteCurrentRecipePreparation = async (recipePreparationId: string) => {
     const { ok } = await deleteRecipePreparation(recipePreparationId, articleId)
+    if (ok) {
+      getRecipe()
+    }
+  }
+
+  const deleteCurrentRecipeInput = async (recipeInputId: string) => {
+    const { ok } = await deleteRecipeInput(recipeInputId, articleId)
     if (ok) {
       getRecipe()
     }
@@ -191,6 +217,32 @@ export const RecipeForm = ({ recipe, articleId, inputs, preparations }: Props) =
               </div>
             ))}
           </div>
+          <div className='w-full flex flex-wrap'>
+            {recipe.RecipeInput?.map((tmpRecipeInput, index) => (
+              <div
+                key={`${tmpRecipeInput.measureSlug}${tmpRecipeInput.inputId}${index}`}
+                className='w-full font-bold antialiased flex  gap-2 py-2'
+              >
+                <span className='w-20 text-left select-none'>- {tmpRecipeInput.quantity}</span>
+                <span className='w-24 select-none'>
+                  {measures.find((x) => x.slug === tmpRecipeInput.measureSlug)?.name}
+                </span>
+                <span className=' w-36 select-none'>
+                  {inputs.find((x) => x.id === tmpRecipeInput.inputId)?.name}
+                </span>
+                <span className='flex items-center gap-4'>
+                  <CiEdit
+                    onClick={() => setRecipeInputToEdit(tmpRecipeInput.id)}
+                    className='font-bold text-2xl cursor-pointer hover:text-gray-700'
+                  />
+                  <IoClose
+                    onClick={() => deleteCurrentRecipeInput(tmpRecipeInput.id)}
+                    className='font-bold text-xl text-red-800 cursor-pointer hover:text-red-600 hover:shadow-2xl transition-all'
+                  />
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </form>
       <RecipePreparationForm
@@ -202,6 +254,17 @@ export const RecipeForm = ({ recipe, articleId, inputs, preparations }: Props) =
         recipePreparation={recipePreparation}
         showForm={showPreparationForm}
         setShowForm={setShowPreparationForm}
+      />
+
+      <RecipeInputForm
+        recipeId={currentRecipe.id}
+        addRecipeInput={addRecipeInput}
+        inputs={inputs.filter((x) =>
+          !currentRecipe.RecipeInput?.some((y) => y.inputId === x.id)
+          )}
+        recipeInput={recipeInput}
+        showForm={showInputForm}
+        setShowForm={setShowInputForm}
       />
       {/* <RecipeInputForm
         addRecipePreparation={addRecipePreparation}

@@ -88,7 +88,7 @@ export const RecipePreparationForm = ({
         <Title className='w-full text-center my-10' title='Preparaciones disponibles' />
           <form onSubmit={handleSubmit(onSubmit)} className='grid grid-cols-1 w-full'>
             <div className='flex flex-col mb-4'>
-              <span className='font-bold text-sm antialiased'>Insumos</span>
+              <span className='font-bold text-sm antialiased'>Preparaciones</span>
               <div className='grid grid-cols-1 gap-4'>
                 <div className='flex flex-col'>
                   <select
