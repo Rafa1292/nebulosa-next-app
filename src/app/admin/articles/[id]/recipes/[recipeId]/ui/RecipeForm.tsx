@@ -266,13 +266,6 @@ export const RecipeForm = ({ recipe, articleId, inputs, preparations }: Props) =
         showForm={showInputForm}
         setShowForm={setShowInputForm}
       />
-      {/* <RecipeInputForm
-        addRecipePreparation={addRecipePreparation}
-        inputs={inputs ?? []}
-        preparationInput={null}
-        showForm={showInputForm}
-        setShowForm={setShowInputForm}
-      /> */}
     </div>
   )
 }
