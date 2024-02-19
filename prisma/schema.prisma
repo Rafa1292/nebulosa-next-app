@@ -29,12 +29,13 @@ enum Route {
 }
 
 model Article {
-    id           String   @id @default(uuid())
-    name         String
-    description  String?
-    needsCommand Boolean @default(false)
-    active       Boolean @default(true)
-    Recipe       Recipe?
+    id              String            @id @default(uuid())
+    name            String
+    description     String?
+    needsCommand    Boolean           @default(false)
+    active          Boolean           @default(true)
+    recipe          Recipe?
+    saleItemArticles SaleItemArticle[]
 }
 
 model Recipe {
@@ -43,8 +44,8 @@ model Recipe {
     cost              Float
     articleId         String              @unique
     article           Article             @relation(fields: [articleId], references: [id])
-    RecipeInput       RecipeInput[]
-    RecipePreparation RecipePreparation[]
+    recipeInputs       RecipeInput[]
+    recipePreparations RecipePreparation[]
 }
 
 model Brand {
@@ -55,7 +56,7 @@ model Brand {
 model InputCategory {
     id    String  @id @default(uuid())
     name  String  @unique
-    Input Input[]
+    inputs Input[]
 }
 
 model Input {
@@ -73,9 +74,9 @@ model Input {
     inputCategoryId   String
     inputCategory     InputCategory      @relation(fields: [inputCategoryId], references: [id])
     measureSlug       String
-    ProviderInput     ProviderInput[]
-    PreparationInput  PreparationInput[]
-    RecipeInput       RecipeInput[]
+    providerInputs     ProviderInput[]
+    preparationInputs  PreparationInput[]
+    recipeInputs       RecipeInput[]
 }
 
 model Provider {
@@ -83,9 +84,9 @@ model Provider {
     name          String          @unique
     phone         String          @unique
     email         String          @unique
-    route         Route[]
+    routes         Route[]
     fixedExpense  Boolean         @default(false)
-    ProviderInput ProviderInput[]
+    providerInputs ProviderInput[]
 }
 
 model ProviderInput {
@@ -109,8 +110,8 @@ model Preparation {
     measureSlug        String
     cost               Float
     presentation       Int
-    PreparationInputs  PreparationInput[]
-    RecipePreparations RecipePreparation[]
+    preparationInputs  PreparationInput[]
+    recipePreparations RecipePreparation[]
 }
 
 model PreparationInput {
@@ -141,4 +142,28 @@ model RecipePreparation {
     measureSlug   String
     recipe        Recipe      @relation(fields: [recipeId], references: [id])
     preparation   Preparation @relation(fields: [preparationId], references: [id])
+}
+
+model SaleItem {
+    id                 String            @id @default(uuid())
+    name               String            @unique
+    saleItemCategoryId String
+    price              Int
+    saleItemCategory   SaleItemCategory  @relation(fields: [saleItemCategoryId], references: [id])
+    saleItemArticles    SaleItemArticle[]
+}
+
+model SaleItemCategory {
+    id       String     @id @default(uuid())
+    name     String     @unique
+    saleItems SaleItem[]
+}
+
+model SaleItemArticle {
+    id         String   @id @default(uuid())
+    saleItemId String
+    articleId  String
+    quantity   Float
+    saleItem   SaleItem @relation(fields: [saleItemId], references: [id])
+    article    Article  @relation(fields: [articleId], references: [id])
 }

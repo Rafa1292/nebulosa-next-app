@@ -6,5 +6,5 @@ export interface Preparation {
     cost: number;
     presentation: number;
     measureSlug: string;
-    PreparationInputs?: PreparationInput[];
+    preparationInputs?: PreparationInput[];
 }

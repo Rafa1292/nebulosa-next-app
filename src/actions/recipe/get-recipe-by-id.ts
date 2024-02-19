@@ -9,12 +9,12 @@ export const getRecipeById = async (id: string)=> {
         id
       },
       include: {
-        RecipePreparation: {
+        recipePreparations: {
           include: {
             preparation: true,
           },
         },
-        RecipeInput: {
+        recipeInputs: {
           include: {
             input: true,
           },

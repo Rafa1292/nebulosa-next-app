@@ -6,5 +6,5 @@ export interface Article {
     description: string | null;
     needsCommand: boolean;
     active: boolean;
-    Recipe: Recipe
+    recipe: Recipe
 }

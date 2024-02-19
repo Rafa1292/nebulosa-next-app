@@ -9,7 +9,7 @@ export const getPreparationById = async (id: string) => {
         id,
       },
       include: {
-        PreparationInputs: {
+        preparationInputs: {
           include: {
             input: true,
           },

@@ -80,7 +80,7 @@ export const RecipeForm = ({ recipe, articleId, inputs, preparations }: Props) =
   }
 
   const setRecipePreparationToEdit = (recipePreparationId: string) => {
-    const recipePreparation = currentRecipe.RecipePreparation?.find((x) => x.id === recipePreparationId)
+    const recipePreparation = currentRecipe.recipePreparations?.find((x) => x.id === recipePreparationId)
     if (recipePreparation) {
       setRecipePreparation(recipePreparation)
       setShowPreparationForm(true)
@@ -88,7 +88,7 @@ export const RecipeForm = ({ recipe, articleId, inputs, preparations }: Props) =
   }
 
   const setRecipeInputToEdit = (recipeInputId: string) => {
-    const recipeInput = currentRecipe.RecipeInput?.find((x) => x.id === recipeInputId)
+    const recipeInput = currentRecipe.recipeInputs?.find((x) => x.id === recipeInputId)
     if (recipeInput) {
       setRecipeInput(recipeInput)
       setShowInputForm(true)
@@ -192,7 +192,7 @@ export const RecipeForm = ({ recipe, articleId, inputs, preparations }: Props) =
             Guardar
           </button>
           <div className='w-full flex flex-wrap'>
-            {recipe.RecipePreparation?.map((tmpRecipePreparation, index) => (
+            {recipe.recipePreparations?.map((tmpRecipePreparation, index) => (
               <div
                 key={`${tmpRecipePreparation.measureSlug}${tmpRecipePreparation.preparationId}${index}`}
                 className='w-full font-bold antialiased flex  gap-2 py-2'
@@ -218,7 +218,7 @@ export const RecipeForm = ({ recipe, articleId, inputs, preparations }: Props) =
             ))}
           </div>
           <div className='w-full flex flex-wrap'>
-            {recipe.RecipeInput?.map((tmpRecipeInput, index) => (
+            {recipe.recipeInputs?.map((tmpRecipeInput, index) => (
               <div
                 key={`${tmpRecipeInput.measureSlug}${tmpRecipeInput.inputId}${index}`}
                 className='w-full font-bold antialiased flex  gap-2 py-2'
@@ -249,7 +249,7 @@ export const RecipeForm = ({ recipe, articleId, inputs, preparations }: Props) =
         recipeId={currentRecipe.id}
         addRecipePreparation={addRecipePreparation}
         preparations={preparations.filter((x) =>
-          !currentRecipe.RecipePreparation?.some((y) => y.preparationId === x.id)
+          !currentRecipe.recipePreparations?.some((y) => y.preparationId === x.id)
           )}
         recipePreparation={recipePreparation}
         showForm={showPreparationForm}
@@ -260,7 +260,7 @@ export const RecipeForm = ({ recipe, articleId, inputs, preparations }: Props) =
         recipeId={currentRecipe.id}
         addRecipeInput={addRecipeInput}
         inputs={inputs.filter((x) =>
-          !currentRecipe.RecipeInput?.some((y) => y.inputId === x.id)
+          !currentRecipe.recipeInputs?.some((y) => y.inputId === x.id)
           )}
         recipeInput={recipeInput}
         showForm={showInputForm}
