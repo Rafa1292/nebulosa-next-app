@@ -29,21 +29,21 @@ enum Route {
 }
 
 model Article {
-    id              String            @id @default(uuid())
-    name            String
-    description     String?
-    needsCommand    Boolean           @default(false)
-    active          Boolean           @default(true)
-    recipe          Recipe?
+    id               String            @id @default(uuid())
+    name             String
+    description      String?
+    needsCommand     Boolean           @default(false)
+    active           Boolean           @default(true)
+    recipe           Recipe?
     saleItemArticles SaleItemArticle[]
 }
 
 model Recipe {
-    id                String              @id @default(uuid())
-    name              String              @unique
-    cost              Float
-    articleId         String              @unique
-    article           Article             @relation(fields: [articleId], references: [id])
+    id                 String              @id @default(uuid())
+    name               String              @unique
+    cost               Float
+    articleId          String              @unique
+    article            Article             @relation(fields: [articleId], references: [id])
     recipeInputs       RecipeInput[]
     recipePreparations RecipePreparation[]
 }
@@ -54,8 +54,8 @@ model Brand {
 }
 
 model InputCategory {
-    id    String  @id @default(uuid())
-    name  String  @unique
+    id     String  @id @default(uuid())
+    name   String  @unique
     inputs Input[]
 }
 
@@ -74,18 +74,18 @@ model Input {
     inputCategoryId   String
     inputCategory     InputCategory      @relation(fields: [inputCategoryId], references: [id])
     measureSlug       String
-    providerInputs     ProviderInput[]
-    preparationInputs  PreparationInput[]
-    recipeInputs       RecipeInput[]
+    providerInputs    ProviderInput[]
+    preparationInputs PreparationInput[]
+    recipeInputs      RecipeInput[]
 }
 
 model Provider {
-    id            String          @id @default(uuid())
-    name          String          @unique
-    phone         String          @unique
-    email         String          @unique
+    id             String          @id @default(uuid())
+    name           String          @unique
+    phone          String          @unique
+    email          String          @unique
     routes         Route[]
-    fixedExpense  Boolean         @default(false)
+    fixedExpense   Boolean         @default(false)
     providerInputs ProviderInput[]
 }
 
@@ -150,12 +150,12 @@ model SaleItem {
     saleItemCategoryId String
     price              Int
     saleItemCategory   SaleItemCategory  @relation(fields: [saleItemCategoryId], references: [id])
-    saleItemArticles    SaleItemArticle[]
+    saleItemArticles   SaleItemArticle[]
 }
 
 model SaleItemCategory {
-    id       String     @id @default(uuid())
-    name     String     @unique
+    id        String     @id @default(uuid())
+    name      String     @unique
     saleItems SaleItem[]
 }
 
@@ -166,4 +166,27 @@ model SaleItemArticle {
     quantity   Float
     saleItem   SaleItem @relation(fields: [saleItemId], references: [id])
     article    Article  @relation(fields: [articleId], references: [id])
+}
+
+model Budget {
+    id                  String @id @default(uuid())
+    goal                Int
+    upperGoal           Int
+    lowerGoal           Int
+    month               Int
+    year                Int
+    fixedExpense        Int
+    inventoryPercentage Int
+    expectedProfit      Int
+}
+
+model WorkDay {
+    id          String   @id @default(uuid())
+    date        DateTime @default(now())
+    initialCash Int
+    finalCash   Int
+    sales       Int
+    expenses    Int
+    diference   Int
+    closed      Boolean
 }
