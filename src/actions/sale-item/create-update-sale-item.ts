@@ -8,7 +8,7 @@ const saleItemSchema = z.object({
   id: z.string().uuid().optional().nullable(),
   name: z.string(),
   saleItemCategoryId: z.string().uuid(),
-  price: z.number().positive(),
+  price: z.coerce.number().positive(),
 })
 
 export const createUpdateSaleItem = async (formData: FormData) => {
@@ -38,7 +38,7 @@ export const createUpdateSaleItem = async (formData: FormData) => {
 
     return {
       ok: true,
-      message: 'Item cread',
+      message: 'Item creado',
     }
   } catch (error: any) {
     return {

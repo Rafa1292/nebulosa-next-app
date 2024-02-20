@@ -8,6 +8,13 @@ export const getSaleItemById = async (id: string) => {
       where: {
         id,
       },
+      include: {
+        saleItemArticles: {
+          include: {
+            article: true,
+          },
+        },
+      },
     })
     return {
       ok: true,

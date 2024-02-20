@@ -3,7 +3,7 @@
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 
-export const deleteSaleItem = async (id: string, saleItemId: string) => {
+export const deleteSaleItemArticle = async (id: string, saleItemId: string) => {
   try {
     await prisma.saleItemArticle.delete({
       where: {
