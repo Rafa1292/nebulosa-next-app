@@ -72,11 +72,11 @@ export const Sidebar = () => {
             Preparaciones
           </Link>
           <Link
-            href={'/admin/recipes'}
+            href={'/admin/sale-item-categories'}
             onClick={() => toggleMenu()}
             className={`flex items-center p-2 hover:bg-gray-100 rounded transition-all cursor-pointer ${titleFont.className} antialiased`}
           >
-            Recetas
+            Categorias de venta
           </Link>
           <Link
             href={'/admin/providers'}

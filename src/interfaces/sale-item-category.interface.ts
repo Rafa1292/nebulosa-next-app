@@ -1,5 +1,5 @@
 
-export interface ItemCategory {
+export interface SaleItemCategory {
     id: string;
     name: string;
 }
