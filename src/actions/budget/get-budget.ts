@@ -11,7 +11,7 @@ export const getBudgetById = async (id: string) => {
     })
     return {
       ok: true,
-      brand: budget,
+      budget,
     }
   } catch (error) {
     console.log(error)

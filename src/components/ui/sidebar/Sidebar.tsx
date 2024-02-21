@@ -44,6 +44,20 @@ export const Sidebar = () => {
         </div>
         <Dropdown title='Mantenimiento'>
           <Link
+            href={'/admin/work-days'}
+            onClick={() => toggleMenu()}
+            className={`flex items-center p-2 hover:bg-gray-100 rounded transition-all cursor-pointer ${titleFont.className} antialiased`}
+          >
+            Jornadas
+          </Link>
+          <Link
+            href={'/admin/budgets'}
+            onClick={() => toggleMenu()}
+            className={`flex items-center p-2 hover:bg-gray-100 rounded transition-all cursor-pointer ${titleFont.className} antialiased`}
+          >
+            Presupuestos
+          </Link>
+          <Link
             href={'/admin/brands'}
             onClick={() => toggleMenu()}
             className={`flex items-center p-2 hover:bg-gray-100 rounded transition-all cursor-pointer ${titleFont.className} antialiased`}
