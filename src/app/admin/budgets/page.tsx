@@ -23,12 +23,13 @@ export default async function BudgetsPage({ searchParams }: Props) {
         tableTitle='Presupuestos'
         buttonTitle='Agregar Presupuesto'
         buttonRef='/admin/budgets/add'
-        heads={['Ganancia', 'Gasto', 'Meta -', 'Meta', 'Meta +', 'Fecha',  '']}
+        heads={['Ganancia', 'Gasto', 'Costo', 'Meta -', 'Meta', 'Meta +', 'Fecha',  '']}
       >
         {budgets.map((budget) => (
           <tr key={budget.id} className='bg-white border-b transition duration-300 ease-in-out hover:bg-gray-100'>
             <td className='text-sm font-bold text-gray-900 px-6 py-4 whitespace-nowrap text-center'>{budget.expectedProfit}</td>
             <td className='text-sm font-bold text-gray-900 px-6 py-4 whitespace-nowrap text-center'>{budget.fixedExpense}</td>
+            <td className='text-sm font-bold text-gray-900 px-6 py-4 whitespace-nowrap text-center'>{budget.inventoryPercentage}%</td>
             <td className='text-sm font-bold text-gray-900 px-6 py-4 whitespace-nowrap text-center'>{budget.lowerGoal}</td>
             <td className='text-sm font-bold text-gray-900 px-6 py-4 whitespace-nowrap text-center'>{budget.goal}</td>
             <td className='text-sm font-bold text-gray-900 px-6 py-4 whitespace-nowrap text-center'>{budget.upperGoal}</td>
