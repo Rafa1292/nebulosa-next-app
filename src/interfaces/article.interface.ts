@@ -1,4 +1,4 @@
-import { Recipe } from ".";
+import { ArticleModifierGroup, Recipe } from ".";
 
 export interface Article {
     id: string;
@@ -7,4 +7,5 @@ export interface Article {
     needsCommand: boolean;
     active: boolean;
     recipe?: Recipe
+    articleModifiers: ArticleModifierGroup[];
 }
