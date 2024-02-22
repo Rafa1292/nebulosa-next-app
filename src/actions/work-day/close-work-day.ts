@@ -9,7 +9,7 @@ const workDaySchema = z.object({
   finalCashCash: z.coerce.number().positive(),
 })
 
-export const createWorkDay = async (formData: FormData) => {
+export const closeWorkDay = async (formData: FormData) => {
   try {
     const data = Object.fromEntries(formData)
     const parse = workDaySchema.safeParse(data)

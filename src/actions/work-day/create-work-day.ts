@@ -5,11 +5,13 @@ import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 
 const workDaySchema = z.object({
+  userId: z.string().uuid(),
   initialCash: z.coerce.number().positive(),
 })
 
 export const createWorkDay = async (formData: FormData) => {
   try {
+    console.log('formData', formData)
     const data = Object.fromEntries(formData)
     const parse = workDaySchema.safeParse(data)
     if (!parse.success) {
@@ -25,7 +27,8 @@ export const createWorkDay = async (formData: FormData) => {
         sales: 0,
         expenses: 0,
         diference: 0,
-        finalCash: 0
+        finalCash: 0,
+        userId: payload.userId,
       }
     })
 
