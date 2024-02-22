@@ -1,3 +1,4 @@
+import { ElementPrice } from ".";
 
 
 export interface ModifierElement {
@@ -7,5 +8,5 @@ export interface ModifierElement {
     combinable: boolean;
     combinableModifierGroupId: string;
     modifierGroupId: string;
-    price: number;
+    prices: ElementPrice[];
 }

@@ -1,4 +1,4 @@
-import { SaleItemArticle } from ".";
+import { ItemPrice, SaleItemArticle } from ".";
 
 export interface SaleItem {
     id: string;
@@ -6,5 +6,6 @@ export interface SaleItem {
     saleItemCategoryId: string
     price: number;
     saleItemArticles?: SaleItemArticle[]
+    prices: ItemPrice[]
     }
     
