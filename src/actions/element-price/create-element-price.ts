@@ -4,37 +4,37 @@ import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 
-const itemPriceSchema = z.object({
+const elementPriceSchema = z.object({
   id: z.string().uuid().optional().nullable(),
   menuId: z.string().uuid(),
-  saleItemId: z.string().uuid(),
+  modifierElementId: z.string().uuid(),
   price: z.number().int().positive(),
 })
 
-export const createUpdateItemPrice = async (formData: FormData) => {
+export const createUpdateElementPrice = async (formData: FormData) => {
   try {
     const data = Object.fromEntries(formData)
-    const parse = itemPriceSchema.safeParse(data)
+    const parse = elementPriceSchema.safeParse(data)
     if (!parse.success) {
       throw new Error(parse.error.message)
     }
-    const { id, ...itemPrice } = parse.data
+    const { id, ...elementPrice } = parse.data
 
     if (id) {
       // update
-      await prisma.itemPrice.update({
+      await prisma.elementPrice.update({
         where: {
           id,
         },
-        data: itemPrice,
+        data: elementPrice,
       })
     } else {
       // create
-      await prisma.itemPrice.create({
-        data: itemPrice,
+      await prisma.elementPrice.create({
+        data: elementPrice,
       })
     }
-    revalidatePath(`/admin/sale-items/${itemPrice.saleItemId}`)
+    revalidatePath(`/admin/modifier-elements/${elementPrice.modifierElementId}`)
 
     return {
       ok: true,
