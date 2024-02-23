@@ -1,3 +1,5 @@
+// config 
+
 generator client {
     provider = "prisma-client-js"
 }
@@ -6,6 +8,8 @@ datasource db {
     provider = "postgresql"
     url      = env("DATABASE_URL")
 }
+
+// Enums--------------------------------------
 
 enum Role {
     admin
@@ -28,6 +32,148 @@ enum Route {
     D
 }
 
+enum DeliveryMethod {
+    Mesa
+    Domicilio
+    Recoger
+}
+
+// models--------------------------------------
+
+model Menu {
+    id                   String         @id @default(uuid())
+    name                 String
+    commissionPercentage Int            @default(0)
+    ItemPrice            ItemPrice[]
+    ElementPrice         ElementPrice[]
+}
+
+model ItemPrice {
+    id         String   @id @default(uuid())
+    price      Int
+    menuId     String
+    saleItemId String
+    menu       Menu     @relation(fields: [menuId], references: [id])
+    saleItem   SaleItem @relation(fields: [saleItemId], references: [id])
+}
+
+model ElementPrice {
+    id                String          @id @default(uuid())
+    price             Int
+    modifierElementId String
+    menuId            String
+    menu              Menu            @relation(fields: [menuId], references: [id])
+    modifierElement   ModifierElement @relation(fields: [modifierElementId], references: [id])
+}
+
+model ArticleModifierGroup {
+    id              String        @id @default(uuid())
+    articleId       String
+    modifierGroupId String
+    order           Int
+    price           Int
+    minSelect       Int
+    maxSelect       Int
+    priceByGroup    Boolean
+    article         Article       @relation(fields: [articleId], references: [id])
+    modifierGroup   ModifierGroup @relation(fields: [modifierGroupId], references: [id])
+}
+
+model ModifierGroup {
+    id                   String                 @id @default(uuid())
+    name                 String
+    showLabel            Boolean                @default(false)
+    ArticleModifierGroup ArticleModifierGroup[]
+    elements             ModifierElement[]
+}
+
+model ModifierElement {
+    id                        String         @id @default(uuid())
+    name                      String
+    defaultRecipeId           String
+    combinable                Boolean
+    combinableModifierGroupId String
+    modifierGroupId           String
+    ElementPrice              ElementPrice[]
+    ModifierGroup             ModifierGroup  @relation(fields: [modifierGroupId], references: [id])
+}
+
+model Bill {
+    id             String         @id @default(uuid())
+    closed         Boolean        @default(false)
+    tableNumber    Int
+    deliveryMethod DeliveryMethod
+    clientId       String
+    addressId      String
+    openWorkDayId  String
+    closeWorkDayId String
+    commandTime    DateTime
+    isNull         Boolean        @default(false)
+    menuId         String
+    isServed       Boolean        @default(false)
+    isCredit       Boolean        @default(false)
+    items          BillItem[]
+}
+
+model BillItem {
+    id             String                  @id @default(uuid())
+    description    String
+    quantity       Int
+    unitPrice      Int
+    discount       Int
+    tax            Int
+    billId         String
+    saleItemId     String
+    kitchenMessage Boolean                 @default(false)
+    itemArticles   BillItemLinkedArticle[]
+    Bill           Bill                    @relation(fields: [billId], references: [id])
+}
+
+model BillItemLinkedArticle {
+    id                String          @id @default(uuid())
+    billItemId        String
+    itemNumber        Int
+    saleItemArticleId String
+    combined          Boolean         @default(false)
+    description       String
+    linkedArticles    LinkedArticle[]
+    BillItem          BillItem        @relation(fields: [billItemId], references: [id])
+}
+
+model LinkedArticle {
+    id            String                  @id @default(uuid())
+    name          String
+    unitPrice     Int
+    isCommanded   Boolean                 @default(false)
+    articleId     String
+    billArticleId String
+    modifiers     LinkedArticleModifier[]
+    BillItem      BillItemLinkedArticle   @relation(fields: [billArticleId], references: [id])
+}
+
+model LinkedArticleModifier {
+    id              String                         @id @default(uuid())
+    linkedArticleId String
+    quantity        Int
+    maxSelect       Int
+    minSelect       Int
+    showLabel       Boolean                        @default(false)
+    name            String
+    modifierGroupId String
+    elements        LinkedArticleModifierElement[]
+    LinkedArticle   LinkedArticle                  @relation(fields: [linkedArticleId], references: [id])
+}
+
+model LinkedArticleModifierElement {
+    id                      String                @id @default(uuid())
+    name                    String
+    price                   Int
+    quantity                Int
+    linkedArticleModifierId String
+    modifierElementId       String
+    LinkedArticleModifier   LinkedArticleModifier @relation(fields: [linkedArticleModifierId], references: [id])
+}
+
 model User {
     id            String    @id @default(uuid())
     name          String
@@ -39,13 +185,14 @@ model User {
 }
 
 model Article {
-    id               String            @id @default(uuid())
-    name             String
-    description      String?
-    needsCommand     Boolean           @default(false)
-    active           Boolean           @default(true)
-    recipe           Recipe?
-    saleItemArticles SaleItemArticle[]
+    id                   String                 @id @default(uuid())
+    name                 String
+    description          String?
+    needsCommand         Boolean                @default(false)
+    active               Boolean                @default(true)
+    recipe               Recipe?
+    saleItemArticles     SaleItemArticle[]
+    ArticleModifierGroup ArticleModifierGroup[]
 }
 
 model Recipe {
@@ -161,6 +308,7 @@ model SaleItem {
     price              Int
     saleItemCategory   SaleItemCategory  @relation(fields: [saleItemCategoryId], references: [id])
     saleItemArticles   SaleItemArticle[]
+    ItemPrice          ItemPrice[]
 }
 
 model SaleItemCategory {

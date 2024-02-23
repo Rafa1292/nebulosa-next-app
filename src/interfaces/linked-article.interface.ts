@@ -3,10 +3,10 @@ import { LinkedArticleModifier } from ".";
 
 export interface LinkedArticle {
     id: string;
-    articleId: string;
-    unitPrice: number;
-    billArticleId: string;
-    isComanded: boolean;
     name: string;
+    unitPrice: number;
+    isComanded: boolean;
+    articleId: string;
+    billArticleId: string;
     modifiers: LinkedArticleModifier[]
 }
