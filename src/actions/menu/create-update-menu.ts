@@ -7,7 +7,7 @@ import { z } from 'zod'
 const menuSchema = z.object({
   id: z.string().uuid().optional().nullable(),
   name: z.string(),
-  commissionPercentage: z.number().int().min(0).max(100),
+  commissionPercentage:  z.coerce.number().int().min(0).max(100),
 })
 
 export const createUpdateMenu = async (formData: FormData) => {
