@@ -16,7 +16,7 @@ export interface Bill {
     menuId: string;
     isServed: boolean;
     isCredit: boolean;
-    items: BillItem[];
+    items?: BillItem[];
 }
 
 export type DeliveryMethod = 'Mesa' | 'Domicilio' | 'Recoger';

@@ -44,8 +44,8 @@ model Menu {
     id                   String         @id @default(uuid())
     name                 String
     commissionPercentage Int            @default(0)
-    ItemPrice            ItemPrice[]
-    ElementPrice         ElementPrice[]
+    itemPrices            ItemPrice[]
+    elementPrices         ElementPrice[]
 }
 
 model ItemPrice {
@@ -94,7 +94,7 @@ model ModifierElement {
     combinable                Boolean
     combinableModifierGroupId String
     modifierGroupId           String
-    ElementPrice              ElementPrice[]
+    prices              ElementPrice[]
     ModifierGroup             ModifierGroup  @relation(fields: [modifierGroupId], references: [id])
 }
 
@@ -181,7 +181,7 @@ model User {
     emailVerified DateTime?
     password      String
     role          Role      @default(user)
-    WorkDay       WorkDay[]
+    workDays       WorkDay[]
 }
 
 model Article {
@@ -192,7 +192,7 @@ model Article {
     active               Boolean                @default(true)
     recipe               Recipe?
     saleItemArticles     SaleItemArticle[]
-    ArticleModifierGroup ArticleModifierGroup[]
+    articleModifiers ArticleModifierGroup[]
 }
 
 model Recipe {
@@ -305,10 +305,9 @@ model SaleItem {
     id                 String            @id @default(uuid())
     name               String            @unique
     saleItemCategoryId String
-    price              Int
     saleItemCategory   SaleItemCategory  @relation(fields: [saleItemCategoryId], references: [id])
     saleItemArticles   SaleItemArticle[]
-    ItemPrice          ItemPrice[]
+    prices          ItemPrice[]
 }
 
 model SaleItemCategory {

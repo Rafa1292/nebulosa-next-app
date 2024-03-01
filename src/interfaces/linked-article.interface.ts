@@ -8,5 +8,5 @@ export interface LinkedArticle {
     isComanded: boolean;
     articleId: string;
     billArticleId: string;
-    modifiers: LinkedArticleModifier[]
+    modifiers?: LinkedArticleModifier[]
 }

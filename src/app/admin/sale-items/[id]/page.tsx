@@ -2,7 +2,7 @@ import React from 'react'
 import { redirect } from 'next/navigation'
 import { SaleItemForm } from './ui/SaleItemForm'
 import { Title } from '@/components'
-import { getArticles, getSaleItemById, getSaleItemCategories } from '@/actions'
+import { getArticles, getMenus, getSaleItemById, getSaleItemCategories } from '@/actions'
 
 interface Props {
   params: {
@@ -13,9 +13,10 @@ interface Props {
 export default async function InputPage({ params }: Props) {
   const { id } = params
   const {saleItem} = await getSaleItemById(id)
-  const title = id === 'add' ? 'Agregar item' : 'Editar item' 
+  const title = id === 'add' ? 'Agregar item' : 'Actualizar item' 
   const {saleItemCategories} = await getSaleItemCategories()
   const { articles= [] } = await getArticles()
+  const { menus } = await getMenus()
 
   if (!saleItem && id !== 'add') {
     redirect('/admin/sale-items')
@@ -25,6 +26,7 @@ export default async function InputPage({ params }: Props) {
     <div className='w-100 justify-center flex-wrap flex'>
       <Title title={title} />
       <SaleItemForm 
+      menus={menus ?? []}
       saleItemCategories={saleItemCategories??[]} 
       saleItem={saleItem ?? {}}
       articles={articles ?? []}

@@ -4,5 +4,5 @@ export interface ModifierGroup {
     id: string;
     name: string;
     showLabel: boolean;
-    elements: ModifierElement[];
+    elements?: ModifierElement[];
 }

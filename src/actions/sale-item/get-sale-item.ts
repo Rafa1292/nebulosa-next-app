@@ -9,9 +9,10 @@ export const getSaleItemById = async (id: string) => {
         id,
       },
       include: {
+        prices: true,
         saleItemArticles: {
           include: {
-            article: true,
+            article: true
           },
         },
       },

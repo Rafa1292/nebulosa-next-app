@@ -7,5 +7,5 @@ export interface Article {
     needsCommand: boolean;
     active: boolean;
     recipe?: Recipe
-    articleModifiers: ArticleModifierGroup[];
+    articleModifiers?: ArticleModifierGroup[];
 }

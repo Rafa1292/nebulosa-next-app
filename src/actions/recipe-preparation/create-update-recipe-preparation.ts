@@ -15,7 +15,6 @@ const recipePreparationSchema = z.object({
 
 export const createUpdateRecipePreparation = async (data: RecipePreparation, articleId: string) => {
   try {
-    console.log('data', data)
     const parse = recipePreparationSchema.safeParse(data)
     if (!parse.success) {
       throw new Error(parse.error.message)

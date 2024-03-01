@@ -9,5 +9,5 @@ export interface ArticleModifierGroup {
     minSelec: number;
     maxSelec: number;
     priceByGroup: boolean;
-    modifierGroup: ModifierGroup;
+    modifierGroup?: ModifierGroup;
 }

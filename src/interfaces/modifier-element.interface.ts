@@ -8,5 +8,5 @@ export interface ModifierElement {
     combinable: boolean;
     combinableModifierGroupId: string;
     modifierGroupId: string;
-    prices: ElementPrice[];
+    prices?: ElementPrice[];
 }

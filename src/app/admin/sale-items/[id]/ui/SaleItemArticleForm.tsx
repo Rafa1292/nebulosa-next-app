@@ -1,7 +1,7 @@
 'use client'
 
 import { Title } from '@/components'
-import { Article, Input, Preparation, RecipeInput, RecipePreparation, SaleItem, SaleItemArticle, measures } from '@/interfaces'
+import { Article,SaleItemArticle } from '@/interfaces'
 import { ErrorMessage } from '@hookform/error-message'
 import clsx from 'clsx'
 import React, { useEffect, useState } from 'react'
@@ -12,6 +12,7 @@ interface Props {
   addSaleItemArticle: (saleItemArticle: SaleItemArticle) => void
   setShowForm: (show: boolean) => void
   showForm: boolean
+  setSaleItemArticle: (saleItemArticle: SaleItemArticle | null) => void
   saleItemArticle: SaleItemArticle | null
   articles: Article[]
   saleItemId?: string
@@ -28,6 +29,7 @@ export const SaleItemArticleForm = ({
   addSaleItemArticle,
   saleItemId,
   saleItemArticle,
+  setSaleItemArticle,
   articles,
   showForm,
   setShowForm,
@@ -54,7 +56,7 @@ Props) => {
 
   const cancel = () => {
     reset()
-    // setPreparationInput(null)
+    setSaleItemArticle(null)
     setShowForm(false)
   }
 

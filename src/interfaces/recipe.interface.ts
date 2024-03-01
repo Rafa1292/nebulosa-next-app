@@ -5,6 +5,6 @@ export interface Recipe {
     id: string;
     name: string;
     cost: number;
-    recipePreparations: RecipePreparation[];
-    recipeInputs: RecipeInput[];
+    recipePreparations?: RecipePreparation[];
+    recipeInputs?: RecipeInput[];
 }

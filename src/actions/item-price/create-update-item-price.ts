@@ -1,5 +1,6 @@
 'use server'
 
+import { ItemPrice } from '@/interfaces'
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
@@ -11,10 +12,10 @@ const itemPriceSchema = z.object({
   price: z.number().int().positive(),
 })
 
-export const createUpdateItemPrice = async (formData: FormData) => {
+
+export const createUpdateItemPrice = async (price: Partial<ItemPrice>) => {
   try {
-    const data = Object.fromEntries(formData)
-    const parse = itemPriceSchema.safeParse(data)
+    const parse = itemPriceSchema.safeParse(price)
     if (!parse.success) {
       throw new Error(parse.error.message)
     }
@@ -35,7 +36,6 @@ export const createUpdateItemPrice = async (formData: FormData) => {
       })
     }
     revalidatePath(`/admin/sale-items/${itemPrice.saleItemId}`)
-
     return {
       ok: true,
       message: 'Precio creado',

@@ -7,5 +7,5 @@ export interface BillItemLinkedArticle {
     saleItemArticleId: string;
     combined: boolean;
     description: string;
-    linkedArticles: LinkedArticle[]
+    linkedArticles?: LinkedArticle[]
 }

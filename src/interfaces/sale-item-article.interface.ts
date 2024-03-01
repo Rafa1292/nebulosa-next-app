@@ -1,9 +1,10 @@
-import { Article } from ".";
+import { Article, SaleItem } from ".";
 
 export interface SaleItemArticle {
     id: string;
     saleItemId: string;
     articleId: string;
     quantity: number;
-    article: Article;
+    saleItem?: SaleItem;
+    article?: Article;
 }

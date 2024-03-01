@@ -5,6 +5,9 @@ import prisma from '@/lib/prisma'
 export const getSaleItems = async () => {
   try {
     const saleItems = await prisma.saleItem.findMany({
+      include: {
+        prices: true,
+      }
     })
 
     return {

@@ -10,5 +10,5 @@ export interface LinkedArticleModifier {
     showLabel: boolean;
     name: string;
     modifierGroupId: string;
-    elements: LinkedArticleModifierElement[];
+    elements?: LinkedArticleModifierElement[];
 }

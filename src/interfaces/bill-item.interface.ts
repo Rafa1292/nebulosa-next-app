@@ -10,5 +10,5 @@ export interface BillItem {
   billId: string
   saleItemId: string
   kitchenMessage: boolean
-  itemArticles: BillItemLinkedArticle[]
+  itemArticles?: BillItemLinkedArticle[]
 }
