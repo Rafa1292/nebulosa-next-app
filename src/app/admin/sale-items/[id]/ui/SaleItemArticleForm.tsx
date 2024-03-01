@@ -1,7 +1,7 @@
 'use client'
 
 import { Title } from '@/components'
-import { Article,SaleItemArticle } from '@/interfaces'
+import { Article, SaleItemArticle } from '@/interfaces'
 import { ErrorMessage } from '@hookform/error-message'
 import clsx from 'clsx'
 import React, { useEffect, useState } from 'react'
@@ -61,6 +61,7 @@ Props) => {
   }
 
   useEffect(() => {
+    console.log(saleItemId)
     if (saleItemArticle !== null) {
       if (saleItemArticle.id) {
         setBtnText('Actualizar')
@@ -85,27 +86,55 @@ Props) => {
           onClick={() => setShowForm(false)}
           className=' cursor-pointer text-4xl absolute text-red-800 left-3 top-3 hover:text-red-700'
         />
-        <Title className='w-full text-center my-10' title='Articulos disponibles' />
-        <form onSubmit={handleSubmit(onSubmit)} className='grid grid-cols-1 w-full'>
-          <div className='flex flex-col mb-4'>
-            <span className='font-bold text-sm antialiased'>Articulos</span>
-            <div className='grid grid-cols-1 gap-4'>
-              <div className='flex flex-col'>
-                <select
-                  disabled={saleItemArticle?.id !== undefined}
-                  {...register('articleId', { required: 'El articulo es obligatoria' })}
+        {(saleItemId === undefined || saleItemId == '') ? (
+          <div className='flex flex-col items-center justify-center w-full'>
+            <p className='text-red-800 font-bold text-center'>Debe agregar el item para acceder a los articulos</p>
+          </div>
+        ) : (
+          <>
+            <Title className='w-full text-center my-10' title='Articulos disponibles' />
+            <form onSubmit={handleSubmit(onSubmit)} className='grid grid-cols-1 w-full'>
+              <div className='flex flex-col mb-4'>
+                <span className='font-bold text-sm antialiased'>Articulos</span>
+                <div className='grid grid-cols-1 gap-4'>
+                  <div className='flex flex-col'>
+                    <select
+                      disabled={saleItemArticle?.id !== undefined}
+                      {...register('articleId', { required: 'El articulo es obligatoria' })}
+                      className='p-2 border rounded-md bg-gray-100'
+                    >
+                      <option value=''>[Seleccione]</option>
+                      {articles.map((article) => (
+                        <option key={article.id} value={article.id}>
+                          {article.name}
+                        </option>
+                      ))}
+                    </select>
+                    <ErrorMessage
+                      errors={errors}
+                      name='articleId'
+                      render={({ messages }) =>
+                        messages &&
+                        Object.entries(messages).map(([type, message]) => (
+                          <p className='text-red-900 text-sm font-bold' key={type}>
+                            {message}
+                          </p>
+                        ))
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className='flex flex-col mb-4'>
+                <span className='font-bold text-sm antialiased'>Cantidad</span>
+                <input
+                  {...register('quantity', { required: 'La cantidad es obligatoria', min: 1 })}
+                  type='number'
                   className='p-2 border rounded-md bg-gray-100'
-                >
-                  <option value=''>[Seleccione]</option>
-                  {articles.map((article) => (
-                    <option key={article.id} value={article.id}>
-                      {article.name}
-                    </option>
-                  ))}
-                </select>
+                />
                 <ErrorMessage
                   errors={errors}
-                  name='articleId'
+                  name='quantity'
                   render={({ messages }) =>
                     messages &&
                     Object.entries(messages).map(([type, message]) => (
@@ -116,48 +145,28 @@ Props) => {
                   }
                 />
               </div>
-            </div>
-          </div>
-          <div className='flex flex-col mb-4'>
-            <span className='font-bold text-sm antialiased'>Cantidad</span>
-            <input
-              {...register('quantity', { required: 'La cantidad es obligatoria', min: 1 })}
-              type='number'
-              className='p-2 border rounded-md bg-gray-100'
-            />
-            <ErrorMessage
-              errors={errors}
-              name='quantity'
-              render={({ messages }) =>
-                messages &&
-                Object.entries(messages).map(([type, message]) => (
-                  <p className='text-red-900 text-sm font-bold' key={type}>
-                    {message}
-                  </p>
-                ))
-              }
-            />
-          </div>
-          <div className='flex gap-3 flex-wrap justify-center w-full'>
-            <button
-              type='submit'
-              disabled={!isValid}
-              className={clsx('text-white font-bold w-1/3 rounded', {
-                'bg-green-600 hover:bg-green-500 py-2 cursor-pointer': isValid,
-                'bg-gray-400 py-2 cursor-not-allowed': !isValid,
-              })}
-            >
-              {btnText}
-            </button>
-            <button
-              type='button'
-              onClick={() => cancel()}
-              className='text-white font-bold w-2/5 rounded bg-red-800 hover:bg-red-700 py-2 cursor-pointer'
-            >
-              Cancelar
-            </button>
-          </div>
-        </form>
+              <div className='flex gap-3 flex-wrap justify-center w-full'>
+                <button
+                  type='submit'
+                  disabled={!isValid}
+                  className={clsx('text-white font-bold w-1/3 rounded', {
+                    'bg-green-600 hover:bg-green-500 py-2 cursor-pointer': isValid,
+                    'bg-gray-400 py-2 cursor-not-allowed': !isValid,
+                  })}
+                >
+                  {btnText}
+                </button>
+                <button
+                  type='button'
+                  onClick={() => cancel()}
+                  className='text-white font-bold w-2/5 rounded bg-red-800 hover:bg-red-700 py-2 cursor-pointer'
+                >
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          </>
+        )}
       </div>
     </>
   )

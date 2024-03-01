@@ -41,7 +41,7 @@ export const createUpdateSaleItem = async (formData: FormData) => {
         if (prices) {
           for (const price of prices) {
             const itemPriceId = price.id === '' ? undefined : price.id
-            const { ok, message } = await createUpdateItemPrice({ ...price, id: itemPriceId, saleItemId: id })
+            const { ok, message } = await createUpdateItemPrice({ ...price, id: itemPriceId, saleItemId: id }, tx)
             if (!ok) {
               throw new Error(message)
             }
@@ -49,9 +49,18 @@ export const createUpdateSaleItem = async (formData: FormData) => {
         }
       } else {
         // create
-        await tx.saleItem.create({
+        const {id:newId } = await tx.saleItem.create({
           data: saleItem,
         })
+        //create-prices
+        if (prices) {
+          for (const price of prices) {
+            const { ok, message } = await createUpdateItemPrice({ ...price, id: undefined, saleItemId: newId },tx)
+            if (!ok) {
+              throw new Error(message)
+            }
+          }
+        }
       }
       revalidatePath(`/admin/sale-items`)
     })

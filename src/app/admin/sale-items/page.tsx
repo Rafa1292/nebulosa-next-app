@@ -1,5 +1,6 @@
 import { getMenus, getPaginatedSaleItems, getSaleItemCategories } from '@/actions'
 import { TableList } from '@/components/view-data/table/TableList'
+import { currencyFormat } from '@/utils'
 import Link from 'next/link'
 import { CiEdit } from 'react-icons/ci'
 import { FaTrashCan } from 'react-icons/fa6'
@@ -43,7 +44,7 @@ export default async function SaleItemsPage({ searchParams }: Props) {
                     key={price.id}
                     className='text-sm font-bold text-gray-900 w-2/4 p-2 text-left whitespace-nowrap'
                   >
-                    {price.price}
+                    {currencyFormat(price.price)}
                   </span>
                 </>
               ))}

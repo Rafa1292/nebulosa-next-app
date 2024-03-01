@@ -13,8 +13,9 @@ const itemPriceSchema = z.object({
 })
 
 
-export const createUpdateItemPrice = async (price: Partial<ItemPrice>) => {
+export const createUpdateItemPrice = async (price: Partial<ItemPrice>, tx:any) => {
   try {
+    console.log(price)
     const parse = itemPriceSchema.safeParse(price)
     if (!parse.success) {
       throw new Error(parse.error.message)
@@ -23,7 +24,7 @@ export const createUpdateItemPrice = async (price: Partial<ItemPrice>) => {
 
     if (id) {
       // update
-      await prisma.itemPrice.update({
+      await tx.itemPrice.update({
         where: {
           id,
         },
@@ -31,7 +32,7 @@ export const createUpdateItemPrice = async (price: Partial<ItemPrice>) => {
       })
     } else {
       // create
-      await prisma.itemPrice.create({
+      await tx.itemPrice.create({
         data: itemPrice,
       })
     }

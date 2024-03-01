@@ -7,6 +7,7 @@ import { ErrorMessage } from '@hookform/error-message'
 import {
   createUpdateSaleItem,
   createUpdateSaleItemArticle,
+  deleteItemPrice,
   deleteSaleItemArticle,
   getMenus,
   getSaleItemById,
@@ -119,8 +120,17 @@ export const SaleItemForm = ({ saleItem, articles, saleItemCategories, menus }: 
     }
   }
 
-  const includeMenu = (menuId: string) => {
+  const includeMenu = async (menuId: string, itemPriceId?: string) => {
     if (currentSaleItem.prices?.some((x) => x.menuId === menuId)) {
+      //if itemPriceComes, delete from db
+      if (itemPriceId) {
+        const { ok } = await deleteItemPrice(itemPriceId)
+        if (!ok) {
+          alert('Error al eliminar el precio')
+          return
+        }
+      }
+      
       setCurrentSaleItem({
         ...currentSaleItem,
         prices: currentSaleItem.prices?.filter((x) => x.menuId !== menuId),
@@ -185,11 +195,13 @@ export const SaleItemForm = ({ saleItem, articles, saleItemCategories, menus }: 
                 ))}
               </select>
             </div>
+            <span className='font-bold text-sm antialiased'>Precios</span>
             {/* menus aqui */}
             {menus.map((menu) => (
-              <div key={menu.id} className='flex items-center '>
+              <div key={menu.id} className='flex items-center mt-3 pl-2'>
                 <input
-                  onChange={() => includeMenu(menu.id)}
+                  checked={currentSaleItem.prices?.some((x) => x.menuId === menu.id)}
+                  onChange={() => includeMenu(menu.id, currentSaleItem.prices?.find((x) => x.menuId === menu.id)?.id)}
                   id={menu.id}
                   type='checkbox'
                   className='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-3xl focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600'
@@ -203,6 +215,7 @@ export const SaleItemForm = ({ saleItem, articles, saleItemCategories, menus }: 
                 {currentSaleItem.prices?.some((x) => x.menuId === menu.id) && (
                   <div className='flex flex-wrap'>
                     <input
+                      value={currentSaleItem.prices?.find((x) => x.menuId === menu.id)?.price}
                       onChange={(e) => setMenuPrice(menu.id, Number(e.target.value))}
                       placeholder='Precio'
                       type='number'
