@@ -16,6 +16,7 @@ export default async function ProvidersPage({ searchParams }: Props) {
   const limit = searchParams.limit ? parseInt(searchParams.limit) : 12
 
   const { providers = [], totalPages } = await getPaginatedProviders({ page, take: limit })
+  console.log(providers, totalPages)
   return (
     <>
       <TableList

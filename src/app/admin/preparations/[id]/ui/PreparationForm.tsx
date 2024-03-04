@@ -68,7 +68,7 @@ export const PreparationForm = ({ inputs, title, id }: Props) => {
     if (!id) return
     const { preparation } = await getPreparationById(id)
     if (preparation) {
-      setPreparationInputs(preparation.PreparationInputs)
+      setPreparationInputs(preparation.preparationInputs)
       setValue('name', preparation.name)
       setValue('cost', preparation.cost)
       setValue('presentation', preparation.presentation)

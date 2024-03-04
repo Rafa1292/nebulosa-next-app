@@ -1,5 +1,6 @@
 'use server'
 
+import { ModifierElement } from '@/interfaces'
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
@@ -7,16 +8,16 @@ import { z } from 'zod'
 const modifierElementSchema = z.object({
   id: z.string().uuid().optional().nullable(),
   name: z.string(),
-  defaultRecipeId: z.string().uuid(),
-  combinable: z.string().transform((val) => (val === 'true' ? true : false)),
-  combinableModifierGroupId: z.string().uuid(),
+  defaultRecipeId: z.string().optional(),
+  combinable: z.boolean(),
+  combinableModifierGroupId: z.string().optional(),
   modifierGroupId: z.string().uuid(),
 })
 
-export const createUpdateModifierElement = async (formData: FormData) => {
+export const createUpdateModifierElement = async (modifierElementData: ModifierElement) => {
   try {
-    const data = Object.fromEntries(formData)
-    const parse = modifierElementSchema.safeParse(data)
+    console.log('modifierElementData', modifierElementData)
+    const parse = modifierElementSchema.safeParse(modifierElementData)
     if (!parse.success) {
       throw new Error(parse.error.message)
     }
@@ -33,7 +34,11 @@ export const createUpdateModifierElement = async (formData: FormData) => {
     } else {
       // create
       await prisma.modifierElement.create({
-        data: modifierElement,
+        data: {
+          ...modifierElement,
+          defaultRecipeId: modifierElement.defaultRecipeId || '',
+          combinableModifierGroupId: modifierElement.combinableModifierGroupId || '',
+        },
       })
     }
     revalidatePath(`/admin/modifier-groups/${modifierElement.modifierGroupId}`)

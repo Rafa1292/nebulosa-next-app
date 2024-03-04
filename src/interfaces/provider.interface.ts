@@ -6,6 +6,6 @@ export interface Provider {
     name: string;
     phone: string;
     email: string;
-    route: Route[];
+    routes: Route[];
     fixedExpense: boolean;
 }

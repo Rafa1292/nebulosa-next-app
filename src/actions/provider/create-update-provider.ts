@@ -10,7 +10,7 @@ const providerSchema = z.object({
   name: z.string(),
   email: z.string().email(),
   phone: z.string(),
-  route: z.coerce.string().transform((val) => val.split(',') as Route[]),
+  routes: z.coerce.string().transform((val) => val.split(',') as Route[]),
   fixedExpense: z.string().transform((val) => (val === 'true' ? true : false)),
 })
 

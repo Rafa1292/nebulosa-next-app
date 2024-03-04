@@ -18,7 +18,7 @@ interface FormInputs {
   name: string
   phone: string
   email: string
-  route: Route[]
+  routes: Route[]
   fixedExpense: boolean
 }
 
@@ -35,11 +35,11 @@ export const ProviderForm = ({ provider }: Props) => {
     criteriaMode: 'all',
     defaultValues: {
       ...provider,
-      route: provider.route ?? [],
+      routes: provider.routes ?? [],
     },
   })
 
-  watch('route')
+  watch('routes')
 
   const onSubmit = async (data: FormInputs) => {
     const formData = new FormData()
@@ -50,7 +50,7 @@ export const ProviderForm = ({ provider }: Props) => {
     formData.append('name', data.name)
     formData.append('phone', data.phone)
     formData.append('email', data.email)
-    formData.append('route', data.route.toString())
+    formData.append('routes', data.routes.toString())
     formData.append('fixedExpense', data.fixedExpense.toString() ?? 'false')
 
     const { ok, message } = await createUpdateProvider(formData)
@@ -62,13 +62,13 @@ export const ProviderForm = ({ provider }: Props) => {
   }
 
   const onRouteChange = (route: string) => {
-    const routes = new Set(getValues('route'))
+    const routes = new Set(getValues('routes'))
     if (routes.has(route as Route)) {
       routes.delete(route as Route)
     } else {
       routes.add(route as Route)
     }
-    setValue('route', Array.from(routes) as Route[])
+    setValue('routes', Array.from(routes) as Route[])
   }
 
   return (
@@ -151,15 +151,15 @@ export const ProviderForm = ({ provider }: Props) => {
                 className={clsx(
                   'p-2 border rounded-md mr-2 w-14 transition-all cursor-pointer text-center  hover:bg-blue-500 hover:text-white',
                   {
-                    'bg-blue-500 text-white': getValues('route').includes(route as Route),
-                    'bg-gray-200 text-black': !getValues('route').includes(route as Route),
+                    'bg-blue-500 text-white': getValues('routes').includes(route as Route),
+                    'bg-gray-200 text-black': !getValues('routes').includes(route as Route),
                   }
                 )}
               >
                 <span>{route}</span>
               </div>
             ))}
-            {!isValid && getValues('route').length < 1 && (
+            {!isValid && getValues('routes').length < 1 && (
               <p className='text-red-900 text-sm font-bold pt-2'>Debe seleccionar almenos 1 dia</p>
             )}
           </div>

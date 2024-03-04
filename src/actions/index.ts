@@ -28,6 +28,7 @@ export * from './recipe/create-update-recipe'
 export * from './recipe/delete-recipe'
 export * from './recipe/get-recipe-by-article'
 export * from './recipe/get-recipe-by-id'
+export * from './recipe/get-recipes'
 
 export * from './provider-input/create-update-provider-input'
 export * from './provider-input/delete-provider-input'

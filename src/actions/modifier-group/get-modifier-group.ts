@@ -8,6 +8,9 @@ export const getModifierGroupById = async (id: string) => {
       where: {
         id,
       },
+      include: {
+        elements: true
+      },
     })
     return {
       ok: true,
