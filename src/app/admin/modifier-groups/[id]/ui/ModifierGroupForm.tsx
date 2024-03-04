@@ -4,7 +4,7 @@ import { ModifierElement, ModifierGroup, Recipe } from '@/interfaces'
 import { useForm } from 'react-hook-form'
 import { ErrorMessage } from '@hookform/error-message'
 import { useRouter } from 'next/navigation'
-import { createUpdateModifierElement, createUpdateModifierGroup, getModifierGroupById } from '@/actions'
+import { createUpdateModifierElement, createUpdateModifierGroup, deleteModifierElement, getModifierGroupById } from '@/actions'
 import clsx from 'clsx'
 import { ModifierElementForm } from './ModifierElementForm'
 import { useState } from 'react'
@@ -43,6 +43,19 @@ export const ModifierGroupForm = ({ currentModifierGroup, recipes }: Props) => {
     const { ok, message } = await createUpdateModifierElement(modifierElement)
     if (ok) {
       setModifierElement(null)
+      if (modifierGroup.id) {
+        await getCurrentModifierGroupById(modifierGroup.id)
+      }
+      return true
+    } else {
+      alert(message)
+      return false
+    }
+  }
+
+  const deleteCurrentModifierElement = async (modifierElementId: string): Promise<boolean> => {
+    const { ok, message } = await deleteModifierElement(modifierElementId)
+    if (ok) {
       if (modifierGroup.id) {
         await getCurrentModifierGroupById(modifierGroup.id)
       }
@@ -150,7 +163,7 @@ export const ModifierGroupForm = ({ currentModifierGroup, recipes }: Props) => {
                   className='font-bold text-2xl cursor-pointer hover:text-gray-700'
                 />
                 <IoClose
-                  // onClick={() => deleteCurrentSaleItemArticle(element.id)}
+                  onClick={() => deleteCurrentModifierElement(element.id)}
                   className='font-bold text-xl text-red-800 cursor-pointer hover:text-red-600 hover:shadow-2xl transition-all'
                 />
               </span>
