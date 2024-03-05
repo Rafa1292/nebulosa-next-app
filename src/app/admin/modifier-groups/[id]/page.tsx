@@ -1,7 +1,7 @@
 import React from 'react'
 import { redirect } from 'next/navigation'
 import { Title } from '@/components'
-import { getModifierGroupById, getRecipes } from '@/actions'
+import { getMenus, getModifierGroupById, getModifierGroups, getRecipes } from '@/actions'
 import { ModifierGroupForm } from './ui/ModifierGroupForm'
 
 interface Props {
@@ -14,6 +14,8 @@ export default async function ModifierGroupPage({ params }: Props) {
   const { id } = params
   const {modifierGroup} = await getModifierGroupById(id)
   const {recipes} = await getRecipes()
+  const { modifierGroups} = await getModifierGroups()
+  const { menus } = await getMenus()
   const title = id === 'add' ? 'Agregar grupo' : 'Actualizar grupo' 
 
 
@@ -24,7 +26,7 @@ export default async function ModifierGroupPage({ params }: Props) {
   return (
     <div className='w-100 justify-center flex-wrap flex'>
       <Title title={title} />
-      <ModifierGroupForm currentModifierGroup={modifierGroup ?? {}} recipes={recipes ?? []} />
+      <ModifierGroupForm menus={menus ?? []} modifierGroups={modifierGroups ?? []} currentModifierGroup={modifierGroup ?? {}} recipes={recipes ?? []} />
     </div>
   )
 }

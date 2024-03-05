@@ -1,6 +1,6 @@
 'use server'
 
-import prisma from '@/lib/prisma'
+import { ElementPrice } from '@/interfaces'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 
@@ -11,10 +11,9 @@ const elementPriceSchema = z.object({
   price: z.number().int().positive(),
 })
 
-export const createUpdateElementPrice = async (formData: FormData) => {
+export const createUpdateElementPrice = async (currentElementPrice: Partial<ElementPrice>, tx: any) => {
   try {
-    const data = Object.fromEntries(formData)
-    const parse = elementPriceSchema.safeParse(data)
+    const parse = elementPriceSchema.safeParse(currentElementPrice)
     if (!parse.success) {
       throw new Error(parse.error.message)
     }
@@ -22,7 +21,7 @@ export const createUpdateElementPrice = async (formData: FormData) => {
 
     if (id) {
       // update
-      await prisma.elementPrice.update({
+      await tx.elementPrice.update({
         where: {
           id,
         },
@@ -30,7 +29,7 @@ export const createUpdateElementPrice = async (formData: FormData) => {
       })
     } else {
       // create
-      await prisma.elementPrice.create({
+      await tx.elementPrice.create({
         data: elementPrice,
       })
     }

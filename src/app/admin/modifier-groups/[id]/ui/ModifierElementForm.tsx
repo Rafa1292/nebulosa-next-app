@@ -1,7 +1,8 @@
 'use client'
 
+import { deleteElementPrice } from '@/actions'
 import { Title } from '@/components'
-import { ElementPrice, ModifierElement, Recipe } from '@/interfaces'
+import { ElementPrice, Menu, ModifierElement, ModifierGroup, Recipe } from '@/interfaces'
 import { ErrorMessage } from '@hookform/error-message'
 import clsx from 'clsx'
 import React, { useEffect, useState } from 'react'
@@ -15,8 +16,9 @@ interface Props {
   showForm: boolean
   setModifierElement: (modifierElement: ModifierElement | null) => void
   modifierElement: ModifierElement | null
-  //   articles: Article[]
+  modifierGroups: ModifierGroup[]
   modifierGroupId?: string
+  menus: Menu[]
 }
 
 interface FormInputs {
@@ -29,15 +31,17 @@ interface FormInputs {
   prices?: ElementPrice[]
 }
 
-export const ModifierElementForm = ({
+export const ModifierElementForm = (
+  {
   addModifierElement,
   modifierGroupId,
   modifierElement,
   recipes,
   setModifierElement,
-  //   articles,
+  modifierGroups,
   showForm,
   setShowForm,
+  menus
 }: Props) => {
   const {
     handleSubmit,
@@ -45,21 +49,50 @@ export const ModifierElementForm = ({
     formState: { isValid, errors },
     setValue,
     reset,
+    watch,
+    getValues,
   } = useForm<FormInputs>({
     criteriaMode: 'all',
     defaultValues: {
       ...modifierElement,
     },
   })
+  const [currentModifierElement, setCurrentModifierElement] = useState<ModifierElement | null>(modifierElement)
   const [btnText, setBtnText] = useState('Agregar')
 
+  watch('combinable')
+
   const onSubmit = async (data: FormInputs) => {
-    const ok = await addModifierElement({ ...data, modifierGroupId: modifierGroupId ?? '' })
-    if (ok) {
-      setBtnText('Agregar')
-      reset()
+    let validPrices = true
+
+    if (currentModifierElement?.prices) {
+      currentModifierElement?.prices.forEach((price: ElementPrice) => {
+        if (price.price < 1) {
+          validPrices = false
+          alert('Debes asignar un precio a todos los menus seleccionados')
+        } 
+      })
     }
 
+    if (!validPrices) {
+      return
+    }
+
+
+    if (getValues('combinable')) {
+      if (!data.combinableModifierGroupId) {
+        alert('Debe seleccionar un grupo combinable')
+        return
+      }
+      data.combinableModifierGroupId = ''
+    }
+    const dataTmp = { ...data, prices: currentModifierElement?.prices ?? [], modifierGroupId: modifierGroupId ?? '' }
+    const ok = await addModifierElement(dataTmp)
+    if (ok) {
+      setBtnText('Agregar')
+      setCurrentModifierElement(null)
+      reset()
+    }
   }
 
   const cancel = () => {
@@ -67,6 +100,55 @@ export const ModifierElementForm = ({
     setModifierElement(null)
     setShowForm(false)
   }
+
+  const includeMenu = async (menuId: string, elementPriceId?: string) => {
+    if (currentModifierElement?.prices?.some((x) => x.menuId === menuId)) {
+      //if itemPriceComes, delete from db
+      if (elementPriceId) {
+        const { ok } = await deleteElementPrice(elementPriceId)
+        if (!ok) {
+          alert('Error al eliminar el precio')
+          return
+        }
+      }
+      
+      setCurrentModifierElement({
+        ...currentModifierElement,
+        prices: currentModifierElement.prices?.filter((x) => x.menuId !== menuId),
+      })
+    } else {
+      setCurrentModifierElement({
+        ...currentModifierElement!,
+        prices: [
+          ...(currentModifierElement?.prices ?? []),
+          {
+            id: '',
+            menuId,
+            price: 0,
+            modifierElementId: currentModifierElement?.id ?? '',
+          },
+        ],
+      })
+    }
+  }
+
+  const setMenuPrice = (menuId: string, price: number) => {
+
+    setCurrentModifierElement({
+      ...currentModifierElement!,
+      prices: currentModifierElement?.prices?.map((x) => (x.menuId === menuId ? { ...x, price } : x)),
+    })
+  }
+
+  const inputMustBeChecked = (menuId: string): boolean | undefined => {
+    const state = currentModifierElement?.prices?.some((x) => x.menuId === menuId)
+    if (state) {
+      return true
+    }
+
+    return false
+  }
+
 
   useEffect(() => {
     if (modifierElement !== null) {
@@ -81,6 +163,7 @@ export const ModifierElementForm = ({
       setValue('modifierGroupId', modifierElement.modifierGroupId)
       setValue('prices', modifierElement.prices)
     }
+    setCurrentModifierElement(modifierElement)
   }, [modifierElement])
 
   return (
@@ -109,10 +192,7 @@ export const ModifierElementForm = ({
                 <span className='font-bold text-sm antialiased'>Recetas</span>
                 <div className='grid grid-cols-1 gap-4'>
                   <div className='flex flex-col'>
-                    <select
-                      {...register('defaultRecipeId')}
-                      className='p-2 border rounded-md bg-gray-100'
-                    >
+                    <select {...register('defaultRecipeId')} className='p-2 border rounded-md bg-gray-100'>
                       <option value=''>[Seleccione]</option>
                       {recipes.map((recipe) => (
                         <option key={recipe.id} value={recipe.id}>
@@ -143,7 +223,7 @@ export const ModifierElementForm = ({
                   }
                 />
               </div>
-              <div className='flex items-center mt-3 pl-2'>
+              <div className='flex items-center mb-4 pl-2'>
                 <input
                   {...register('combinable')}
                   id='combinable'
@@ -157,13 +237,59 @@ export const ModifierElementForm = ({
                   Combinable
                 </label>
               </div>
+              {getValues('combinable') && (
+                <div className='flex flex-col mb-4'>
+                  <span className='font-bold text-sm antialiased'>Grupo combinable</span>
+                  <div className='grid grid-cols-1 gap-4'>
+                    <div className='flex flex-col'>
+                      <select {...register('combinableModifierGroupId')} className='p-2 border rounded-md bg-gray-100'>
+                        <option value=''>[Seleccione]</option>
+                        {modifierGroups.map((modifierGroup) => (
+                          <option key={modifierGroup.id} value={modifierGroup.id}>
+                            {modifierGroup.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <span className='font-bold text-sm antialiased'>Precios</span>
+              {/* menus aqui */}
+              {menus.map((menu) => (
+                <div key={menu.id} className='flex items-center mt-3 pl-2'>
+                  <input
+                    checked={inputMustBeChecked(menu.id)}
+                    onChange={() => includeMenu(menu.id, currentModifierElement?.prices?.find((x) => x.menuId === menu.id)?.id)}
+                    id={menu.id}
+                    type='checkbox'
+                    className='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-3xl focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600'
+                  />
+                  <label
+                    htmlFor={menu.id}
+                    className='ms-2 py-2 text-sm mr-4 text-gray-900 font-bold cursor-pointer select-none'
+                  >
+                    {menu.name}
+                  </label>
+                  {currentModifierElement?.prices?.some((x) => x.menuId === menu.id) && (
+                    <div className='flex flex-wrap'>
+                      <input
+                        value={currentModifierElement?.prices?.find((x) => x.menuId === menu.id)?.price}
+                        onChange={(e) => setMenuPrice(menu.id, Number(e.target.value))}
+                        placeholder='Precio'
+                        type='number'
+                        className='px-2 py-1 text-sm border rounded-md bg-gray-100'
+                      />
+                    </div>
+                  )}
+                </div>
+              ))}
               <div className='flex gap-3 flex-wrap justify-center w-full'>
                 <button
                   type='submit'
-                  disabled={!isValid}
-                  className={clsx('text-white font-bold w-1/3 rounded', {
-                    'bg-green-600 hover:bg-green-500 py-2 cursor-pointer': isValid,
-                    'bg-gray-400 py-2 cursor-not-allowed': !isValid,
+                  className={clsx('text-white font-bold w-1/3 rounded bg-green-600 hover:bg-green-500 py-2 cursor-pointer', {
+                  
                   })}
                 >
                   {btnText}

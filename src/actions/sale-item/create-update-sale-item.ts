@@ -6,12 +6,6 @@ import { z } from 'zod'
 import { createUpdateItemPrice } from '..'
 import { ItemPrice } from '@/interfaces'
 
-const itemPriceSchema = z.object({
-  id: z.string().uuid().optional(),
-  menuId: z.string().uuid(),
-  saleItemId: z.string().uuid(),
-  price: z.number().int().positive(),
-})
 
 const saleItemSchema = z.object({
   id: z.string().uuid().optional(),

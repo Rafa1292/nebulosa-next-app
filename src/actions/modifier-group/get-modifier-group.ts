@@ -9,9 +9,14 @@ export const getModifierGroupById = async (id: string) => {
         id,
       },
       include: {
-        elements: true
+        elements: {
+          include: {
+            prices: true,
+          },
+        }
       },
     })
+    console.log(modifierGroup)
     return {
       ok: true,
       modifierGroup,

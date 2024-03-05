@@ -2,7 +2,7 @@
 
 export interface ElementPrice {
     id: string;
-    elementId: string;
+    modifierElementId: string;
     menuId: string;
     price: number;
 }
