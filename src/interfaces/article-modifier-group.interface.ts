@@ -6,8 +6,8 @@ export interface ArticleModifierGroup {
     modifierGroupId: string;
     order: number;
     price: number;
-    minSelec: number;
-    maxSelec: number;
+    minSelect: number;
+    maxSelect: number;
     priceByGroup: boolean;
     modifierGroup?: ModifierGroup;
 }

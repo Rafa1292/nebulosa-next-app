@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache'
 
 export const deleteArticleModifierGroup = async (id: string) => {
   try {
-    const itemPrice = await prisma.articleModifierGroup.delete({
+    const articleModifier = await prisma.articleModifierGroup.delete({
       where: {
         id: id,
       },
@@ -13,7 +13,7 @@ export const deleteArticleModifierGroup = async (id: string) => {
         articleId: true,
       },
     })
-    revalidatePath(`/admin/articles/${itemPrice.articleId}`)
+    revalidatePath(`/admin/articles/${articleModifier.articleId}`)
 
     return {
       ok: true,

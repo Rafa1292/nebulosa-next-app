@@ -1,5 +1,6 @@
 'use server'
 
+import { ArticleModifierGroup } from '@/interfaces'
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
@@ -15,9 +16,8 @@ const articleModifierSchema = z.object({
   priceByGroup: z.boolean(),
 })
 
-export const createUpdateArticleModifierGroup = async (formData: FormData) => {
+export const createUpdateArticleModifierGroup = async (data: ArticleModifierGroup, articleId: string) => {
   try {
-    const data = Object.fromEntries(formData)
     const parse = articleModifierSchema.safeParse(data)
     if (!parse.success) {
       throw new Error(parse.error.message)
@@ -38,7 +38,7 @@ export const createUpdateArticleModifierGroup = async (formData: FormData) => {
         data: articleModifierGroup,
       })
     }
-    revalidatePath(`/admin/articles/${articleModifierGroup.articleId}`)
+    revalidatePath(`/admin/articles/${articleId}`)
 
     return {
       ok: true,

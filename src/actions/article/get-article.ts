@@ -8,6 +8,9 @@ export const getArticleById = async (id: string) => {
       where: {
         id,
       },
+      include: {
+        articleModifiers: true,
+      },
     })
     return {
       ok: true,
