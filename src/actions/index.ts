@@ -98,6 +98,9 @@ export * from './auth/register-user'
 export * from './article-modifier-group/create-update-article-modifier-group'
 export * from './article-modifier-group/delete-article-modifier-group'
 
+export * from './article-modifier-price/create-update-article-modifier-price'
+export * from './article-modifier-price/delete-article-modifier-price'
+
 export * from './article/create-update-article'
 export * from './article/get-articles'
 export * from './article/delete-article'

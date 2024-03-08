@@ -2,7 +2,7 @@ import React from 'react'
 import { redirect } from 'next/navigation'
 import { ArticleForm } from './ui/ArticleForm'
 import { Title } from '@/components'
-import { getArticleById, getModifierGroups } from '@/actions'
+import { getArticleById, getMenus, getModifierGroups } from '@/actions'
 
 interface Props {
   params: {
@@ -13,6 +13,7 @@ interface Props {
 export default async function ArticlePage({ params }: Props) {
   const { id } = params
   const {article} = await getArticleById(id)
+  const { menus } = await getMenus()
   const { modifierGroups } = await getModifierGroups()
   const title = id === 'add' ? 'Agregar articulo' : 'Editar articulo' 
 
@@ -24,7 +25,7 @@ export default async function ArticlePage({ params }: Props) {
   return (
     <div className='w-100 justify-center flex-wrap flex'>
       <Title title={title} />
-      <ArticleForm article={article ?? {}} modifierGroups={modifierGroups ?? []}/>
+      <ArticleForm menus={menus ?? []} article={article ?? {}} modifierGroups={modifierGroups ?? []}/>
     </div>
   )
 }

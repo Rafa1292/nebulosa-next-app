@@ -9,7 +9,11 @@ export const getArticleById = async (id: string) => {
         id,
       },
       include: {
-        articleModifiers: true,
+        articleModifiers: {
+          include: {
+            prices: true,
+          },
+        }
       },
     })
     return {

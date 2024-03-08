@@ -1,21 +1,24 @@
 'use client'
 
+import { deleteArticleModifierPrice } from '@/actions'
 import { Title } from '@/components'
-import { ArticleModifierGroup, ModifierGroup } from '@/interfaces'
+import { ArticleModifierGroup, ArticleModifierPrice, Menu, ModifierGroup } from '@/interfaces'
 import { ErrorMessage } from '@hookform/error-message'
 import clsx from 'clsx'
 import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { IoCloseCircleOutline } from 'react-icons/io5'
+import { object } from 'zod'
 
 interface Props {
-  addArticleModifierGroup: (articleModifierGroup: ArticleModifierGroup) => void
+  addArticleModifierGroup: (articleModifierGroup: ArticleModifierGroup) => Promise<boolean>
   setShowForm: (show: boolean) => void
   showForm: boolean
   setArticleModifierGroup: (articleModifierGroup: ArticleModifierGroup | null) => void
   articleModifierGroup: ArticleModifierGroup | null
   modifierGroups: ModifierGroup[]
   articleId?: string
+  menus: Menu[]
 }
 
 interface FormInputs {
@@ -23,10 +26,10 @@ interface FormInputs {
   articleId: string
   modifierGroupId: string
   order: number
-  price: number
   minSelect: number
   maxSelect: number
   priceByGroup: boolean
+  prices?: ArticleModifierPrice[]
 }
 
 export const ArticleModifierGroupForm = ({
@@ -37,6 +40,7 @@ export const ArticleModifierGroupForm = ({
   modifierGroups,
   showForm,
   setShowForm,
+  menus,
 }: Props) => {
   const {
     handleSubmit,
@@ -52,17 +56,72 @@ export const ArticleModifierGroupForm = ({
       ...articleModifierGroup,
     },
   })
+  watch('priceByGroup')
   const [btnText, setBtnText] = useState('Agregar')
-  const onSubmit = (data: FormInputs) => {
-    addArticleModifierGroup({ ...data, articleId: articleId ?? '' })
-    setBtnText('Agregar')
-    reset()
+  const [currentArticleModifierGroup, setCurrentArticleModifierGroup] = useState<ArticleModifierGroup | null>(
+    articleModifierGroup
+  )
+  const onSubmit = async (data: FormInputs) => {
+    const state = await addArticleModifierGroup({ ...data, prices: currentArticleModifierGroup?.prices, articleId: articleId ?? '' })
+    if (state) {
+      reset()
+      setArticleModifierGroup(null)
+      setBtnText('Agregar')
+    }
   }
 
   const cancel = () => {
     reset()
+    setCurrentArticleModifierGroup(null)
     setArticleModifierGroup(null)
     setShowForm(false)
+  }
+
+  const inputMustBeChecked = (menuId: string): boolean | undefined => {
+    const state = currentArticleModifierGroup?.prices?.some((x) => x.menuId === menuId)
+    if (state) {
+      return true
+    }
+
+    return false
+  }
+
+  const includeMenu = async (menuId: string, articleModifierPriceId?: string) => {
+    if (currentArticleModifierGroup?.prices?.some((x) => x.menuId === menuId)) {
+      //if itemPriceComes, delete from db
+      if (articleModifierPriceId) {
+        const { ok } = await deleteArticleModifierPrice(articleModifierPriceId, articleId ?? '')
+        if (!ok) {
+          alert('Error al eliminar el precio')
+          return
+        }
+      }
+
+      setCurrentArticleModifierGroup({
+        ...currentArticleModifierGroup,
+        prices: currentArticleModifierGroup.prices?.filter((x) => x.menuId !== menuId),
+      })
+    } else {
+      setCurrentArticleModifierGroup({
+        ...currentArticleModifierGroup!,
+        prices: [
+          ...(currentArticleModifierGroup?.prices ?? []),
+          {
+            id: '',
+            menuId,
+            price: 0,
+            articleModifierId: currentArticleModifierGroup?.id ?? '',
+          },
+        ],
+      })
+    }
+  }
+
+  const setMenuPrice = (menuId: string, price: number) => {
+    setCurrentArticleModifierGroup({
+      ...currentArticleModifierGroup!,
+      prices: currentArticleModifierGroup?.prices?.map((x) => (x.menuId === menuId ? { ...x, price } : x)),
+    })
   }
 
   useEffect(() => {
@@ -74,19 +133,22 @@ export const ArticleModifierGroupForm = ({
       setValue('articleId', articleModifierGroup.articleId)
       setValue('modifierGroupId', articleModifierGroup.modifierGroupId)
       setValue('order', articleModifierGroup.order)
-      setValue('price', articleModifierGroup.price)
       setValue('minSelect', articleModifierGroup.minSelect)
       setValue('maxSelect', articleModifierGroup.maxSelect)
       setValue('priceByGroup', articleModifierGroup.priceByGroup)
+      setValue('prices', articleModifierGroup.prices)
+    } else {
+      reset()
     }
+    setCurrentArticleModifierGroup(articleModifierGroup)
   }, [articleModifierGroup])
 
-  watch('priceByGroup')
+
   return (
     <>
       <div
         className={clsx(
-          'w-full transition-all z-50 h-fit right-0 py-14 px-4 md:w-2/5 mt-16 flex absolute justify-center flex-wrap rounded shadow-2xl bg-gray-100',
+          'w-full transition-all top-2 z-50 h-5/6 overflow-y-scroll right-0 py-14 px-4 md:w-2/5 mt-16 flex absolute justify-center flex-wrap rounded shadow-2xl bg-gray-100',
           {
             'translate-x-full': !showForm,
           }
@@ -159,11 +221,7 @@ export const ArticleModifierGroupForm = ({
               </div>
               <div className='flex flex-col mb-4'>
                 <span className='font-bold text-sm antialiased'>Minimo seleccionable</span>
-                <input
-                  {...register('minSelect')}
-                  type='number'
-                  className='p-2 border rounded-md bg-gray-100'
-                />
+                <input {...register('minSelect')} type='number' className='p-2 border rounded-md bg-gray-100' />
                 <ErrorMessage
                   errors={errors}
                   name='minSelect'
@@ -179,11 +237,7 @@ export const ArticleModifierGroupForm = ({
               </div>
               <div className='flex flex-col mb-4'>
                 <span className='font-bold text-sm antialiased'>Maximo seleccionable</span>
-                <input
-                  {...register('maxSelect')}
-                  type='number'
-                  className='p-2 border rounded-md bg-gray-100'
-                />
+                <input {...register('maxSelect')} type='number' className='p-2 border rounded-md bg-gray-100' />
                 <ErrorMessage
                   errors={errors}
                   name='maxSelect'
@@ -211,29 +265,38 @@ export const ArticleModifierGroupForm = ({
                   Precio por grupo
                 </label>
               </div>
-              {getValues('priceByGroup') && (
-                <div className='flex flex-col mb-4'>
-                  <span className='font-bold text-sm antialiased'>Precio</span>
-                  <input
-                    {...register('price', { required: 'El precio es obligatorio', min: 1 })}
-                    type='number'
-                    className='p-2 border rounded-md bg-gray-100'
-                  />
-                  <ErrorMessage
-                    errors={errors}
-                    name='price'
-                    render={({ messages }) =>
-                      messages &&
-                      Object.entries(messages).map(([type, message]) => (
-                        <p className='text-red-900 text-sm font-bold' key={type}>
-                          {message}
-                        </p>
-                      ))
-                    }
-                  />
-                </div>
-              )}
-              <div className='flex gap-3 flex-wrap justify-center w-full'>
+              {getValues('priceByGroup') &&
+                menus.map((menu) => (
+                  <div key={menu.id} className='flex items-center mt-3 pl-2'>
+                    <input
+                      checked={inputMustBeChecked(menu.id)}
+                      onChange={() =>
+                        includeMenu(menu.id, currentArticleModifierGroup?.prices?.find((x) => x.menuId === menu.id)?.id)
+                      }
+                      id={menu.id}
+                      type='checkbox'
+                      className='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-3xl focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600'
+                    />
+                    <label
+                      htmlFor={menu.id}
+                      className='ms-2 py-2 text-sm mr-4 text-gray-900 font-bold cursor-pointer select-none'
+                    >
+                      {menu.name}
+                    </label>
+                    {currentArticleModifierGroup?.prices?.some((x) => x.menuId === menu.id) && (
+                      <div className='flex flex-wrap'>
+                        <input
+                          value={currentArticleModifierGroup?.prices?.find((x) => x.menuId === menu.id)?.price}
+                          onChange={(e) => setMenuPrice(menu.id, Number(e.target.value))}
+                          placeholder='Precio'
+                          type='number'
+                          className='px-2 py-1 text-sm border rounded-md bg-gray-100'
+                        />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              <div className='flex gap-3 flex-wrap justify-center mt-4 w-full'>
                 <button
                   type='submit'
                   disabled={!isValid}

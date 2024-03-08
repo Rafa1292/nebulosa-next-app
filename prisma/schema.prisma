@@ -41,11 +41,12 @@ enum DeliveryMethod {
 // models--------------------------------------
 
 model Menu {
-    id                   String         @id @default(uuid())
+    id                   String                 @id @default(uuid())
     name                 String
-    commissionPercentage Int            @default(0)
-    itemPrices            ItemPrice[]
-    elementPrices         ElementPrice[]
+    commissionPercentage Int                    @default(0)
+    itemPrices           ItemPrice[]
+    elementPrices        ElementPrice[]
+    ArticleModifierPrice ArticleModifierPrice[]
 }
 
 model ItemPrice {
@@ -66,17 +67,26 @@ model ElementPrice {
     modifierElement   ModifierElement @relation(fields: [modifierElementId], references: [id])
 }
 
+model ArticleModifierPrice {
+    id                String               @id @default(uuid())
+    price             Int
+    articleModifierId String
+    menuId            String
+    menu              Menu                 @relation(fields: [menuId], references: [id])
+    articleModifier   ArticleModifierGroup @relation(fields: [articleModifierId], references: [id])
+}
+
 model ArticleModifierGroup {
-    id              String        @id @default(uuid())
-    articleId       String
-    modifierGroupId String
-    order           Int
-    price           Int
-    minSelect       Int
-    maxSelect       Int
-    priceByGroup    Boolean
-    article         Article       @relation(fields: [articleId], references: [id])
-    modifierGroup   ModifierGroup @relation(fields: [modifierGroupId], references: [id])
+    id                   String                 @id @default(uuid())
+    articleId            String
+    modifierGroupId      String
+    order                Int
+    minSelect            Int
+    maxSelect            Int
+    priceByGroup         Boolean
+    article              Article                @relation(fields: [articleId], references: [id])
+    modifierGroup        ModifierGroup          @relation(fields: [modifierGroupId], references: [id])
+    prices ArticleModifierPrice[]
 }
 
 model ModifierGroup {
@@ -94,7 +104,7 @@ model ModifierElement {
     combinable                Boolean
     combinableModifierGroupId String
     modifierGroupId           String
-    prices              ElementPrice[]
+    prices                    ElementPrice[]
     ModifierGroup             ModifierGroup  @relation(fields: [modifierGroupId], references: [id])
 }
 
@@ -181,17 +191,17 @@ model User {
     emailVerified DateTime?
     password      String
     role          Role      @default(user)
-    workDays       WorkDay[]
+    workDays      WorkDay[]
 }
 
 model Article {
-    id                   String                 @id @default(uuid())
-    name                 String
-    description          String?
-    needsCommand         Boolean                @default(false)
-    active               Boolean                @default(true)
-    recipe               Recipe?
-    saleItemArticles     SaleItemArticle[]
+    id               String                 @id @default(uuid())
+    name             String
+    description      String?
+    needsCommand     Boolean                @default(false)
+    active           Boolean                @default(true)
+    recipe           Recipe?
+    saleItemArticles SaleItemArticle[]
     articleModifiers ArticleModifierGroup[]
 }
 
@@ -307,7 +317,7 @@ model SaleItem {
     saleItemCategoryId String
     saleItemCategory   SaleItemCategory  @relation(fields: [saleItemCategoryId], references: [id])
     saleItemArticles   SaleItemArticle[]
-    prices          ItemPrice[]
+    prices             ItemPrice[]
 }
 
 model SaleItemCategory {
