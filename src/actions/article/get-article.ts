@@ -12,6 +12,7 @@ export const getArticleById = async (id: string) => {
         articleModifiers: {
           include: {
             prices: true,
+            modifierGroup: true,
           },
         }
       },

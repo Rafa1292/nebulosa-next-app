@@ -212,7 +212,7 @@ export const ArticleForm = ({ article, modifierGroups, menus }: Props) => {
         articleId={currentArticle.id}
         addArticleModifierGroup={addArticleModifierGroup}
         articleModifierGroup={articleModifierGroup}
-        modifierGroups={modifierGroups}
+        modifierGroups={modifierGroups.filter((x) => !currentArticle.articleModifiers?.some((y) => y.modifierGroupId === x.id))}
         setArticleModifierGroup={setArticleModifierGroup}
       />
     </>

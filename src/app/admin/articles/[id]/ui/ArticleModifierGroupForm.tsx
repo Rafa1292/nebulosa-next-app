@@ -148,7 +148,7 @@ export const ArticleModifierGroupForm = ({
     <>
       <div
         className={clsx(
-          'w-full transition-all top-2 z-50 h-5/6 overflow-y-scroll right-0 py-14 px-4 md:w-2/5 mt-16 flex absolute justify-center flex-wrap rounded shadow-2xl bg-gray-100',
+          'w-full transition-all top-2 z-50 h-6/6 overflow-y-scroll right-0 py-14 px-4 md:w-2/5 mt-16 flex absolute justify-center flex-wrap rounded shadow-2xl bg-gray-100',
           {
             'translate-x-full': !showForm,
           }
@@ -183,6 +183,13 @@ export const ArticleModifierGroupForm = ({
                           {modifier.name}
                         </option>
                       ))}
+                      {
+                        articleModifierGroup?.modifierGroup && (
+                          <option key={articleModifierGroup?.modifierGroup.id} value={articleModifierGroup?.modifierGroup.id}>
+                          {articleModifierGroup?.modifierGroup.name}
+                        </option>
+                        )
+                      }
                     </select>
                     <ErrorMessage
                       errors={errors}
@@ -221,7 +228,7 @@ export const ArticleModifierGroupForm = ({
               </div>
               <div className='flex flex-col mb-4'>
                 <span className='font-bold text-sm antialiased'>Minimo seleccionable</span>
-                <input {...register('minSelect')} type='number' className='p-2 border rounded-md bg-gray-100' />
+                <input {...register('minSelect', { required: 'El minimo es obligatorio', min: 1 })} type='number' className='p-2 border rounded-md bg-gray-100' />
                 <ErrorMessage
                   errors={errors}
                   name='minSelect'
@@ -237,7 +244,7 @@ export const ArticleModifierGroupForm = ({
               </div>
               <div className='flex flex-col mb-4'>
                 <span className='font-bold text-sm antialiased'>Maximo seleccionable</span>
-                <input {...register('maxSelect')} type='number' className='p-2 border rounded-md bg-gray-100' />
+                <input {...register('maxSelect', { required: 'El maximo es obligatorio', min: 1 })} type='number' className='p-2 border rounded-md bg-gray-100' />
                 <ErrorMessage
                   errors={errors}
                   name='maxSelect'
@@ -267,7 +274,7 @@ export const ArticleModifierGroupForm = ({
               </div>
               {getValues('priceByGroup') &&
                 menus.map((menu) => (
-                  <div key={menu.id} className='flex items-center mt-3 pl-2'>
+                  <div key={menu.id} className='flex items-center mt-1 pl-2'>
                     <input
                       checked={inputMustBeChecked(menu.id)}
                       onChange={() =>
@@ -299,11 +306,7 @@ export const ArticleModifierGroupForm = ({
               <div className='flex gap-3 flex-wrap justify-center mt-4 w-full'>
                 <button
                   type='submit'
-                  disabled={!isValid}
-                  className={clsx('text-white font-bold w-1/3 rounded', {
-                    'bg-green-600 hover:bg-green-500 py-2 cursor-pointer': isValid,
-                    'bg-gray-400 py-2 cursor-not-allowed': !isValid,
-                  })}
+                  className={clsx('text-white font-bold w-1/3 rounded bg-green-600 hover:bg-green-500 py-2 cursor-pointer', { })}
                 >
                   {btnText}
                 </button>
