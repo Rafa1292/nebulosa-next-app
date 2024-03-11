@@ -99,9 +99,12 @@ export const ArticleForm = ({ article, modifierGroups, menus }: Props) => {
   }
 
   const deleteCurrentArticleModifier = async (articleModifierId: string) => {
-    const { ok } = await deleteArticleModifierGroup(articleModifierId)
+    const { ok, message } = await deleteArticleModifierGroup(articleModifierId)
     if (ok) {
       getArticle()
+    }
+    else {
+      alert(message)
     }
   }
 

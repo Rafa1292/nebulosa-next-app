@@ -1,11 +1,15 @@
-import { getWorkDayByEmail } from "@/actions"
+
+import { getMenus, getSaleItemCategoriesWithRelations, getWorkDayByEmail } from "@/actions"
 import { auth } from "@/auth.config"
 import { redirect } from "next/navigation"
 import {WorkDay} from "./ui/WorkDay"
+import { TmpBillContainer } from "./ui/bill/TmpBillContainer"
 
 export default async function BillingPage() {
     const session = await auth()
     const allowedUserRoles = ['user', 'admin']
+    const {saleItemCategories} = await getSaleItemCategoriesWithRelations()
+    const {menus} = await getMenus()
 
     if(!session) {
         redirect('/auth/login')
@@ -28,9 +32,7 @@ export default async function BillingPage() {
 
     return (
       <div>
-        {
-            JSON.stringify(workDay)
-        }
+        <TmpBillContainer menus={menus ?? []} saleItemCategories={saleItemCategories ?? []}/>
       </div>
     )
   }

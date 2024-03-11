@@ -228,7 +228,7 @@ export const ArticleModifierGroupForm = ({
               </div>
               <div className='flex flex-col mb-4'>
                 <span className='font-bold text-sm antialiased'>Minimo seleccionable</span>
-                <input {...register('minSelect', { required: 'El minimo es obligatorio', min: 1 })} type='number' className='p-2 border rounded-md bg-gray-100' />
+                <input {...register('minSelect')} type='number' className='p-2 border rounded-md bg-gray-100' />
                 <ErrorMessage
                   errors={errors}
                   name='minSelect'

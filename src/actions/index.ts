@@ -7,6 +7,7 @@ export * from './sale-item-category/create-update-sale-item-category'
 export * from './sale-item-category/delete-sale-item-category'
 export * from './sale-item-category/get-sale-item-category'
 export * from './sale-item-category/get-sale-item-categories'
+export * from './sale-item-category/get-sale-item-categories-with-relations'
 export * from './sale-item-category/get-sale-item-category-paginated'
 
 export * from './sale-item-article/create-update-sale-item-article'

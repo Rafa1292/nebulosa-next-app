@@ -9,7 +9,7 @@ import { createUpdateElementPrice } from '..'
 const elementPriceSchema = z.object({
   id: z.string().optional(),
   menuId: z.string().uuid(),
-  modifierElementId: z.string().uuid().nullable().optional(),
+  modifierElementId: z.string().nullable().optional(),
   price: z.number().int().positive(),
 })
 

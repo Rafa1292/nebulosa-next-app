@@ -285,7 +285,7 @@ export const ModifierElementForm = (
                   )}
                 </div>
               ))}
-              <div className='flex gap-3 flex-wrap justify-center w-full'>
+              <div className='flex gap-3 flex-wrap justify-center w-full pt-4'>
                 <button
                   type='submit'
                   className={clsx('text-white font-bold w-1/3 rounded bg-green-600 hover:bg-green-500 py-2 cursor-pointer', {

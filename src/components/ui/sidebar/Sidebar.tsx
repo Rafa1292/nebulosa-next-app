@@ -1,6 +1,6 @@
 'use client'
 
-import { titleFont } from '@/config/fonts'
+import { subTitleFont, titleFont } from '@/config/fonts'
 import { useUIStore } from '@/store'
 import clsx from 'clsx'
 import Link from 'next/link'
@@ -42,6 +42,13 @@ export const Sidebar = () => {
             className='w-full bg-gray-50 rounded pl-10 py-2 pr-10 border-b-2 text-xl border-gray-200 focus:outline-none focus:border-blue-500'
           />
         </div>
+        <Link
+            href={'/billing'}
+            onClick={() => toggleMenu()}
+            className={` w-full text-left p-2 rounded focus:outline-none ${subTitleFont.className} duration-500 transition-all antialiased font-bold`}
+          >
+            Jornadas
+          </Link>
         <Dropdown title='Mantenimiento'>
           <Link
             href={'/admin/work-days'}
@@ -105,6 +112,13 @@ export const Sidebar = () => {
             className={`flex items-center p-2 hover:bg-gray-100 rounded transition-all cursor-pointer ${titleFont.className} antialiased`}
           >
             Articulos
+          </Link>
+          <Link
+            href={'/admin/modifier-groups'}
+            onClick={() => toggleMenu()}
+            className={`flex items-center p-2 hover:bg-gray-100 rounded transition-all cursor-pointer ${titleFont.className} antialiased`}
+          >
+            Modificadores
           </Link>
         </Dropdown>
 

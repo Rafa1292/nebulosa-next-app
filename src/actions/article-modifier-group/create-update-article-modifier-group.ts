@@ -9,7 +9,7 @@ import { createUpdateArticleModifierPrice } from '..'
 const articleModifierPriceSchema = z.object({
   id: z.string().optional(),
   menuId: z.string().uuid(),
-  articleModifierId: z.string().uuid(),
+  articleModifierId: z.string().optional(),
   price: z.number().int().positive(),
 })
 
