@@ -73,9 +73,9 @@ export const BillArticles = ({ saleItem, setSaleItem }: Props) => {
               key={index}
               className={clsx(
                 'flex bg-black w-1/5 justify-center text-white h-16 items-center cursor-pointer select-none px-3 py-1 border-y-2 shadow-xl rounded-xl border-white',
-                'hover:bg-white hover:border-gray-900 hover:!text-black',
+                'hover:bg-white hover:!text-black',
                 {
-                  'bg-white border-gray-900 !text-black': selectedArticle?.id === itemArticle.article?.id,
+                  'bg-white !border-gray-900 !text-black': selectedArticle?.id === itemArticle.article?.id,
                 }
               )}
             >
@@ -96,9 +96,9 @@ export const BillArticles = ({ saleItem, setSaleItem }: Props) => {
                 key={index}
                 className={clsx(
                   'flex bg-black w-1/5 justify-center text-white h-16 items-center cursor-pointer select-none px-3 py-1 border-y-2 shadow-xl rounded-xl border-white',
-                  ' hover:border-gray-900 hover:!bg-white hover:!text-black ',
+                  ' hover:!bg-white hover:!text-black ',
                   {
-                    ' bg-white border-gray-900 !text-black':
+                    ' bg-white !border-gray-900 !text-black':
                       selectedArticleModifierGroup?.modifierGroupId === articleModifier.modifierGroupId,
                   }
                 )}
