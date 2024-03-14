@@ -45,9 +45,9 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props)
             <div
               onClick={() => setSaleItemCategory(saleItemCategory)}
               key={index}
-              className='flex bg-black text-white cursor-pointer select-none hover:bg-white hover:border-gray-900 hover:!text-black justify-between px-3 py-1 border-y-2 shadow-xl rounded-md border-white'
+              className='flex bg-black text-white cursor-pointer select-none hover:bg-white hover:border-gray-900 hover:!text-black justify-center px-3 py-1 border-y-2 shadow-xl rounded-md border-white'
             >
-              <div className={`${titleFont.className}  antialiased text-xs font-bold`}>{saleItemCategory.name}</div>
+              <div className={`${titleFont.className} text-center  antialiased text-xs font-bold`}>{saleItemCategory.name}</div>
             </div>
           ))}
         </div>
@@ -61,7 +61,7 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props)
                   className='flex bg-black w-1/6 text-white cursor-pointer select-none h-14 items-center px-3 py-1 border-y-2 shadow-xl rounded-md border-white
                  hover:bg-white hover:border-gray-900 hover:!text-black'
                 >
-                  <div className={`${titleFont.className}  antialiased text-center text-xs font-bold`}>
+                  <div className={`${titleFont.className}  antialiased text-center w-full text-xs font-bold`}>
                     {saleItem.name}
                   </div>
                 </div>
