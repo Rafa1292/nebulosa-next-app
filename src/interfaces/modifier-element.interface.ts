@@ -8,5 +8,6 @@ export interface ModifierElement {
     combinable: boolean;
     combinableModifierGroupId: string;
     modifierGroupId: string;
+    currentMenuPrice?: number;
     prices?: ElementPrice[];
 }

@@ -9,5 +9,6 @@ export interface ArticleModifierGroup {
     maxSelect: number;
     priceByGroup: boolean;
     modifierGroup?: ModifierGroup;
+    currentMenuPrice?: number;
     prices?: ArticleModifierPrice[]
 }

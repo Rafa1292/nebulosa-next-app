@@ -3,7 +3,7 @@
 import { titleFont } from '@/config/fonts'
 import { Article, ArticleModifierGroup, ModifierGroup, SaleItem, SaleItemArticle } from '@/interfaces'
 import clsx from 'clsx'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { IoCloseCircleOutline } from 'react-icons/io5'
 import { BillElements } from './BillElements'
 import { QuantitySelector } from '@/components'
@@ -27,8 +27,15 @@ export const BillArticles = ({ saleItem, setSaleItem }: Props) => {
 
   const onItemArticleChange = (itemArticle: SaleItemArticle | undefined) => {
     setSelectedItemArticle(itemArticle)
-    setSelectedArticleModifierGroup(undefined)
+    setSelectedArticleModifierGroup(itemArticle?.article?.articleModifiers?.[0])
   }
+
+  useEffect(() => {
+    if (saleItem !== null) {
+      setSelectedItemArticle(saleItem?.saleItemArticles?.[0])
+      setSelectedArticleModifierGroup(saleItem?.saleItemArticles?.[0]?.article?.articleModifiers?.[0])
+    }
+  }, [saleItem])
 
   return (
     <div
@@ -75,7 +82,7 @@ export const BillArticles = ({ saleItem, setSaleItem }: Props) => {
                 'flex bg-black w-1/5 justify-center text-white h-16 items-center cursor-pointer select-none px-3 py-1 border-y-2 shadow-xl rounded-xl border-white',
                 'hover:bg-white hover:!text-black',
                 {
-                  'bg-white !border-gray-900 !text-black': selectedItemArticle?.id === itemArticle.article?.id,
+                  'bg-white !border-gray-900 !text-black': selectedItemArticle?.articleId === itemArticle.article?.id,
                 }
               )}
             >

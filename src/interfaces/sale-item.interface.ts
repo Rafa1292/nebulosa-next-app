@@ -5,6 +5,7 @@ export interface SaleItem {
     name: string;
     saleItemCategoryId: string
     saleItemArticles?: SaleItemArticle[]
+    currentMenuPrice?: number
     prices?: ItemPrice[]
     }
     

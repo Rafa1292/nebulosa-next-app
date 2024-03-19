@@ -77,6 +77,9 @@ export const BillElements = ({ articleModifierGroup, saleItemArticleId }: Props)
           <div className={`${titleFont.className} w-full px antialiased text-center text-xs font-bold`}>
             {element.name}
           </div>
+          <div className={`${titleFont.className} w-full px antialiased text-center text-xs font-bold`}>
+            {element.currentMenuPrice}
+          </div>
           {articleModifierGroup.maxSelect > 1 && (
             <QuantitySelector
               minusClassName='hover:bg-black p-0.5 hover:!text-white rounded-2xl'
