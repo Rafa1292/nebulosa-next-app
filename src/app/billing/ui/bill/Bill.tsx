@@ -6,6 +6,8 @@ import clsx from 'clsx'
 import { useState } from 'react'
 import { IoCloseCircleOutline } from 'react-icons/io5'
 import { BillArticles } from './BillArticles'
+import { useBillItemStore } from '@/store'
+
 
 interface Props {
   saleItemCategories: SaleItemCategory[]
@@ -15,8 +17,15 @@ interface Props {
 }
 
 export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props) => {
+  const { addBillItem } = useBillItemStore()
   const [saleItemCategory, setSaleItemCategory] = useState<SaleItemCategory | null>(null)
   const [saleItem, setSaleItem] = useState<SaleItem | null>(null)
+
+  const handleSetSaleItem = (saleItem: SaleItem) => {
+    addBillItem(saleItem)
+    setSaleItem(saleItem)
+  }
+
 
   return (
     <div
@@ -56,7 +65,7 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props)
             <div className='w-full flex gap-2 px-2 py-3'>
               {saleItemCategory?.saleItems?.map((saleItem, index) => (
                 <div
-                  onClick={() => setSaleItem(saleItem)}
+                  onClick={() => handleSetSaleItem(saleItem)}
                   key={index}
                   className='flex bg-black w-1/6 text-white cursor-pointer select-none h-14 items-center px-3 py-1 border-y-2 shadow-xl rounded-md border-white
                  hover:bg-white hover:border-gray-900 hover:!text-black'

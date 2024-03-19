@@ -1,7 +1,7 @@
 'use client'
 
 import { titleFont } from '@/config/fonts'
-import { Article, ArticleModifierGroup, ModifierGroup, SaleItem } from '@/interfaces'
+import { Article, ArticleModifierGroup, ModifierGroup, SaleItem, SaleItemArticle } from '@/interfaces'
 import clsx from 'clsx'
 import { useState } from 'react'
 import { IoCloseCircleOutline } from 'react-icons/io5'
@@ -14,19 +14,19 @@ interface Props {
 }
 
 export const BillArticles = ({ saleItem, setSaleItem }: Props) => {
-  const [selectedArticle, setSelectedArticle] = useState<Article | undefined>(undefined)
+  const [selectedItemArticle, setSelectedItemArticle] = useState<SaleItemArticle | undefined>(undefined)
   const [selectedArticleModifierGroup, setSelectedArticleModifierGroup] = useState<ArticleModifierGroup | undefined>(
     undefined
   )
 
   const closeModal = () => {
     setSaleItem(null)
-    setSelectedArticle(undefined)
+    setSelectedItemArticle(undefined)
     setSelectedArticleModifierGroup(undefined)
   }
 
-  const onArticleChange = (article: Article | undefined) => {
-    setSelectedArticle(article)
+  const onItemArticleChange = (itemArticle: SaleItemArticle | undefined) => {
+    setSelectedItemArticle(itemArticle)
     setSelectedArticleModifierGroup(undefined)
   }
 
@@ -69,13 +69,13 @@ export const BillArticles = ({ saleItem, setSaleItem }: Props) => {
           </div>
           {saleItem?.saleItemArticles?.map((itemArticle, index) => (
             <div
-              onClick={() => onArticleChange(itemArticle?.article)}
+              onClick={() => onItemArticleChange(itemArticle)}
               key={index}
               className={clsx(
                 'flex bg-black w-1/5 justify-center text-white h-16 items-center cursor-pointer select-none px-3 py-1 border-y-2 shadow-xl rounded-xl border-white',
                 'hover:bg-white hover:!text-black',
                 {
-                  'bg-white !border-gray-900 !text-black': selectedArticle?.id === itemArticle.article?.id,
+                  'bg-white !border-gray-900 !text-black': selectedItemArticle?.id === itemArticle.article?.id,
                 }
               )}
             >
@@ -85,12 +85,12 @@ export const BillArticles = ({ saleItem, setSaleItem }: Props) => {
             </div>
           ))}
         </div>
-        {selectedArticle !== undefined && (
+        {selectedItemArticle !== undefined && (
           <div className='w-full flex flex-wrap gap-3 px-2 shadow-lg justify-center py-4'>
             <div className={`${titleFont.className}  antialiased text-center text-xs w-full font-bold my-2`}>
               Modificadores
             </div>
-            {selectedArticle?.articleModifiers?.map((articleModifier, index) => (
+            {selectedItemArticle?.article?.articleModifiers?.map((articleModifier, index) => (
               <div
                 onClick={() => setSelectedArticleModifierGroup(articleModifier)}
                 key={index}
@@ -111,7 +111,7 @@ export const BillArticles = ({ saleItem, setSaleItem }: Props) => {
           </div>
         )}
         {selectedArticleModifierGroup !== undefined && (
-          <BillElements articleModifierGroup={selectedArticleModifierGroup} />
+          <BillElements saleItemArticleId={selectedItemArticle?.id ?? ''} articleModifierGroup={selectedArticleModifierGroup} />
         )}
       </div>
     </div>
