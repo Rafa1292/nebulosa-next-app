@@ -6,13 +6,15 @@ import { ArticleModifierGroup, LinkedArticleModifierElement, ModifierElement, Mo
 import clsx from 'clsx'
 import {  useEffect, useState } from 'react'
 import { useBillItemStore } from '@/store'
+import { currencyFormat } from '@/utils'
 
 interface Props {
   articleModifierGroup: ArticleModifierGroup | undefined
   saleItemArticleId: string
+  itemNumber: number
 }
 
-export const BillElements = ({ articleModifierGroup, saleItemArticleId }: Props) => {
+export const BillElements = ({ articleModifierGroup, saleItemArticleId, itemNumber }: Props) => {
   const { addLinkedArticleModifierElement, getLinkedArticleModifierElement } = useBillItemStore()
   const [linkedArticleModifierElements, setLinkedArticleModifierElements] = useState<LinkedArticleModifierElement[]>([])
 
@@ -45,16 +47,18 @@ export const BillElements = ({ articleModifierGroup, saleItemArticleId }: Props)
       saleItemArticleId,
       articleModifierGroup?.articleId ?? '',
       linkedArticleModifierElement,
-      articleModifierGroup!.modifierGroup?.id ?? ''
+      articleModifierGroup!.modifierGroup?.id ?? '',
+      itemNumber
     )
-    const currentElements = getLinkedArticleModifierElement(saleItemArticleId, articleModifierGroup?.articleId ?? '', articleModifierGroup?.modifierGroup?.id ?? '')
+    const currentElements = getLinkedArticleModifierElement(saleItemArticleId, articleModifierGroup?.articleId ?? '', articleModifierGroup?.modifierGroup?.id ?? '', itemNumber)
     setLinkedArticleModifierElements(currentElements)
   }
 
   useEffect(() => {
-    const currentElements = getLinkedArticleModifierElement(saleItemArticleId, articleModifierGroup?.articleId ?? '', articleModifierGroup?.modifierGroup?.id ?? '')
+    console.log(itemNumber)
+    const currentElements = getLinkedArticleModifierElement(saleItemArticleId, articleModifierGroup?.articleId ?? '', articleModifierGroup?.modifierGroup?.id ?? '', itemNumber)
     setLinkedArticleModifierElements(currentElements)
-  }, [articleModifierGroup, saleItemArticleId])
+  }, [articleModifierGroup, saleItemArticleId, itemNumber])
 
 
   return (
@@ -65,7 +69,7 @@ export const BillElements = ({ articleModifierGroup, saleItemArticleId }: Props)
           onClick={articleModifierGroup.maxSelect > 1 ? () => {} : () => handleAddLinkedArticleModifierElement(1, element)}
           key={index}
           className={clsx(
-            'flex bg-black text-white flex-wrap cursor-pointer h-20 w-1/5 items-center select-none justify-center px-3 py-1 border-y-2 shadow-xl rounded-xl border-white',
+            'flex bg-black text-white flex-wrap cursor-pointer h-24 w-1/5 items-center select-none justify-center px-3 py-1 border-y-2 shadow-xl rounded-xl border-white',
             ' hover:bg-white hover:border-gray-900 hover:!text-black',
             {
               '!border-y-2 !bg-white !text-black !border-gray-900': linkedArticleModifierElements.some(
@@ -78,7 +82,7 @@ export const BillElements = ({ articleModifierGroup, saleItemArticleId }: Props)
             {element.name}
           </div>
           <div className={`${titleFont.className} w-full px antialiased text-center text-xs font-bold`}>
-            {element.currentMenuPrice}
+            {currencyFormat(element.currentMenuPrice ?? 0)}
           </div>
           {articleModifierGroup.maxSelect > 1 && (
             <QuantitySelector

@@ -7,6 +7,8 @@ import { useEffect, useState } from 'react'
 import { IoCloseCircleOutline } from 'react-icons/io5'
 import { BillArticles } from './BillArticles'
 import { useBillItemStore } from '@/store'
+import { currencyFormat } from '@/utils'
+import { BillSaleItem } from './BillSaleItem'
 
 interface Props {
   saleItemCategories: SaleItemCategory[]
@@ -23,7 +25,7 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props)
   const [saleItemCategoriesWithPrice, setSaleItemCategoriesWithPrice] = useState<SaleItemCategory[]>([])
   
   const handleSetSaleItem = (saleItem: SaleItem) => {
-    addBillItem(saleItem)
+    addBillItem(saleItem, 1)
     setSaleItem(saleItem)
   }
 
@@ -100,6 +102,7 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props)
         className=' cursor-pointer text-4xl z-50 absolute text-red-800 right-3 top-3 hover:text-red-700'
       />
       <div className='w-3/5 bg-gray-100'>
+        {/* -------------menus--------------------- */}
         <div className='w-full flex gap-3 px-2 border-b-2 justify-center py-2'>
           {menus.map((menu, index) => (
             <div
@@ -116,6 +119,7 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props)
             </div>
           ))}
         </div>
+        {/* -------------Categorias--------------------- */}
         {saleItemCategoriesWithPrice.length > 0 && (
           <div className='w-full flex gap-2 px-2 shadow-md py-3'>
             {saleItemCategoriesWithPrice.map((saleItemCategory, index) => (
@@ -131,6 +135,7 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props)
             ))}
           </div>
         )}
+        {/* -------------Items de venta--------------------- */}
         {saleItemCategory?.saleItems !== undefined ? (
           saleItemCategory.saleItems.length > 0 ? (
             <div className='w-full flex gap-2 px-2 py-3'>
@@ -138,12 +143,20 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props)
                 <div
                   onClick={() => handleSetSaleItem(saleItem)}
                   key={index}
-                  className='flex bg-black w-1/6 text-white cursor-pointer select-none h-14 items-center px-3 py-1 border-y-2 shadow-xl rounded-md border-white
+                  className='flex flex-wrap bg-black w-1/6 text-white cursor-pointer select-none h-20 items-center px-3 py-1 border-y-2 shadow-xl rounded-md border-white
                  hover:bg-white hover:border-gray-900 hover:!text-black'
                 >
                   <div className={`${titleFont.className}  antialiased text-center w-full text-xs font-bold`}>
                     {saleItem.name}
                   </div>
+                  {
+                    saleItem.currentMenuPrice !== undefined && saleItem.currentMenuPrice > 0 ? (
+                  
+                  <div className={`${titleFont.className}  antialiased text-center w-full text-xs font-bold`}>
+                    {currencyFormat(saleItem.currentMenuPrice ?? 0)}
+                  </div>
+                  ) : null
+                  }
                 </div>
               ))}
             </div>
@@ -153,7 +166,7 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props)
             </div>
           )
         ) : null}
-        <BillArticles setSaleItem={setSaleItem} saleItem={saleItem} />
+        <BillSaleItem setSaleItem={setSaleItem} saleItem={saleItem} />
       </div>
       <div className='w-2/5 shadow-2xl bg-white h-screen z-40'></div>
     </div>
