@@ -32,7 +32,7 @@ export const BillArticle = ({ saleItem, itemNumber }: Props) => {
   return (
     <>
       <div className='w-full flex gap-3 px-2 border-b-2 justify-center py-2 flex-wrap'>
-        <div className={`${titleFont.className}  antialiased text-center text-xs w-full font-bold my-2`}>Articulos</div>
+        <div className={`${titleFont.className}  antialiased text-center text-xs w-full font-bold my-2 select-none`}>Articulos</div>
 
         {saleItem?.saleItemArticles?.map((itemArticle, index) => (
           <div
@@ -54,7 +54,7 @@ export const BillArticle = ({ saleItem, itemNumber }: Props) => {
       </div>
       {selectedItemArticle !== undefined && (
         <div className='w-full flex flex-wrap gap-3 px-2 shadow-lg justify-center py-4'>
-          <div className={`${titleFont.className}  antialiased text-center text-xs w-full font-bold my-2`}>
+          <div className={`${titleFont.className} select-none antialiased text-center text-xs w-full font-bold my-2`}>
             Modificadores
           </div>
           {selectedItemArticle?.article?.articleModifiers?.map((articleModifier, index) => (

@@ -63,7 +63,7 @@ export const BillElements = ({ articleModifierGroup, saleItemArticleId, itemNumb
 
   return (
     <div className='w-full flex flex-wrap gap-3 px-2 justify-center py-4'>
-      <div className={`${titleFont.className}  antialiased text-center text-xs w-full font-bold my-2`}>Elementos</div>
+      <div className={`${titleFont.className}  antialiased text-center text-xs w-full font-bold my-2 select-none`}>Elementos</div>
       {articleModifierGroup?.modifierGroup?.elements?.map((element, index) => (
         <div
           onClick={articleModifierGroup.maxSelect > 1 ? () => {} : () => handleAddLinkedArticleModifierElement(1, element)}

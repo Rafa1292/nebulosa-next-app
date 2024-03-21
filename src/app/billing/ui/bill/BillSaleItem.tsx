@@ -4,7 +4,7 @@ import { titleFont } from '@/config/fonts'
 import { ArticleModifierGroup, SaleItem } from '@/interfaces'
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
-import { IoAddCircleOutline, IoCloseCircleOutline } from 'react-icons/io5'
+import { IoAddCircleOutline, IoCloseCircleOutline, IoRemoveCircleOutline } from 'react-icons/io5'
 import { useBillItemStore } from '@/store'
 import { BillArticle } from './BillArticle'
 import { currencyFormat } from '@/utils'
@@ -15,7 +15,7 @@ interface Props {
 }
 
 export const BillSaleItem = ({ saleItem, setSaleItem }: Props) => {
-  const { addBillItemArticle, billItem } = useBillItemStore()
+  const { addBillItemArticle, billItem, removeBillItemArticle } = useBillItemStore()
   const [saleItems, setSaleItems] = useState<SaleItem[]>([])
   const [itemNumber, setItemNumber] = useState(1)
   const [nextItemNumber, setNextItemNumber] = useState(2)
@@ -64,10 +64,16 @@ export const BillSaleItem = ({ saleItem, setSaleItem }: Props) => {
         style={{ height: '95vh' }}
         className={clsx(' w-full bg-white z-20 relative overflow-x-hidden overflow-scroll', {})}
       >
-        <IoCloseCircleOutline
+        <div
+          onClick={() => closeModal()}
+          className={`${titleFont.className} select-none cursor-pointer z-50 text-sm fixed text-red-800 right-6 top-12 hover:text-red-700`}
+        >
+          Cerrar
+        </div>
+        {/* <IoCloseCircleOutline
           onClick={() => closeModal()}
           className='cursor-pointer z-50 text-4xl fixed text-red-800 right-4 lg:top-10 hover:text-red-700'
-        />
+        /> */}
         <div className='w-full flex gap-3 px-2 border-b-2 justify-center py-2 pt-10 flex-wrap'>
           <div className='w-1/6 justify-center items-center flex flex-wrap'>
             <button
@@ -82,7 +88,7 @@ export const BillSaleItem = ({ saleItem, setSaleItem }: Props) => {
               onClick={() => setItemNumber(index + 1)}
               key={index}
               className={clsx(
-                'flex relative flex-wrap bg-black w-1/6 text-white cursor-pointer select-none h-20 items-center px-3 py-1 border-y-2 shadow-xl rounded-md border-white',
+                'flex relative flex-wrap bg-black w-1/6 text-white cursor-pointer select-none h-20 items-center px-3 py-4 border-y-2 shadow-xl rounded-md border-white',
                 'hover:bg-white hover:border-gray-900 hover:!text-black',
                 {
                   'bg-white !border-gray-900 !text-black': itemNumber === index + 1,
@@ -99,6 +105,17 @@ export const BillSaleItem = ({ saleItem, setSaleItem }: Props) => {
                   {index + 1}
                 </div>
               </div>
+              <div
+                className={clsx(
+                  'absolute hover:bg-red-800 bg-white text-black shadow-md border-gray-200 border justify-center items-center flex -top-2 right-4 w-6 h-6 rounded-2xl'
+                )}
+              >
+                <IoRemoveCircleOutline
+                  onClick={() => removeBillItemArticle(index + 1)}
+                  className={clsx('text-red-800', 'hover:!text-white ')}
+                  size={25}
+                />
+              </div>
               <div className={`${titleFont.className}  antialiased text-center w-full text-xs font-bold`}>
                 {currentSaleItem.name}
               </div>
@@ -110,7 +127,7 @@ export const BillSaleItem = ({ saleItem, setSaleItem }: Props) => {
             </div>
           ))}
         </div>
-        <BillArticle saleItem={saleItem} itemNumber={itemNumber} />
+        {saleItem !== null && <BillArticle saleItem={saleItem} itemNumber={itemNumber} />}
       </div>
     </div>
   )

@@ -7,6 +7,7 @@ import {
   ModifierElement,
   SaleItem,
 } from '@/interfaces'
+import { stat } from 'fs'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
@@ -14,6 +15,7 @@ interface State {
   billItem: BillItem | null
   addBillItem: (saleItem: SaleItem, itemNumber: number) => void
   setQuantity: (quantity: number) => void
+  removeBillItemArticle: (itemNumber: number) => void
   addLinkedArticleModifierElement: (
     saleItemArticleId: string,
     articleId: string,
@@ -24,7 +26,7 @@ interface State {
   getLinkedArticleModifierElement: (
     saleItemArticleId: string,
     articleId: string,
-    modifierGroupId: string, 
+    modifierGroupId: string,
     itemNumber: number
   ) => LinkedArticleModifierElement[]
   addBillItemArticle: (saleItem: SaleItem, itemNumber: number) => void
@@ -81,7 +83,8 @@ export const useBillItemStore = create<State>()(
         } else {
           billItem.itemArticles = [...billItem.itemArticles!, ...billItemLinkedArticles]
         }
-        set({ billItem })
+        const currentQuantity = billItem?.quantity ?? 1
+        set({ billItem: { ...billItem, quantity: currentQuantity + 1 } })
       },
       addBillItem: (saleItem: SaleItem, itemNumber: number) => {
         const billItem: BillItem = {
@@ -151,11 +154,10 @@ export const useBillItemStore = create<State>()(
         itemNumber: number
       ) =>
         set((state) => {
-          console.log(itemNumber)
           const itemArticles: BillItemLinkedArticle[] =
             state.billItem!.itemArticles?.map((itemArticle) => {
               if (itemArticle.saleItemArticleId !== saleItemArticleId) return itemArticle
-              if(itemArticle.itemNumber !== itemNumber) return itemArticle
+              if (itemArticle.itemNumber !== itemNumber) return itemArticle
               const linkedArticles: LinkedArticle[] =
                 itemArticle.linkedArticles?.map((linkedArticle) => {
                   if (linkedArticle.articleId !== articleId) return linkedArticle
@@ -198,12 +200,18 @@ export const useBillItemStore = create<State>()(
             }) ?? []
           return { billItem: { ...state.billItem!, itemArticles } }
         }),
-      getLinkedArticleModifierElement: (saleItemArticleId: string, articleId: string, modifierGroupId: string, itemNumber: number) => {
+      getLinkedArticleModifierElement: (
+        saleItemArticleId: string,
+        articleId: string,
+        modifierGroupId: string,
+        itemNumber: number
+      ) => {
         const billItemTmp = get().billItem
         console.log(billItemTmp)
         if (billItemTmp) {
           const itemArticle = billItemTmp.itemArticles?.find(
-            (itemArticle) => itemArticle.saleItemArticleId === saleItemArticleId && itemArticle.itemNumber === itemNumber
+            (itemArticle) =>
+              itemArticle.saleItemArticleId === saleItemArticleId && itemArticle.itemNumber === itemNumber
           )
           if (itemArticle) {
             const linkedArticle = itemArticle.linkedArticles?.find(
@@ -220,6 +228,26 @@ export const useBillItemStore = create<State>()(
         }
         return []
       },
+      removeBillItemArticle: (itemNumber: number) =>
+        set((state) => {
+          const billItem = state.billItem
+          console.log(billItem?.quantity)
+          if ((billItem?.quantity ?? 1) > 1) {
+            let itemArticles = state.billItem?.itemArticles?.filter(
+              (itemArticle) => itemArticle.itemNumber !== itemNumber
+            )
+            itemArticles =
+              itemArticles?.map((itemArticle, index) => {
+                if (itemArticle.itemNumber > itemNumber) {
+                  itemArticle.itemNumber--
+                  return itemArticle
+                }
+                return itemArticle
+              }) ?? []
+            return { billItem: { ...state.billItem!, itemArticles } }
+          }
+          return { billItem }
+        }),
     }),
 
     {
