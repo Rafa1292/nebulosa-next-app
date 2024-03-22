@@ -58,3 +58,30 @@ body {
   animation-name: fadeIn;
 }
 
+.overflow-scroll::-webkit-scrollbar {
+  -webkit-appearance: none;
+}
+
+.overflow-scroll::-webkit-scrollbar:vertical {
+  width: 5px;
+}
+
+.overflow-scroll::-webkit-scrollbar-button:increment,
+.contenedor::-webkit-scrollbar-button {
+  display: none;
+}
+
+.overflow-scroll::-webkit-scrollbar:horizontal {
+  height: 5px;
+}
+
+.overflow-scroll::-webkit-scrollbar-thumb {
+  background-color: #797979;
+  border-radius: 20px;
+  border: none;
+}
+
+.overflow-scroll::-webkit-scrollbar-track {
+  border-radius: 10px;
+}
+

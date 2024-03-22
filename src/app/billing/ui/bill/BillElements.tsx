@@ -2,9 +2,9 @@
 
 import { QuantitySelector } from '@/components'
 import { titleFont } from '@/config/fonts'
-import { ArticleModifierGroup, LinkedArticleModifierElement, ModifierElement, ModifierGroup } from '@/interfaces'
+import { ArticleModifierGroup, LinkedArticleModifierElement, ModifierElement } from '@/interfaces'
 import clsx from 'clsx'
-import {  useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useBillItemStore } from '@/store'
 import { currencyFormat } from '@/utils'
 
@@ -15,8 +15,9 @@ interface Props {
 }
 
 export const BillElements = ({ articleModifierGroup, saleItemArticleId, itemNumber }: Props) => {
-  const { addLinkedArticleModifierElement, getLinkedArticleModifierElement } = useBillItemStore()
+  const { addLinkedArticleModifierElement, getLinkedArticleModifierElement, validateBillItem } = useBillItemStore()
   const [linkedArticleModifierElements, setLinkedArticleModifierElements] = useState<LinkedArticleModifierElement[]>([])
+  const [isValid, setIsValid] = useState<boolean>(false)
 
   const handleAddLinkedArticleModifierElement = (quantity: number, modifierElement: ModifierElement) => {
     const currentOptionsSelected = linkedArticleModifierElements.reduce((acc, linkedArticleModifierElement) => {
@@ -50,23 +51,38 @@ export const BillElements = ({ articleModifierGroup, saleItemArticleId, itemNumb
       articleModifierGroup!.modifierGroup?.id ?? '',
       itemNumber
     )
-    const currentElements = getLinkedArticleModifierElement(saleItemArticleId, articleModifierGroup?.articleId ?? '', articleModifierGroup?.modifierGroup?.id ?? '', itemNumber)
+    const currentElements = getLinkedArticleModifierElement(
+      saleItemArticleId,
+      articleModifierGroup?.articleId ?? '',
+      articleModifierGroup?.modifierGroup?.id ?? '',
+      itemNumber
+    )
     setLinkedArticleModifierElements(currentElements)
+    setIsValid(validateBillItem())
   }
 
   useEffect(() => {
-    console.log(itemNumber)
-    const currentElements = getLinkedArticleModifierElement(saleItemArticleId, articleModifierGroup?.articleId ?? '', articleModifierGroup?.modifierGroup?.id ?? '', itemNumber)
+    const isValid = validateBillItem()
+    setIsValid(isValid)
+    const currentElements = getLinkedArticleModifierElement(
+      saleItemArticleId,
+      articleModifierGroup?.articleId ?? '',
+      articleModifierGroup?.modifierGroup?.id ?? '',
+      itemNumber
+    )
     setLinkedArticleModifierElements(currentElements)
   }, [articleModifierGroup, saleItemArticleId, itemNumber])
 
-
   return (
-    <div className='w-full flex flex-wrap gap-3 px-2 justify-center py-4'>
-      <div className={`${titleFont.className}  antialiased text-center text-xs w-full font-bold my-2 select-none`}>Elementos</div>
+    <div className='w-full flex flex-wrap gap-3 px-2 justify-center pt-4 pb-20'>
+      <div className={`${titleFont.className}  antialiased text-center text-xs w-full font-bold my-2 select-none`}>
+        Elementos
+      </div>
       {articleModifierGroup?.modifierGroup?.elements?.map((element, index) => (
         <div
-          onClick={articleModifierGroup.maxSelect > 1 ? () => {} : () => handleAddLinkedArticleModifierElement(1, element)}
+          onClick={
+            articleModifierGroup.maxSelect > 1 ? () => {} : () => handleAddLinkedArticleModifierElement(1, element)
+          }
           key={index}
           className={clsx(
             'flex bg-black text-white flex-wrap cursor-pointer h-24 w-1/5 items-center select-none justify-center px-3 py-1 border-y-2 shadow-xl rounded-xl border-white',
@@ -98,6 +114,14 @@ export const BillElements = ({ articleModifierGroup, saleItemArticleId, itemNumb
           )}
         </div>
       ))}
+      <div className='w-full fixed bottom-0 bg-white'>
+        <button className={clsx(
+          'w-full left-0 bg-green-800 text-white text-center text-2xl font-bold py-2',
+          {
+            '!bg-gray-400': !isValid
+          }
+        )}>Agregar</button>
+      </div>
     </div>
   )
 }

@@ -4,10 +4,8 @@ import {
   LinkedArticle,
   LinkedArticleModifier,
   LinkedArticleModifierElement,
-  ModifierElement,
   SaleItem,
 } from '@/interfaces'
-import { stat } from 'fs'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
@@ -30,6 +28,7 @@ interface State {
     itemNumber: number
   ) => LinkedArticleModifierElement[]
   addBillItemArticle: (saleItem: SaleItem, itemNumber: number) => void
+  validateBillItem: () => boolean
 }
 
 export const useBillItemStore = create<State>()(
@@ -248,6 +247,25 @@ export const useBillItemStore = create<State>()(
           }
           return { billItem }
         }),
+        validateBillItem: () => {
+          const billItem = get().billItem
+          let isValid = true
+          billItem?.itemArticles?.forEach((itemArticle) => {
+            itemArticle.linkedArticles?.forEach((linkedArticle) => {
+              linkedArticle.modifiers?.forEach((modifier) => {
+                const selectedElements = modifier.elements?.reduce((acc, element) => acc + element.quantity, 0) ?? 0
+                if (selectedElements < modifier.minSelectable) {
+                  isValid = false
+                  return
+                }
+                if (selectedElements > modifier.maxSelectable) {
+                  isValid = false
+                }
+              })
+            })
+          })
+          return isValid
+        }
     }),
 
     {

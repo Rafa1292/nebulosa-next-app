@@ -31,7 +31,7 @@ export const BillArticle = ({ saleItem, itemNumber }: Props) => {
 
   return (
     <>
-      <div className='w-full flex gap-3 px-2 border-b-2 justify-center py-2 flex-wrap'>
+      <div className='w-full flex gap-3 px-2 border-b-2 justify-center relative py-2 flex-wrap'>
         <div className={`${titleFont.className}  antialiased text-center text-xs w-full font-bold my-2 select-none`}>Articulos</div>
 
         {saleItem?.saleItemArticles?.map((itemArticle, index) => (
@@ -84,6 +84,8 @@ export const BillArticle = ({ saleItem, itemNumber }: Props) => {
           articleModifierGroup={selectedArticleModifierGroup}
         />
       )}
+      
+
     </>
   )
 }

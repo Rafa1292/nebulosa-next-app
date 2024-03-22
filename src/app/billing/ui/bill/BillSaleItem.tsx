@@ -64,16 +64,16 @@ export const BillSaleItem = ({ saleItem, setSaleItem }: Props) => {
         style={{ height: '95vh' }}
         className={clsx(' w-full bg-white z-20 relative overflow-x-hidden overflow-scroll', {})}
       >
+        <div 
+        style={{top: '5vh'}}
+        className='w-full fixed z-30 h-8 bg-white'>
+        </div>
         <div
           onClick={() => closeModal()}
-          className={`${titleFont.className} select-none cursor-pointer z-50 text-sm fixed text-red-800 right-6 top-12 hover:text-red-700`}
+          className={`${titleFont.className} bg-white px-4 py-1 rounded-xl select-none cursor-pointer z-50 text-sm fixed text-red-800 right-6 top-12 hover:text-red-700`}
         >
           Cerrar
         </div>
-        {/* <IoCloseCircleOutline
-          onClick={() => closeModal()}
-          className='cursor-pointer z-50 text-4xl fixed text-red-800 right-4 lg:top-10 hover:text-red-700'
-        /> */}
         <div className='w-full flex gap-3 px-2 border-b-2 justify-center py-2 pt-10 flex-wrap'>
           <div className='w-1/6 justify-center items-center flex flex-wrap'>
             <button
@@ -105,17 +105,19 @@ export const BillSaleItem = ({ saleItem, setSaleItem }: Props) => {
                   {index + 1}
                 </div>
               </div>
-              <div
-                className={clsx(
-                  'absolute hover:bg-red-800 bg-white text-black shadow-md border-gray-200 border justify-center items-center flex -top-2 right-4 w-6 h-6 rounded-2xl'
-                )}
-              >
-                <IoRemoveCircleOutline
-                  onClick={() => removeBillItemArticle(index + 1)}
-                  className={clsx('text-red-800', 'hover:!text-white ')}
-                  size={25}
-                />
-              </div>
+              {nextItemNumber > 2 && (
+                <div
+                  className={clsx(
+                    'absolute hover:bg-red-800 bg-white text-black shadow-md border-gray-200 border justify-center items-center flex -top-2 right-4 w-6 h-6 rounded-2xl'
+                  )}
+                >
+                  <IoRemoveCircleOutline
+                    onClick={() => removeBillItemArticle(index + 1)}
+                    className={clsx('text-red-800', 'hover:!text-white ')}
+                    size={25}
+                  />
+                </div>
+              )}
               <div className={`${titleFont.className}  antialiased text-center w-full text-xs font-bold`}>
                 {currentSaleItem.name}
               </div>

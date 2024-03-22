@@ -23,7 +23,7 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props)
   const [saleItem, setSaleItem] = useState<SaleItem | null>(null)
   const [selectedMenu, setSelectedMenu] = useState<Menu | null>(null)
   const [saleItemCategoriesWithPrice, setSaleItemCategoriesWithPrice] = useState<SaleItemCategory[]>([])
-  
+
   const handleSetSaleItem = (saleItem: SaleItem) => {
     addBillItem(saleItem, 1)
     setSaleItem(saleItem)
@@ -87,9 +87,6 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props)
     setSaleItemCategory(tmpSaleItemCategory[0])
   }
 
-
-
-
   return (
     <div
       style={{ height: '0vh', width: '0vw' }}
@@ -149,14 +146,11 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props)
                   <div className={`${titleFont.className}  antialiased text-center w-full text-xs font-bold`}>
                     {saleItem.name}
                   </div>
-                  {
-                    saleItem.currentMenuPrice !== undefined && saleItem.currentMenuPrice > 0 ? (
-                  
-                  <div className={`${titleFont.className}  antialiased text-center w-full text-xs font-bold`}>
-                    {currencyFormat(saleItem.currentMenuPrice ?? 0)}
-                  </div>
-                  ) : null
-                  }
+                  {saleItem.currentMenuPrice !== undefined && saleItem.currentMenuPrice > 0 ? (
+                    <div className={`${titleFont.className}  antialiased text-center w-full text-xs font-bold`}>
+                      {currencyFormat(saleItem.currentMenuPrice ?? 0)}
+                    </div>
+                  ) : null}
                 </div>
               ))}
             </div>
@@ -167,6 +161,7 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props)
           )
         ) : null}
         <BillSaleItem setSaleItem={setSaleItem} saleItem={saleItem} />
+
       </div>
       <div className='w-2/5 shadow-2xl bg-white h-screen z-40'></div>
     </div>
