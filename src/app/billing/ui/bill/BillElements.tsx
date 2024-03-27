@@ -6,16 +6,20 @@ import { ArticleModifierGroup, LinkedArticleModifierElement, ModifierElement } f
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 import { useBillItemStore } from '@/store'
+import { useBillStore } from '@/store'
 import { currencyFormat } from '@/utils'
 
 interface Props {
   articleModifierGroup: ArticleModifierGroup | undefined
   saleItemArticleId: string
   itemNumber: number
+  closeModal: () => void
 }
 
-export const BillElements = ({ articleModifierGroup, saleItemArticleId, itemNumber }: Props) => {
-  const { addLinkedArticleModifierElement, getLinkedArticleModifierElement, validateBillItem } = useBillItemStore()
+export const BillElements = ({ articleModifierGroup, closeModal, saleItemArticleId, itemNumber }: Props) => {
+  const { addItemToBill } = useBillStore()
+  const { addLinkedArticleModifierElement, getLinkedArticleModifierElement, validateBillItem, billItem } =
+    useBillItemStore()
   const [linkedArticleModifierElements, setLinkedArticleModifierElements] = useState<LinkedArticleModifierElement[]>([])
   const [isValid, setIsValid] = useState<boolean>(false)
 
@@ -115,12 +119,21 @@ export const BillElements = ({ articleModifierGroup, saleItemArticleId, itemNumb
         </div>
       ))}
       <div className='w-full fixed bottom-0 bg-white'>
-        <button className={clsx(
-          'w-full left-0 bg-green-800 text-white text-center text-2xl font-bold py-2',
-          {
-            '!bg-gray-400': !isValid
-          }
-        )}>Agregar</button>
+        <button
+          className={clsx('w-full left-0 bg-green-800 text-white text-center text-2xl font-bold py-2', {
+            '!bg-gray-400': !isValid,
+          })}
+          onClick={() => {
+            if (isValid) {
+              const state = addItemToBill(billItem!)
+              if(state){
+                closeModal()
+              }
+            }
+          }}
+        >
+          Agregar
+        </button>
       </div>
     </div>
   )

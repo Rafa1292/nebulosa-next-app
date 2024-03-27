@@ -3,12 +3,12 @@
 import { titleFont } from '@/config/fonts'
 import { Menu, SaleItem, SaleItemCategory } from '@/interfaces'
 import clsx from 'clsx'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { IoCloseCircleOutline } from 'react-icons/io5'
-import { BillArticles } from './BillArticles'
-import { useBillItemStore } from '@/store'
+import { useBillItemStore, useBillStore } from '@/store'
 import { currencyFormat } from '@/utils'
 import { BillSaleItem } from './BillSaleItem'
+import { BillItemUI } from './BillItem'
 
 interface Props {
   saleItemCategories: SaleItemCategory[]
@@ -18,6 +18,7 @@ interface Props {
 }
 
 export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props) => {
+  const { bill } = useBillStore()
   const { addBillItem } = useBillItemStore()
   const [saleItemCategory, setSaleItemCategory] = useState<SaleItemCategory | null>(null)
   const [saleItem, setSaleItem] = useState<SaleItem | null>(null)
@@ -161,9 +162,29 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props)
           )
         ) : null}
         <BillSaleItem setSaleItem={setSaleItem} saleItem={saleItem} />
-
       </div>
-      <div className='w-2/5 shadow-2xl bg-white h-screen z-40'></div>
+      <div className='w-2/5 shadow-2xl bg-white h-screen pt-28 z-40'>
+        {bill.items!.length > 0 ? (
+          <>
+            <div className='flex border-b-gray-600  flex-wrap text-black cursor-pointer select-none items-center px-3 py-2 border-b-2'>
+              <div className={`${titleFont.className}  antialiased text-center w-1/6 text-xs font-bold`}>Nombre</div>
+              <div className={`${titleFont.className}  antialiased text-center w-1/6 text-xs font-bold`}>Desc</div>
+              <div className={`${titleFont.className}  antialiased text-center w-1/6 text-xs font-bold`}>Cant</div>
+              <div className={`${titleFont.className}  antialiased text-center w-1/6 text-xs font-bold`}>P/U</div>
+              <div className={`${titleFont.className}  antialiased text-center w-1/6 text-xs font-bold`}>Total</div>
+            </div>
+            <div className='w-full flex flex-col gap-2'>
+              {bill.items!.map((billItem, index) => (
+                <BillItemUI key={index} billItem={billItem} />
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className='w-full flex justify-center items-center h-3/5'>
+            <div className='text-3xl text-gray-500'>No hay items en la cuenta</div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

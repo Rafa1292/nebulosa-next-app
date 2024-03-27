@@ -7,11 +7,12 @@ import { useEffect, useState } from 'react'
 import { BillElements } from './BillElements'
 
 interface Props {
+  closeModal: () => void
   saleItem: SaleItem | null
   itemNumber: number
 }
 
-export const BillArticle = ({ saleItem, itemNumber }: Props) => {
+export const BillArticle = ({ saleItem, closeModal, itemNumber }: Props) => {
   const [selectedArticleModifierGroup, setSelectedArticleModifierGroup] = useState<ArticleModifierGroup | undefined>(
     undefined
   )
@@ -79,6 +80,7 @@ export const BillArticle = ({ saleItem, itemNumber }: Props) => {
       )}
       {selectedArticleModifierGroup !== undefined && (
         <BillElements
+        closeModal={closeModal}
           itemNumber={itemNumber}
           saleItemArticleId={selectedItemArticle?.id ?? ''}
           articleModifierGroup={selectedArticleModifierGroup}

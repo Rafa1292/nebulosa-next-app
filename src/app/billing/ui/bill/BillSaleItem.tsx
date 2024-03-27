@@ -129,7 +129,7 @@ export const BillSaleItem = ({ saleItem, setSaleItem }: Props) => {
             </div>
           ))}
         </div>
-        {saleItem !== null && <BillArticle saleItem={saleItem} itemNumber={itemNumber} />}
+        {saleItem !== null && <BillArticle closeModal={closeModal} saleItem={saleItem} itemNumber={itemNumber} />}
       </div>
     </div>
   )
