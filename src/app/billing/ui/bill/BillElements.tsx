@@ -18,7 +18,7 @@ interface Props {
 
 export const BillElements = ({ articleModifierGroup, closeModal, saleItemArticleId, itemNumber }: Props) => {
   const { addItemToBill } = useBillStore()
-  const { addLinkedArticleModifierElement, getLinkedArticleModifierElement, validateBillItem, billItem } =
+  const { addLinkedArticleModifierElement, getLinkedArticleModifierElement, validateBillItem, billItem, initBillItem } =
     useBillItemStore()
   const [linkedArticleModifierElements, setLinkedArticleModifierElements] = useState<LinkedArticleModifierElement[]>([])
   const [isValid, setIsValid] = useState<boolean>(false)
@@ -127,6 +127,7 @@ export const BillElements = ({ articleModifierGroup, closeModal, saleItemArticle
             if (isValid) {
               const state = addItemToBill(billItem!)
               if(state){
+                initBillItem()
                 closeModal()
               }
             }

@@ -30,6 +30,7 @@ interface State {
   addBillItemArticle: (saleItem: SaleItem, itemNumber: number) => void
   validateBillItem: () => boolean
   setBillItemForEdit: (billItem: BillItem) => void
+  initBillItem: () => void
 }
 
 export const useBillItemStore = create<State>()(
@@ -269,7 +270,10 @@ export const useBillItemStore = create<State>()(
       },
       setBillItemForEdit: (billItem: BillItem) => {
         set({ billItem })
-      }
+      },
+      initBillItem: () => {
+        set({ billItem: null })
+      },
     }),
 
     {
