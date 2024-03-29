@@ -45,7 +45,7 @@ export const BillElements = ({ articleModifierGroup, closeModal, saleItemArticle
       linkedArticleModifierId: '',
       modifierElementId: modifierElement.id,
       name: modifierElement.name,
-      price: 0,
+      price: modifierElement.currentMenuPrice ?? 0,
       quantity,
     }
     addLinkedArticleModifierElement(

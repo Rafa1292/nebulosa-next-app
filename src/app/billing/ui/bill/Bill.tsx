@@ -1,7 +1,7 @@
 'use client'
 
 import { titleFont } from '@/config/fonts'
-import { Menu, SaleItem, SaleItemCategory } from '@/interfaces'
+import { BillItem, Menu, SaleItem, SaleItemCategory } from '@/interfaces'
 import clsx from 'clsx'
 import { useState } from 'react'
 import { IoCloseCircleOutline } from 'react-icons/io5'
@@ -18,8 +18,8 @@ interface Props {
 }
 
 export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props) => {
-  const { bill } = useBillStore()
-  const { addBillItem } = useBillItemStore()
+  const { bill, setMenuId, removeBillItem } = useBillStore()
+  const { addBillItem, setBillItemForEdit } = useBillItemStore()
   const [saleItemCategory, setSaleItemCategory] = useState<SaleItemCategory | null>(null)
   const [saleItem, setSaleItem] = useState<SaleItem | null>(null)
   const [selectedMenu, setSelectedMenu] = useState<Menu | null>(null)
@@ -31,61 +31,89 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props)
   }
 
   const handleChangeMenu = (menu: Menu) => {
-    setSelectedMenu(menu)
-    //set current price on saleItem, articleModifierGroup, modifierElement from prices where menuId === menu.id
-    const tmpSaleItemCategory: SaleItemCategory[] = saleItemCategories.map((saleItemCategory) => {
-      return {
-        ...saleItemCategory,
-        saleItems: saleItemCategory?.saleItems?.map((saleItem) => {
-          return {
-            ...saleItem,
-            currentMenuPrice: saleItem?.prices?.find((price) => price.menuId === menu.id)?.price ?? 0,
-            saleItemArticles: saleItem?.saleItemArticles?.map((saleItemArticle) => {
-              return {
-                ...saleItemArticle,
-                article: {
-                  id: saleItemArticle.article?.id ?? '',
-                  name: saleItemArticle.article?.name ?? '',
-                  description: saleItemArticle.article?.description ?? '',
-                  needsCommand: saleItemArticle.article?.needsCommand ?? false,
-                  active: saleItemArticle.article?.active ?? false,
-                  articleModifiers: saleItemArticle.article?.articleModifiers?.map((articleModifier) => {
-                    return {
-                      id: articleModifier.id,
-                      articleId: articleModifier.articleId,
-                      modifierGroupId: articleModifier.modifierGroupId,
-                      order: articleModifier.order,
-                      minSelect: articleModifier.minSelect,
-                      maxSelect: articleModifier.maxSelect,
-                      priceByGroup: articleModifier.priceByGroup,
-                      currentMenuPrice: articleModifier.prices?.find((price) => price.menuId === menu.id)?.price ?? 0,
-                      modifierGroup: {
-                        id: articleModifier.modifierGroup?.id ?? '',
-                        name: articleModifier.modifierGroup?.name ?? '',
-                        showLabel: articleModifier.modifierGroup?.showLabel ?? false,
-                        elements: articleModifier.modifierGroup?.elements?.map((element) => {
-                          return {
-                            id: element.id,
-                            name: element.name,
-                            defaultRecipeId: element.defaultRecipeId,
-                            combinable: element.combinable,
-                            combinableModifierGroupId: element.combinableModifierGroupId,
-                            modifierGroupId: element.modifierGroupId,
-                            currentMenuPrice: element.prices?.find((price) => price.menuId === menu.id)?.price ?? 0,
-                          }
-                        }),
-                      },
-                    }
-                  }),
-                },
-              }
-            }),
-          }
-        }),
+    let isValid = true
+    if (bill.menuId !== '') {
+      if (bill.items!.length > 0) {
+        if (bill.menuId !== menu.id) {
+          alert('No puedes agregar items de diferentes menus en la misma cuenta')
+          isValid = false
+        }
       }
-    })
-    setSaleItemCategoriesWithPrice(tmpSaleItemCategory)
-    setSaleItemCategory(tmpSaleItemCategory[0])
+    }
+    if (isValid) {
+      setSelectedMenu(menu)
+      setMenuId(menu.id)
+      const tmpSaleItemCategories: SaleItemCategory[] = saleItemCategories.map((saleItemCategory) => {
+        return {
+          ...saleItemCategory,
+          saleItems: saleItemCategory?.saleItems?.map((saleItem) => {
+            return {
+              ...saleItem,
+              currentMenuPrice: saleItem?.prices?.find((price) => price.menuId === menu.id)?.price ?? 0,
+              saleItemArticles: saleItem?.saleItemArticles?.map((saleItemArticle) => {
+                return {
+                  ...saleItemArticle,
+                  article: {
+                    id: saleItemArticle.article?.id ?? '',
+                    name: saleItemArticle.article?.name ?? '',
+                    description: saleItemArticle.article?.description ?? '',
+                    needsCommand: saleItemArticle.article?.needsCommand ?? false,
+                    active: saleItemArticle.article?.active ?? false,
+                    articleModifiers: saleItemArticle.article?.articleModifiers?.map((articleModifier) => {
+                      return {
+                        id: articleModifier.id,
+                        articleId: articleModifier.articleId,
+                        modifierGroupId: articleModifier.modifierGroupId,
+                        order: articleModifier.order,
+                        minSelect: articleModifier.minSelect,
+                        maxSelect: articleModifier.maxSelect,
+                        priceByGroup: articleModifier.priceByGroup,
+                        currentMenuPrice: articleModifier.prices?.find((price) => price.menuId === menu.id)?.price ?? 0,
+                        modifierGroup: {
+                          id: articleModifier.modifierGroup?.id ?? '',
+                          name: articleModifier.modifierGroup?.name ?? '',
+                          showLabel: articleModifier.modifierGroup?.showLabel ?? false,
+                          elements: articleModifier.modifierGroup?.elements?.map((element) => {
+                            return {
+                              id: element.id,
+                              name: element.name,
+                              defaultRecipeId: element.defaultRecipeId,
+                              combinable: element.combinable,
+                              combinableModifierGroupId: element.combinableModifierGroupId,
+                              modifierGroupId: element.modifierGroupId,
+                              currentMenuPrice: element.prices?.find((price) => price.menuId === menu.id)?.price ?? 0,
+                            }
+                          }),
+                        },
+                      }
+                    }),
+                  },
+                }
+              }),
+            }
+          }),
+        }
+      })
+      setSaleItemCategoriesWithPrice(tmpSaleItemCategories)
+      setSaleItemCategory(tmpSaleItemCategories[0])
+      return tmpSaleItemCategories
+    }
+  }
+
+  const handleEditBillItem = (billItem: BillItem) => {
+    const currentMenu = menus.find((menu) => menu.id === bill.menuId)
+    if (currentMenu) {
+      const tmpSaleItemCategories = handleChangeMenu(currentMenu) ?? []
+      tmpSaleItemCategories.forEach((saleItemCategory) => {
+        const item = saleItemCategory.saleItems?.find((saleItem) => saleItem.id === billItem.saleItemId)
+        if (item) {
+          setBillItemForEdit(billItem)
+          removeBillItem(billItem.saleItemId)
+          setSaleItem(item)
+          return
+        }
+      })
+    }
   }
 
   return (
@@ -120,14 +148,19 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props)
         {/* -------------Categorias--------------------- */}
         {saleItemCategoriesWithPrice.length > 0 && (
           <div className='w-full flex gap-2 px-2 shadow-md py-3'>
-            {saleItemCategoriesWithPrice.map((saleItemCategory, index) => (
+            {saleItemCategoriesWithPrice.map((tmpSaleItemCategory, index) => (
               <div
-                onClick={() => setSaleItemCategory(saleItemCategory)}
+                onClick={() => setSaleItemCategory(tmpSaleItemCategory)}
                 key={index}
-                className='flex bg-black text-white cursor-pointer select-none hover:bg-white hover:border-gray-900 hover:!text-black justify-center px-3 py-1 border-y-2 shadow-xl rounded-md border-white'
+                className={clsx(
+                  'flex bg-black text-white cursor-pointer select-none hover:bg-white hover:border-gray-900 hover:!text-black justify-center px-3 py-1 border-y-2 shadow-xl rounded-md border-white',
+                  {
+                    'bg-white !border-gray-900 !text-black': tmpSaleItemCategory.id === saleItemCategory?.id,
+                  }
+                )}
               >
                 <div className={`${titleFont.className} text-center  antialiased text-xs font-bold`}>
-                  {saleItemCategory.name}
+                  {tmpSaleItemCategory.name}
                 </div>
               </div>
             ))}
@@ -175,7 +208,7 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props)
             </div>
             <div className='w-full flex flex-col gap-2'>
               {bill.items!.map((billItem, index) => (
-                <BillItemUI key={index} billItem={billItem} />
+                <BillItemUI handleEditBillItem={handleEditBillItem} key={index} billItem={billItem} />
               ))}
             </div>
           </>

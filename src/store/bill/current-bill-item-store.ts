@@ -29,6 +29,7 @@ interface State {
   ) => LinkedArticleModifierElement[]
   addBillItemArticle: (saleItem: SaleItem, itemNumber: number) => void
   validateBillItem: () => boolean
+  setBillItemForEdit: (billItem: BillItem) => void
 }
 
 export const useBillItemStore = create<State>()(
@@ -90,7 +91,7 @@ export const useBillItemStore = create<State>()(
           id: '',
           description: saleItem.name,
           quantity: 1,
-          unitPrice: 0,
+          unitPrice: saleItem.currentMenuPrice ?? 0,
           discount: 0,
           tax: 0,
           billId: '',
@@ -112,7 +113,7 @@ export const useBillItemStore = create<State>()(
                   billItemLinkedArticleId: '',
                   quantity: 1,
                   name: articleModifier.modifierGroup?.name ?? '',
-                  price: 0,
+                  price: articleModifier.currentMenuPrice ?? 0,
                 }
               }) ?? []
             const linkedArticles: LinkedArticle[] = [
@@ -198,7 +199,7 @@ export const useBillItemStore = create<State>()(
               }
             }) ?? []
           return { billItem: { ...state.billItem!, itemArticles } }
-        }),
+      }),
       getLinkedArticleModifierElement: (
         saleItemArticleId: string,
         articleId: string,
@@ -246,26 +247,29 @@ export const useBillItemStore = create<State>()(
             return { billItem: { ...state.billItem!, itemArticles } }
           }
           return { billItem }
-        }),
-        validateBillItem: () => {
-          const billItem = get().billItem
-          let isValid = true
-          billItem?.itemArticles?.forEach((itemArticle) => {
-            itemArticle.linkedArticles?.forEach((linkedArticle) => {
-              linkedArticle.modifiers?.forEach((modifier) => {
-                const selectedElements = modifier.elements?.reduce((acc, element) => acc + element.quantity, 0) ?? 0
-                if (selectedElements < modifier.minSelectable) {
-                  isValid = false
-                  return
-                }
-                if (selectedElements > modifier.maxSelectable) {
-                  isValid = false
-                }
-              })
+      }),
+      validateBillItem: () => {
+        const billItem = get().billItem
+        let isValid = true
+        billItem?.itemArticles?.forEach((itemArticle) => {
+          itemArticle.linkedArticles?.forEach((linkedArticle) => {
+            linkedArticle.modifiers?.forEach((modifier) => {
+              const selectedElements = modifier.elements?.reduce((acc, element) => acc + element.quantity, 0) ?? 0
+              if (selectedElements < modifier.minSelectable) {
+                isValid = false
+                return
+              }
+              if (selectedElements > modifier.maxSelectable) {
+                isValid = false
+              }
             })
           })
-          return isValid
-        }
+        })
+        return isValid
+      },
+      setBillItemForEdit: (billItem: BillItem) => {
+        set({ billItem })
+      }
     }),
 
     {
