@@ -77,7 +77,7 @@ export const BillItemUI = ({ billItem, handleEditBillItem }: Props) => {
                   </div>
                 </div>
                 <div className={`${subTitleFont.className}  antialiased text-center w-1/6 text-xs font-bold`}></div>
-                <div className={`${subTitleFont.className}  antialiased text-center w-1/6 text-xs font-bold`}>
+                <div className={`${subTitleFont.className}  antialiased text-black text-center w-1/6 text-xs font-bold`}>
                   {currencyFormat(getItemArticleTotal(itemArticle.itemNumber!, billItem.saleItemId))}
                 </div>
                 {/* modifiers */}

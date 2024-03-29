@@ -53,8 +53,20 @@ export const useBillStore = create<State>()(
 
       addItemToBill: (billItem: BillItem) => {
         const bill = get().bill
-        set({ bill: { ...bill, items: [...(bill.items ?? []), billItem] } })
-        return true
+        const item = bill.items?.find((item) => item.saleItemId === billItem.saleItemId)
+        console.log('item', item)
+        if (item) {          
+          const currentItems = bill.items?.filter((item) => item.saleItemId !== billItem.saleItemId)
+          billItem.itemArticles?.forEach((itemArticle) => {
+            const itemNumber = item?.itemArticles?.length ?? 0
+            item?.itemArticles?.push({ ...itemArticle, itemNumber: itemNumber + 1 })
+          })
+          set({ bill: { ...bill, items: [...(currentItems ?? []), item] } })
+          return true
+        } else {
+          set({ bill: { ...bill, items: [...(bill.items ?? []), billItem] } })
+          return true
+        }
       },
       initBill: () => {
         set({ bill: initialBill })
@@ -71,7 +83,7 @@ export const useBillStore = create<State>()(
       getBillItemTotal: (saleItemId: string) => {
         const bill = get().bill
         const item = bill.items?.find((item) => item.saleItemId === saleItemId)
-        let total = ((item?.unitPrice ?? 0) * (item?.quantity ?? 0)) ?? 0
+        let total = (item?.unitPrice ?? 0) * (item?.quantity ?? 0) ?? 0
         item?.itemArticles?.forEach((itemArticle) => {
           itemArticle.linkedArticles?.forEach((linkedArticle) => {
             linkedArticle.modifiers?.forEach((modifier) => {
