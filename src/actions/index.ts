@@ -1,3 +1,9 @@
+export * from './address/create-update-address'
+
+export * from './customer/create-update-customer'
+export * from './customer/get-customer-by-phone'
+export * from './customer/get-customer-by-id'
+
 export * from './work-day/close-work-day'
 export * from './work-day/create-work-day'
 export * from './work-day/get-work-day-by-email'

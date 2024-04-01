@@ -1,4 +1,4 @@
-import { Bill, BillItem } from '@/interfaces'
+import { Bill, BillItem, DeliveryMethod } from '@/interfaces'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
@@ -10,6 +10,9 @@ interface State {
   removeBillItem: (saleItemId: string) => void
   getItemArticleTotal: (itemNumber: number, saleItemId: string) => number
   getBillItemTotal: (saleItemId: string) => number
+  setAddressId: (addressId: string) => void
+  setDeliveryMethod: (deliveryMethod: DeliveryMethod) => void
+  setCustomerId: (customerId: string) => void
 }
 
 const initialBill: Bill = {
@@ -100,6 +103,18 @@ export const useBillStore = create<State>()(
         const bill = get().bill
         set({ bill: { ...bill, menuId } })
       },
+      setAddressId: (addressId: string) => {
+        const bill = get().bill
+        set({ bill: { ...bill, addressId } })
+      },
+      setDeliveryMethod: (deliveryMethod: DeliveryMethod) => {
+        const bill = get().bill
+        set({ bill: { ...bill, deliveryMethod } })
+      },
+      setCustomerId: (customerId: string) => {
+        const bill = get().bill
+        set({ bill: { ...bill, clientId: customerId } })
+      }
     }),
     {
       name: 'bill-store',

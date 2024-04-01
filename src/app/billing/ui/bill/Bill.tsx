@@ -9,6 +9,10 @@ import { useBillItemStore, useBillStore } from '@/store'
 import { currencyFormat } from '@/utils'
 import { BillSaleItem } from './BillSaleItem'
 import { BillItemUI } from './BillItem'
+import { BillClient } from './BillClient'
+import { BillDeliveryMethod } from './BillDeliveryMethod'
+import { BillItemHeader } from './BillItemHeader'
+import { BillActions } from './BillActions'
 
 interface Props {
   saleItemCategories: SaleItemCategory[]
@@ -196,19 +200,24 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props)
         ) : null}
         <BillSaleItem setSaleItem={setSaleItem} saleItem={saleItem} />
       </div>
-      <div className='w-2/5 shadow-2xl bg-white h-screen pt-28 z-40'>
+      <div className='w-2/5 shadow-2xl pb-[20vh] relative bg-white h-[100vh] pt-1 z-40'>
+        {/* delivery method 10%*/}
+        <BillDeliveryMethod />
+        {/* client info 6%*/}
+        <BillClient />
         {bill.items!.length > 0 ? (
           <>
-            <div className='flex border-b-gray-600  flex-wrap text-black cursor-pointer select-none items-center px-3 py-2 border-b-2'>
-              <div className={`${titleFont.className}  antialiased text-center w-1/6 text-xs font-bold`}>Nombre</div>
-              <div className={`${titleFont.className}  antialiased text-center w-1/6 text-xs font-bold`}>Desc</div>
-              <div className={`${titleFont.className}  antialiased text-center w-1/6 text-xs font-bold`}>Cant</div>
-              <div className={`${titleFont.className}  antialiased text-center w-1/6 text-xs font-bold`}>P/U</div>
-              <div className={`${titleFont.className}  antialiased text-center w-1/6 text-xs font-bold`}>Total</div>
-            </div>
-            <div className='w-full flex flex-col gap-2'>
+            {/* header 5%*/}
+            <BillItemHeader />
+            {/* items */}
+            <div className='w-full flex flex-col h-[59vh]  overflow-scroll gap-2'>
               {bill.items!.map((billItem, index) => (
-                <BillItemUI handleEditBillItem={handleEditBillItem} key={index} billItem={billItem} />
+                <BillItemUI
+                  currentKey={index}
+                  handleEditBillItem={handleEditBillItem}
+                  key={index}
+                  billItem={billItem}
+                />
               ))}
             </div>
           </>
@@ -217,6 +226,10 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props)
             <div className='text-3xl text-gray-500'>No hay items en la cuenta</div>
           </div>
         )}
+            {/* actions 20%*/}
+        <div className='w-full absolute bottom-0 right-0 h-[20vh] bg-white '>
+          <BillActions />
+        </div>
       </div>
     </div>
   )

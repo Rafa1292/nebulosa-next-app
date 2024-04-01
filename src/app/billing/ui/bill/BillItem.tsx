@@ -13,13 +13,14 @@ import { RiEdit2Fill } from 'react-icons/ri'
 interface Props {
   billItem: BillItem
   handleEditBillItem: (billItem: BillItem) => void
+  currentKey: number
 }
 
-export const BillItemUI = ({ billItem, handleEditBillItem }: Props) => {
+export const BillItemUI = ({ billItem, handleEditBillItem, currentKey }: Props) => {
   const [showArticles, setShowArticles] = useState(false)
   const { removeBillItem, getItemArticleTotal, getBillItemTotal } = useBillStore()
   return (
-    <div className='flex flex-wrap mb-2 text-black transition-all cursor-pointer select-none items-center px-0  shadow-md rounded-md '>
+    <div key={currentKey} className='flex flex-wrap mb-2 text-black transition-all cursor-pointer select-none items-center px-0  shadow-md rounded-md '>
       <div className={`${titleFont.className}  antialiased py-2 text-center w-1/6 text-xs font-bold`}>
         {billItem.description}
       </div>
@@ -93,7 +94,7 @@ export const BillItemUI = ({ billItem, handleEditBillItem }: Props) => {
                           </div>
                           {/* elements */}
                           {modifier.elements?.map((element, index) => (
-                            <div className='w-full flex-wrap flex py-1'>
+                            <div className='w-full flex-wrap flex py-1' key={index}>
                               <div
                                 className={`${titleFont.className}  text-gray-700 antialiased text-right pr-2 w-1/3 text-xs font-bold`}
                               >

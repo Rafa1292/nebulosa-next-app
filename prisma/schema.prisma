@@ -40,6 +40,24 @@ enum DeliveryMethod {
 
 // models--------------------------------------
 
+model Customer {
+    id          String    @id @default(uuid())
+    name        String
+    phone       String   @unique
+    email       String
+    idNumber    String
+    creditState Boolean   @default(false)
+    creditLimit Int       @default(0)
+    addresses   Address[]
+}
+
+model Address {
+    id          String   @id @default(uuid())
+    description String
+    customerId  String
+    Customer    Customer @relation(fields: [customerId], references: [id])
+}
+
 model Menu {
     id                   String                 @id @default(uuid())
     name                 String
@@ -77,16 +95,16 @@ model ArticleModifierPrice {
 }
 
 model ArticleModifierGroup {
-    id                   String                 @id @default(uuid())
-    articleId            String
-    modifierGroupId      String
-    order                Int
-    minSelect            Int
-    maxSelect            Int
-    priceByGroup         Boolean
-    article              Article                @relation(fields: [articleId], references: [id])
-    modifierGroup        ModifierGroup          @relation(fields: [modifierGroupId], references: [id])
-    prices ArticleModifierPrice[]
+    id              String                 @id @default(uuid())
+    articleId       String
+    modifierGroupId String
+    order           Int
+    minSelect       Int
+    maxSelect       Int
+    priceByGroup    Boolean
+    article         Article                @relation(fields: [articleId], references: [id])
+    modifierGroup   ModifierGroup          @relation(fields: [modifierGroupId], references: [id])
+    prices          ArticleModifierPrice[]
 }
 
 model ModifierGroup {
