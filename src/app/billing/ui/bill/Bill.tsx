@@ -228,7 +228,7 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props)
         )}
             {/* actions 20%*/}
         <div className='w-full absolute bottom-0 right-0 h-[20vh] bg-white '>
-          <BillActions />
+          <BillActions setShow={setShow}/>
         </div>
       </div>
     </div>

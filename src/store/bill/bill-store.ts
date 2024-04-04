@@ -13,6 +13,7 @@ interface State {
   setAddressId: (addressId: string) => void
   setDeliveryMethod: (deliveryMethod: DeliveryMethod) => void
   setCustomerId: (customerId: string) => void
+  saveBill: () => boolean
 }
 
 const initialBill: Bill = {
@@ -114,7 +115,12 @@ export const useBillStore = create<State>()(
       setCustomerId: (customerId: string) => {
         const bill = get().bill
         set({ bill: { ...bill, clientId: customerId } })
-      }
+      },
+      saveBill: () => {
+        const bill = get().bill
+        console.log('bill', bill)
+        return true
+      },
     }),
     {
       name: 'bill-store',
