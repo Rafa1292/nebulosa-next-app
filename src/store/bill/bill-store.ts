@@ -14,6 +14,7 @@ interface State {
   setDeliveryMethod: (deliveryMethod: DeliveryMethod) => void
   setCustomerId: (customerId: string) => void
   saveBill: () => boolean
+  getTotalBill: () => number
 }
 
 const initialBill: Bill = {
@@ -50,6 +51,15 @@ const getCurrentItemArticleTotal = (bill: Bill, itemNumber: number, saleItemId: 
   return total
 }
 
+const getCurrentBillItemTotal = (bill: Bill, saleItemId: string) => {
+  const item = bill.items?.find((item) => item.saleItemId === saleItemId)
+  let total = 0
+  item?.itemArticles?.forEach((itemArticle) => {
+    total += getCurrentItemArticleTotal(bill, itemArticle.itemNumber, saleItemId)
+  })
+  return total
+}
+
 export const useBillStore = create<State>()(
   persist(
     (set, get) => ({
@@ -58,14 +68,28 @@ export const useBillStore = create<State>()(
       addItemToBill: (billItem: BillItem) => {
         const bill = get().bill
         const item = bill.items?.find((item) => item.saleItemId === billItem.saleItemId)
-        console.log('item', item)
-        if (item) {          
+        if (item) {
           const currentItems = bill.items?.filter((item) => item.saleItemId !== billItem.saleItemId)
           billItem.itemArticles?.forEach((itemArticle) => {
             const itemNumber = item?.itemArticles?.length ?? 0
             item?.itemArticles?.push({ ...itemArticle, itemNumber: itemNumber + 1 })
           })
-          set({ bill: { ...bill, items: [...(currentItems ?? []), item] } })
+          set({
+            bill: {
+              ...bill,
+              items: [
+                ...(currentItems ?? []),
+                {
+                  ...item,
+                  quantity: item.itemArticles?.reduce((max, curr) => {
+                    if (curr.itemNumber > max.itemNumber) return curr
+
+                    return max
+                  }).itemNumber ?? 0,
+                },
+              ],
+            },
+          })
           return true
         } else {
           set({ bill: { ...bill, items: [...(bill.items ?? []), billItem] } })
@@ -86,19 +110,7 @@ export const useBillStore = create<State>()(
       },
       getBillItemTotal: (saleItemId: string) => {
         const bill = get().bill
-        const item = bill.items?.find((item) => item.saleItemId === saleItemId)
-        let total = (item?.unitPrice ?? 0) * (item?.quantity ?? 0) ?? 0
-        item?.itemArticles?.forEach((itemArticle) => {
-          itemArticle.linkedArticles?.forEach((linkedArticle) => {
-            linkedArticle.modifiers?.forEach((modifier) => {
-              total +=
-                modifier.elements?.reduce((acc, element) => {
-                  return acc + element.price * element.quantity
-                }, 0) ?? 0
-            })
-          })
-        })
-        return total
+        return getCurrentBillItemTotal(bill, saleItemId)
       },
       setMenuId: (menuId: string) => {
         const bill = get().bill
@@ -120,6 +132,14 @@ export const useBillStore = create<State>()(
         const bill = get().bill
         console.log('bill', bill)
         return true
+      },
+      getTotalBill: () => {
+        const bill = get().bill
+        let total = 0
+        bill.items?.forEach((item) => {
+          total += getCurrentBillItemTotal(bill, item.saleItemId)
+        })
+        return total
       },
     }),
     {

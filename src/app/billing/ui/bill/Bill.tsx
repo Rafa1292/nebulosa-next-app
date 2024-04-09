@@ -13,6 +13,7 @@ import { BillClient } from './BillClient'
 import { BillDeliveryMethod } from './BillDeliveryMethod'
 import { BillItemHeader } from './BillItemHeader'
 import { BillActions } from './BillActions'
+import { BillPayMethod } from './BillPayMethod'
 
 interface Props {
   saleItemCategories: SaleItemCategory[]
@@ -28,6 +29,7 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props)
   const [saleItem, setSaleItem] = useState<SaleItem | null>(null)
   const [selectedMenu, setSelectedMenu] = useState<Menu | null>(null)
   const [saleItemCategoriesWithPrice, setSaleItemCategoriesWithPrice] = useState<SaleItemCategory[]>([])
+  const [showPayMethod, setShowPayMethod] = useState(false)
 
   const handleSetSaleItem = (saleItem: SaleItem) => {
     addBillItem(saleItem, 1)
@@ -210,7 +212,7 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props)
             {/* header 5%*/}
             <BillItemHeader />
             {/* items */}
-            <div className='w-full flex flex-col h-[59vh]  overflow-scroll gap-2'>
+            <div className='w-full flex flex-col h-[64vh]  overflow-scroll gap-2'>
               {bill.items!.map((billItem, index) => (
                 <BillItemUI
                   currentKey={index}
@@ -227,10 +229,11 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props)
           </div>
         )}
             {/* actions 20%*/}
-        <div className='w-full absolute bottom-0 right-0 h-[20vh] bg-white '>
-          <BillActions setShow={setShow}/>
+        <div className='w-full absolute bottom-0 right-0 h-[15vh] bg-white '>
+          <BillActions setShowPayMethod={setShowPayMethod} showPayMethod={showPayMethod} setShow={setShow}/>
         </div>
       </div>
+      <BillPayMethod show={showPayMethod} />
     </div>
   )
 }

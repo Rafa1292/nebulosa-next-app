@@ -12,7 +12,6 @@ import { persist } from 'zustand/middleware'
 interface State {
   billItem: BillItem | null
   addBillItem: (saleItem: SaleItem, itemNumber: number) => void
-  setQuantity: (quantity: number) => void
   removeBillItemArticle: (itemNumber: number) => void
   addLinkedArticleModifierElement: (
     saleItemArticleId: string,
@@ -91,7 +90,7 @@ export const useBillItemStore = create<State>()(
         const billItem: BillItem = {
           id: '',
           description: saleItem.name,
-          quantity: 1,
+          quantity: itemNumber,
           unitPrice: saleItem.currentMenuPrice ?? 0,
           discount: 0,
           tax: 0,
@@ -146,7 +145,6 @@ export const useBillItemStore = create<State>()(
         }
         set({ billItem })
       },
-      setQuantity: (quantity: number) => set((state) => ({ billItem: { ...state.billItem!, quantity } })),
       addLinkedArticleModifierElement: (
         saleItemArticleId: string,
         articleId: string,
@@ -155,6 +153,7 @@ export const useBillItemStore = create<State>()(
         itemNumber: number
       ) =>
         set((state) => {
+          console.log(saleItemArticleId, articleId, linkedArticleModifierElement, modifierGroupId, itemNumber)
           const itemArticles: BillItemLinkedArticle[] =
             state.billItem!.itemArticles?.map((itemArticle) => {
               if (itemArticle.saleItemArticleId !== saleItemArticleId) return itemArticle

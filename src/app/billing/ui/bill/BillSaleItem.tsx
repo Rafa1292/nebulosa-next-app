@@ -17,7 +17,7 @@ interface Props {
 export const BillSaleItem = ({ saleItem, setSaleItem }: Props) => {
   const { addBillItemArticle, billItem, removeBillItemArticle } = useBillItemStore()
   const [saleItems, setSaleItems] = useState<SaleItem[]>([])
-  const [itemNumber, setItemNumber] = useState(1)
+  const [itemNumber, setItemNumber] = useState((billItem?.itemArticles?.length ?? 1)  / (saleItem?.saleItemArticles?.length ?? 1))
   const [nextItemNumber, setNextItemNumber] = useState(2)
 
   const fillSaleItems = () => {
@@ -39,6 +39,8 @@ export const BillSaleItem = ({ saleItem, setSaleItem }: Props) => {
   useEffect(() => {
     if (saleItem !== null) {
       fillSaleItems()
+    } else {
+      setItemNumber(1)
     }
   }, [saleItem, billItem?.itemArticles, itemNumber])
 
@@ -60,6 +62,7 @@ export const BillSaleItem = ({ saleItem, setSaleItem }: Props) => {
         )}
       ></div>
       {/*Close button*/}
+
       <div
         style={{ height: '95vh' }}
         className={clsx(' w-full bg-white z-20 relative overflow-x-hidden overflow-scroll', {})}
