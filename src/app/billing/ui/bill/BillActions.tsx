@@ -5,8 +5,10 @@ import { useBillStore } from '@/store'
 import { currencyFormat } from '@/utils'
 import { useEffect, useState } from 'react'
 import { FaCashRegister } from 'react-icons/fa6'
+import { HiMiniReceiptPercent } from 'react-icons/hi2'
 import { LuConciergeBell } from 'react-icons/lu'
 import { MdOutlineRestaurantMenu } from 'react-icons/md'
+import { nan } from 'zod'
 
 interface Props {
   setShow: (show: boolean) => void
@@ -15,10 +17,13 @@ interface Props {
 }
 
 export const BillActions = ({ setShow, showPayMethod, setShowPayMethod }: Props) => {
-  const { bill, saveBill, getTotalBill } = useBillStore()
+  const { bill, saveBill, getTotalBill, addDiscount, getBillDiscount } = useBillStore()
   const [billSaved, setBillSaved] = useState(true)
   const [commandActionWait, setCommandActionWait] = useState(false)
   const [loaded, setLoaded] = useState(false)
+  const [discountForm, setDiscountForm] = useState(false)
+  const [discountPercent, setDiscountPercent] = useState(0)
+  const [discountAmount, setDiscountAmount] = useState(0)
 
   const commandBill = () => {
     const state = saveBill()
@@ -30,6 +35,55 @@ export const BillActions = ({ setShow, showPayMethod, setShowPayMethod }: Props)
   const stayBill = () => {
     setCommandActionWait(false)
     setBillSaved(true)
+  }
+
+  const getTotal = () => {
+    const total = getTotalBill()
+    const discount = getBillDiscount()
+
+    return total - discount
+  }
+
+  const onSetDiscountAmount = (value: string) => {
+    //remove 0 at the beginning
+    if (value.length > 1 && value[0] === '0') {
+      value = value.slice(1)
+    }
+    const amount = parseFloat(value)
+
+    if (isNaN(amount) || amount < 0) {
+      setDiscountAmount(0)
+      setDiscountPercent(0)
+      return
+    }
+
+    setDiscountAmount(amount)
+    const percent = (amount * 100) / getTotalBill()
+    setDiscountPercent(percent)
+  }
+
+  const onSetDiscountPercent = (value: string) => {
+    if (value.length > 1 && value[0] === '0') {
+      value = value.slice(1)
+    }
+    const percent = parseFloat(value)
+
+    if (isNaN(percent) || percent < 0) {
+      setDiscountAmount(0)
+      setDiscountPercent(0)
+      return
+    }
+
+    if(percent > 100) return 
+
+    setDiscountPercent(percent)
+    const amount = (getTotalBill() * percent) / 100
+    setDiscountAmount(amount)
+  }
+
+  const handleSetDiscount = () => {
+    addDiscount(discountAmount)
+    setDiscountForm(false)
   }
 
   const closeBill = () => {
@@ -80,28 +134,64 @@ export const BillActions = ({ setShow, showPayMethod, setShowPayMethod }: Props)
               {!showPayMethod ? <FaCashRegister size={50} className='' /> : <MdOutlineRestaurantMenu size={50} />}
             </div>
           </div>
-          <div className='w-3/5 font-bold select-none shadow-lg py-4 content-end h-full'>
-            {loaded && (
-              <>
-                <div className='w-full flex-wrap flex'>
-                  <div className='w-3/5 pr-4 text-right'>Subtotal:</div>
-                  <div className='w-2/5 text-left'>¢24 000</div>
+          {!discountForm ? (
+            <div className='w-3/5 font-bold select-none shadow-lg py-4 content-end h-full'>
+              {loaded && (
+                <>
+                  <div className='w-full flex-wrap flex'>
+                    <div className='w-3/5 pr-4 text-right'>Subtotal:</div>
+                    <div className='w-2/5 text-left'>¢24 000</div>
+                  </div>
+                  <div className='w-full flex-wrap flex'>
+                    <div className='w-3/5 pr-4 text-right'>Impuesto:</div>
+                    <div className='w-2/5 text-left'>¢0</div>
+                  </div>
+                  <div className='w-full flex-wrap flex'>
+                    <div className='w-3/5 pr-4 text-right'>Descuento:</div>
+                    <div className='w-2/5 flex-wrap flex justify-between items-center pr-2'>
+                      {currencyFormat(getBillDiscount())}
+                      <HiMiniReceiptPercent
+                        onClick={() => setDiscountForm(true)}
+                        size={15}
+                        className=' text-green-700 cursor-pointer hover:text-green-600 '
+                      />
+                    </div>
+                  </div>
+                  <div className='w-full flex-wrap flex'>
+                    <div className='w-3/5 pr-4 text-right'>Total:</div>
+                    <div className='w-2/5 text-left'>{currencyFormat(getTotal())}</div>
+                  </div>
+                </>
+              )}
+            </div>
+          ) : (
+            <div className='w-3/5 font-bold select-none shadow-lg py-4 justify-around flex flex-wrap content-end h-full'>
+              <div className='w-full justify-around flex-wrap flex mb-6'>
+                <div className='w-2/5 flex flex-wrap'>
+                  <span className='text-left text-xs text-gray-700'>Porcentage</span>
+                  <input
+                    value={discountPercent}
+                    onChange={(ev) => onSetDiscountPercent(ev.target.value)}
+                    type='number'
+                    className='w-full focus-visible:!outline-gray-400 select:border-gray-200 border text-xs p-2 text-gray-400 border-gray-300 rounded-lg'
+                  />
                 </div>
-                <div className='w-full flex-wrap flex'>
-                  <div className='w-3/5 pr-4 text-right'>Impuesto:</div>
-                  <div className='w-2/5 text-left'>¢0</div>
+                <div className='w-2/5 flex flex-wrap'>
+                <span className='text-left text-xs text-gray-700'>Monto</span>
+                  <input
+                    value={discountAmount}
+                    onChange={(ev) => onSetDiscountAmount(ev.target.value)}
+                    type='number'
+                    className='w-full focus-visible:!outline-gray-400 select:border-gray-200 border text-xs p-2 text-gray-400 border-gray-300 rounded-lg'
+                  />
                 </div>
-                <div className='w-full flex-wrap flex'>
-                  <div className='w-3/5 pr-4 text-right'>Descuento:</div>
-                  <div className='w-2/5 text-left'>¢0</div>
-                </div>
-                <div className='w-full flex-wrap flex'>
-                  <div className='w-3/5 pr-4 text-right'>Total:</div>
-                  <div className='w-2/5 text-left'>{currencyFormat(getTotalBill())}</div>
-                </div>
-              </>
-            )}
-          </div>
+              </div>
+              <button onClick={()=> handleSetDiscount()} className='w-2/5 bg-green-800 text-white text-sm hover:bg-green-700 rounded-lg p-2'>
+                Aplicar
+              </button>
+              <button onClick={()=> setDiscountForm(false)} className='w-2/5 bg-red-800 text-white text-sm hover:bg-red-700 rounded-lg p-2'>Cancelar</button>
+            </div>
+          )}
         </div>
       )}
     </>

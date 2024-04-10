@@ -15,6 +15,8 @@ interface State {
   setCustomerId: (customerId: string) => void
   saveBill: () => boolean
   getTotalBill: () => number
+  getBillDiscount: () => number
+  addDiscount: (discount: number) => void
 }
 
 const initialBill: Bill = {
@@ -138,6 +140,25 @@ export const useBillStore = create<State>()(
         let total = 0
         bill.items?.forEach((item) => {
           total += getCurrentBillItemTotal(bill, item.saleItemId)
+        })
+        return total
+      },
+      addDiscount: (discountAmount: number) => {
+        //set discount amount for each item
+        const bill = get().bill
+        const discountPerItem = discountAmount / (bill.items?.length ?? 0)
+        const items = bill.items?.map((item) => {
+          const itemTotal = get().getBillItemTotal(item.saleItemId)
+          const discountItem = discountPerItem
+          return { ...item, discount: discountItem }
+        })
+        set({ bill: { ...bill, items } })
+      },
+      getBillDiscount: () => {
+        const bill = get().bill
+        let total = 0
+        bill.items?.forEach((item) => {
+          total += item.discount ?? 0
         })
         return total
       },
