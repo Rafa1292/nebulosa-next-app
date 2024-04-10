@@ -13,7 +13,7 @@ import { BillClient } from './BillClient'
 import { BillDeliveryMethod } from './BillDeliveryMethod'
 import { BillItemHeader } from './BillItemHeader'
 import { BillActions } from './BillActions'
-import { BillPayMethod } from './BillPayMethod'
+import { BillPayMethodActions } from './BillPayMethodActions'
 
 interface Props {
   saleItemCategories: SaleItemCategory[]
@@ -233,7 +233,7 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props)
           <BillActions setShowPayMethod={setShowPayMethod} showPayMethod={showPayMethod} setShow={setShow}/>
         </div>
       </div>
-      <BillPayMethod show={showPayMethod} />
+      <BillPayMethodActions show={showPayMethod} />
     </div>
   )
 }

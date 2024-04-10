@@ -40,10 +40,30 @@ enum DeliveryMethod {
 
 // models--------------------------------------
 
+model Account {
+    id          String      @id @default(uuid())
+    name        String
+    description String?
+    active      Boolean     @default(true)
+    cash        Boolean     @default(false)
+    payMethods  PayMethod[]
+}
+
+model PayMethod {
+    id           String  @id @default(uuid())
+    name         String
+    accountId    String
+    active       Boolean @default(true)
+    commission   Int     @default(0)
+    isPublic     Boolean @default(false)
+    isSemiPublic Boolean @default(false)
+    Account      Account @relation(fields: [accountId], references: [id])
+}
+
 model Customer {
     id          String    @id @default(uuid())
     name        String
-    phone       String   @unique
+    phone       String    @unique
     email       String
     idNumber    String
     creditState Boolean   @default(false)

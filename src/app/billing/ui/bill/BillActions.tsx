@@ -74,7 +74,7 @@ export const BillActions = ({ setShow, showPayMethod, setShowPayMethod }: Props)
       return
     }
 
-    if(percent > 100) return 
+    if (percent > 100) return
 
     setDiscountPercent(percent)
     const amount = (getTotalBill() * percent) / 100
@@ -150,11 +150,13 @@ export const BillActions = ({ setShow, showPayMethod, setShowPayMethod }: Props)
                     <div className='w-3/5 pr-4 text-right'>Descuento:</div>
                     <div className='w-2/5 flex-wrap flex justify-between items-center pr-2'>
                       {currencyFormat(getBillDiscount())}
-                      <HiMiniReceiptPercent
-                        onClick={() => setDiscountForm(true)}
-                        size={15}
-                        className=' text-green-700 cursor-pointer hover:text-green-600 '
-                      />
+                      {!showPayMethod && (
+                        <HiMiniReceiptPercent
+                          onClick={() => setDiscountForm(true)}
+                          size={15}
+                          className=' text-green-700 cursor-pointer hover:text-green-600 '
+                        />
+                      )}
                     </div>
                   </div>
                   <div className='w-full flex-wrap flex'>
@@ -177,7 +179,7 @@ export const BillActions = ({ setShow, showPayMethod, setShowPayMethod }: Props)
                   />
                 </div>
                 <div className='w-2/5 flex flex-wrap'>
-                <span className='text-left text-xs text-gray-700'>Monto</span>
+                  <span className='text-left text-xs text-gray-700'>Monto</span>
                   <input
                     value={discountAmount}
                     onChange={(ev) => onSetDiscountAmount(ev.target.value)}
@@ -186,10 +188,18 @@ export const BillActions = ({ setShow, showPayMethod, setShowPayMethod }: Props)
                   />
                 </div>
               </div>
-              <button onClick={()=> handleSetDiscount()} className='w-2/5 bg-green-800 text-white text-sm hover:bg-green-700 rounded-lg p-2'>
+              <button
+                onClick={() => handleSetDiscount()}
+                className='w-2/5 bg-green-800 text-white text-sm hover:bg-green-700 rounded-lg p-2'
+              >
                 Aplicar
               </button>
-              <button onClick={()=> setDiscountForm(false)} className='w-2/5 bg-red-800 text-white text-sm hover:bg-red-700 rounded-lg p-2'>Cancelar</button>
+              <button
+                onClick={() => setDiscountForm(false)}
+                className='w-2/5 bg-red-800 text-white text-sm hover:bg-red-700 rounded-lg p-2'
+              >
+                Cancelar
+              </button>
             </div>
           )}
         </div>
