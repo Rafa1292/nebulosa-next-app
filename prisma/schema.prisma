@@ -42,7 +42,7 @@ enum DeliveryMethod {
 
 model Account {
     id          String      @id @default(uuid())
-    name        String
+    name        String      @unique
     description String?
     active      Boolean     @default(true)
     cash        Boolean     @default(false)
@@ -51,7 +51,7 @@ model Account {
 
 model PayMethod {
     id           String  @id @default(uuid())
-    name         String
+    name         String  @unique
     accountId    String
     active       Boolean @default(true)
     commission   Int     @default(0)

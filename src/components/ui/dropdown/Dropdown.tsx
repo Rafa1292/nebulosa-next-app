@@ -29,7 +29,7 @@ export const Dropdown = ({ title, children }: Props) => {
 
       <div
         className={clsx('transition-all max-h-0 overflow-hidden duration-500 my-1 mx-2', {
-          ' max-h-96': isOpen,
+          ' max-h-[500px]': isOpen,
         })}
       >
         {/* Contenido del menú desplegable */}

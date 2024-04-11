@@ -51,6 +51,20 @@ export const Sidebar = () => {
           </Link>
         <Dropdown title='Mantenimiento'>
           <Link
+            href={'/admin/accounts'}
+            onClick={() => toggleMenu()}
+            className={`flex items-center p-2 hover:bg-gray-100 rounded transition-all cursor-pointer ${titleFont.className} antialiased`}
+          >
+            Cuentas
+          </Link>
+          <Link
+            href={'/admin/pay-methods'}
+            onClick={() => toggleMenu()}
+            className={`flex items-center p-2 hover:bg-gray-100 rounded transition-all cursor-pointer ${titleFont.className} antialiased`}
+          >
+            Metodos de pago
+          </Link>
+          <Link
             href={'/admin/work-days'}
             onClick={() => toggleMenu()}
             className={`flex items-center p-2 hover:bg-gray-100 rounded transition-all cursor-pointer ${titleFont.className} antialiased`}

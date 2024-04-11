@@ -9,8 +9,8 @@ const accountSchema = z.object({
   id: z.string().uuid().optional(),
   name: z.string(),
   description: z.string().optional(),
-  active: z.boolean().optional(),
-  cash: z.boolean().optional(),
+  active: z.string().transform((val) => (val === 'true' ? true : false)),
+  cash: z.string().transform((val) => (val === 'true' ? true : false)),
 })
 
 export const createUpdateAccount = async (formData: FormData) => {
