@@ -1,3 +1,14 @@
+
+export * from './pay-method/get-pay-method-paginated'
+export * from './pay-method/get-pay-method'
+export * from './pay-method/create-update-pay-method'
+export * from './pay-method/delete-pay-method'
+
+export * from './account/create-update-account'
+export * from './account/delete-account'
+export * from './account/get-account'
+export * from './account/get-accounts-paginated'
+
 export * from './address/create-update-address'
 
 export * from './customer/create-update-customer'
