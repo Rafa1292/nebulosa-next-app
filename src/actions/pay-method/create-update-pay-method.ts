@@ -9,10 +9,10 @@ const payMethodSchema = z.object({
   id: z.string().uuid().optional().nullable(),
   name: z.string(),
   accountId:  z.string(),
-  active: z.boolean().default(true),
-  commission: z.number().int().default(0),
-  isPublic: z.boolean().default(false),
-  isSemiPublic: z.boolean().default(false)
+  active: z.string().transform((val) => (val === 'true' ? true : false)),
+  commission: z.coerce.number(),
+  isPublic: z.string().transform((val) => (val === 'true' ? true : false)),
+  isSemiPublic: z.string().transform((val) => (val === 'true' ? true : false))
 })
 
 export const createUpdatePayMethod = async (formData: FormData) => {

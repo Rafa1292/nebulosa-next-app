@@ -8,6 +8,8 @@ export * from './account/create-update-account'
 export * from './account/delete-account'
 export * from './account/get-account'
 export * from './account/get-accounts-paginated'
+export * from './account/get-accounts'
+
 
 export * from './address/create-update-address'
 
