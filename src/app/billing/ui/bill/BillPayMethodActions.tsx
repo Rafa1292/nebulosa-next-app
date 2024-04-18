@@ -1,7 +1,9 @@
 'use client'
 
 import clsx from 'clsx'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { BillPayMethodComplete } from './BillPayMethodComplete'
+import { usePayMethodStore } from '@/store'
 
 interface Props {
   show: boolean
@@ -11,6 +13,10 @@ type BillPayMethodType = 'Completa' | 'Dividir' | 'Separar'
 
 export const BillPayMethodActions = ({ show }: Props) => {
   const [payMethodType, setPayMethodType] = useState<BillPayMethodType>('Completa')
+
+  useEffect(() => {
+        usePayMethodStore.getState().setPayMethods()
+  }, [])
   return (
     <div
       className={clsx('absolute h-screen w-3/5 transition-all bg-white translate-y-full bottom-0 z-20 left-0', {
@@ -52,6 +58,8 @@ export const BillPayMethodActions = ({ show }: Props) => {
           Separar
         </button>
       </div>
+
+      <BillPayMethodComplete />
       
     </div>
   )

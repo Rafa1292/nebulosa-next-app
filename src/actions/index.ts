@@ -3,6 +3,7 @@ export * from './pay-method/get-pay-method-paginated'
 export * from './pay-method/get-pay-method'
 export * from './pay-method/create-update-pay-method'
 export * from './pay-method/delete-pay-method'
+export * from './pay-method/get-pay-methods'
 
 export * from './account/create-update-account'
 export * from './account/delete-account'

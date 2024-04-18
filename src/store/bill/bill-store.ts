@@ -1,4 +1,4 @@
-import { Bill, BillItem, DeliveryMethod } from '@/interfaces'
+import { AccountHistory, Bill, BillItem, DeliveryMethod } from '@/interfaces'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
@@ -17,6 +17,8 @@ interface State {
   getTotalBill: () => number
   getBillDiscount: () => number
   addDiscount: (discount: number) => void
+  addBillAccountHistory: (tmpAccountHistory?: AccountHistory, index?: number) => void
+  removeBillAccountHistory: (index: number) => void 
 }
 
 const initialBill: Bill = {
@@ -61,6 +63,7 @@ const getCurrentBillItemTotal = (bill: Bill, saleItemId: string) => {
   })
   return total
 }
+
 
 export const useBillStore = create<State>()(
   persist(
@@ -162,6 +165,22 @@ export const useBillStore = create<State>()(
         })
         return total
       },
+      addBillAccountHistory: (tmpAccountHistory?: AccountHistory, index?:number) => {
+        if (tmpAccountHistory) {
+          if(index !== undefined) {
+            const tmpAccountHistories = get().bill.histories?.filter((_, i) => i !== index)
+            set({ bill: { ...get().bill, histories: [...(tmpAccountHistories ?? []), {id:'', billId:'', accountHistoryId:'', accountHistory: tmpAccountHistory}] } })
+            return
+          }
+          set({ bill: { ...get().bill, histories: [...(get().bill.histories ?? []), {id:'', billId:'', accountHistoryId:'', accountHistory: tmpAccountHistory}] } })
+          return
+        }
+      },
+      removeBillAccountHistory: (index: number) => {
+        const bill = get().bill
+        const histories = bill.histories?.filter((_, i) => i !== index)
+        set({ bill: { ...bill, histories } })
+      }
     }),
     {
       name: 'bill-store',
