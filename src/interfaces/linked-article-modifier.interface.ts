@@ -5,8 +5,8 @@ export interface LinkedArticleModifier {
     id: string;
     linkedArticleId: string;
     quantity: number;
-    maxSelectable: number;
-    minSelectable: number;
+    maxSelect: number;
+    minSelect: number;
     showLabel: boolean;
     name: string;
     modifierGroupId: string;

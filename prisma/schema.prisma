@@ -40,6 +40,25 @@ enum DeliveryMethod {
 
 // models--------------------------------------
 
+model AccountHistory {
+    id                 String               @id @default(uuid())
+    amount             Int
+    previousBalance    Int
+    currentBalance     Int
+    pay                Boolean
+    payMethodId        String
+    PayMethod          PayMethod            @relation(fields: [payMethodId], references: [id])
+    BillAccountHistory BillAccountHistory[]
+}
+
+model BillAccountHistory {
+    id               String          @id @default(uuid())
+    billId           String
+    accountHistoryId String
+    bill             Bill            @relation(fields: [billId], references: [id])
+    accountHistory   AccountHistory? @relation(fields: [accountHistoryId], references: [id])
+}
+
 model Account {
     id          String      @id @default(uuid())
     name        String      @unique
@@ -50,14 +69,15 @@ model Account {
 }
 
 model PayMethod {
-    id           String  @id @default(uuid())
-    name         String  @unique
-    accountId    String
-    active       Boolean @default(true)
-    commission   Int     @default(0)
-    isPublic     Boolean @default(false)
-    isSemiPublic Boolean @default(false)
-    Account      Account @relation(fields: [accountId], references: [id])
+    id             String           @id @default(uuid())
+    name           String           @unique
+    accountId      String
+    active         Boolean          @default(true)
+    commission     Int              @default(0)
+    isPublic       Boolean          @default(false)
+    isSemiPublic   Boolean          @default(false)
+    Account        Account          @relation(fields: [accountId], references: [id])
+    AccountHistory AccountHistory[]
 }
 
 model Customer {
@@ -147,20 +167,21 @@ model ModifierElement {
 }
 
 model Bill {
-    id             String         @id @default(uuid())
-    closed         Boolean        @default(false)
-    tableNumber    Int
-    deliveryMethod DeliveryMethod
-    clientId       String
-    addressId      String
-    openWorkDayId  String
-    closeWorkDayId String
-    commandTime    DateTime
-    isNull         Boolean        @default(false)
-    menuId         String
-    isServed       Boolean        @default(false)
-    isCredit       Boolean        @default(false)
-    items          BillItem[]
+    id                 String               @id @default(uuid())
+    closed             Boolean              @default(false)
+    tableNumber        Int
+    deliveryMethod     DeliveryMethod
+    clientId           String
+    addressId          String
+    openWorkDayId      String
+    closeWorkDayId     String
+    commandTime        DateTime
+    isNull             Boolean              @default(false)
+    menuId             String
+    isServed           Boolean              @default(false)
+    isCredit           Boolean              @default(false)
+    items              BillItem[]
+    histories BillAccountHistory[]
 }
 
 model BillItem {

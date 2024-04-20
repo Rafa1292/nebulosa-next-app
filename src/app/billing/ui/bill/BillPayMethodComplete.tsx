@@ -16,15 +16,24 @@ const newAccountHistory: AccountHistory = {
 }
 
 export const BillPayMethodComplete = () => {
-  const { bill, addBillAccountHistory, removeBillAccountHistory } = useBillStore()
+  const { bill, getTotalBill, getTotalHistories, addBillAccountHistory, removeBillAccountHistory } = useBillStore()
   const [currentAccountHistory, setCurrentAccountHistory] = useState<AccountHistory>(newAccountHistory)
   const [loader, setLoader] = useState<boolean>(false)
 
   const addAccountHistory = async (accountHistory: AccountHistory, index?: number) => {
     setLoader(true)
-    await addBillAccountHistory(accountHistory, index)
-    setCurrentAccountHistory(newAccountHistory)
+    const diference = getTotalBill() - getTotalHistories()
+    if (diference >= accountHistory.amount) {
+      await addBillAccountHistory(accountHistory, index)
+      setCurrentAccountHistory(newAccountHistory)
+    } else {
+      alert('El monto no puede ser mayor al total de la factura')
+    }
     setLoader(false)
+  }
+
+  const getDiference = () => {
+    return getTotalBill() - getTotalHistories()
   }
 
   const handleRemoveBillAccountHistory = async (index: number) => {
@@ -34,7 +43,7 @@ export const BillPayMethodComplete = () => {
   }
 
   return (
-    <div className='w-full flex flex-wrap justify-left pt-6'>
+    <div className='w-full flex flex-wrap justify-left py-6 overflow-x-hidden max-h-[90%] overflow-scroll'>
       {/* <div className='w-full justify-center flex py-8'>
         <button
           className={'rounded-full h-[60px] w-[60px] p-0 shadow-xl hover:bg-black hover:text-white hover:shadow-none'}
@@ -44,29 +53,42 @@ export const BillPayMethodComplete = () => {
       </div> */}
       {!loader && (
         <>
-          <div className=' w-[44%] mx-[3%] flex flex-col justify-center items-center mb-6'>
-            <AccountHistoryForm
-              setAccountHistory={(accountHistory) =>
-                addAccountHistory(accountHistory, bill.histories?.length ?? +1 ?? 0)
-              }
-              accountHistory={currentAccountHistory}
-              customClass='w-full'
-            />
-          </div>
+          {getDiference() > 0 && (
+            <>
+              <div className=' w-[44%] mx-[3%] flex flex-col justify-center items-center mb-6'>
+                <AccountHistoryForm
+                  setAccountHistory={(accountHistory) =>
+                    addAccountHistory(accountHistory, bill.histories?.length ?? +1 ?? 0)
+                  }
+                  accountHistory={currentAccountHistory}
+                  customClass='w-full'
+                />
+              </div>
+            </>
+          )}
           {bill.histories?.map((history, index) => (
             <div key={index} className=' w-[44%] mx-[3%] flex flex-col justify-center items-center mb-6 relative'>
-              <IoCloseCircleOutline
-                onClick={() => handleRemoveBillAccountHistory(index)}
-                className=' cursor-pointer text-4xl z-50 absolute text-red-800 -right-4 -top-4 hover:text-red-700'
-              />
               <AccountHistoryForm
+                removeAccountHistory={handleRemoveBillAccountHistory}
+                allowAction={false}
                 setAccountHistory={addAccountHistory}
                 accountHistory={history.accountHistory ?? newAccountHistory}
                 customClass='w-full'
+                index={index}
               />
             </div>
           ))}
         </>
+      )}
+      {getDiference() === 0 && (
+        <div className='w-full absolute bottom-0 left-0'>
+          <button
+            className='bg-green-600 w-full text-white p-2 hover:bg-green-800 select-none py-4'
+            // onClick={removeAccountHistory ? () => removeAccountHistory(currentIndex ?? 0) : () => {}}
+          >
+            Pagar
+          </button>
+        </div>
       )}
     </div>
   )

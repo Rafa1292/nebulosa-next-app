@@ -18,15 +18,15 @@ interface Props {
 
 export const BillActions = ({ setShow, showPayMethod, setShowPayMethod }: Props) => {
   const { bill, saveBill, getTotalBill, addDiscount, getBillDiscount } = useBillStore()
-  const [billSaved, setBillSaved] = useState(true)
+  const [billSaved, setBillSaved] = useState(false)
   const [commandActionWait, setCommandActionWait] = useState(false)
   const [loaded, setLoaded] = useState(false)
   const [discountForm, setDiscountForm] = useState(false)
   const [discountPercent, setDiscountPercent] = useState(0)
   const [discountAmount, setDiscountAmount] = useState(0)
 
-  const commandBill = () => {
-    const state = saveBill()
+  const commandBill = async () => {
+    const state = await saveBill()
     if (state) {
       setCommandActionWait(true)
     }

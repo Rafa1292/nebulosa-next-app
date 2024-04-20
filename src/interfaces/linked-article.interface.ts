@@ -5,7 +5,7 @@ export interface LinkedArticle {
     id: string;
     name: string;
     unitPrice: number;
-    isComanded: boolean;
+    isCommanded: boolean;
     articleId: string;
     billArticleId: string;
     modifiers?: LinkedArticleModifier[]

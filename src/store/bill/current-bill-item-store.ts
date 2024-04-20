@@ -44,8 +44,8 @@ export const useBillItemStore = create<State>()(
                 return {
                   id: '',
                   linkedArticleId: '',
-                  maxSelectable: articleModifier.maxSelect ?? 0,
-                  minSelectable: articleModifier.minSelect ?? 0,
+                  maxSelect: articleModifier.maxSelect ?? 0,
+                  minSelect: articleModifier.minSelect ?? 0,
                   modifierGroupId: articleModifier.modifierGroupId,
                   showLabel: articleModifier.modifierGroup?.showLabel ?? false,
                   articleModifierId: articleModifier.id,
@@ -61,7 +61,7 @@ export const useBillItemStore = create<State>()(
                 articleId: saleItemArticle.articleId,
                 unitPrice: 0,
                 billArticleId: '',
-                isComanded: false,
+                isCommanded: false,
                 name: saleItemArticle.article?.name ?? '',
                 modifiers: linkedArticleModifiers,
               },
@@ -105,8 +105,8 @@ export const useBillItemStore = create<State>()(
                 return {
                   id: '',
                   linkedArticleId: '',
-                  maxSelectable: articleModifier.maxSelect ?? 0,
-                  minSelectable: articleModifier.minSelect ?? 0,
+                  maxSelect: articleModifier.maxSelect ?? 0,
+                  minSelect: articleModifier.minSelect ?? 0,
                   modifierGroupId: articleModifier.modifierGroupId,
                   showLabel: articleModifier.modifierGroup?.showLabel ?? false,
                   articleModifierId: articleModifier.id,
@@ -122,7 +122,7 @@ export const useBillItemStore = create<State>()(
                 articleId: saleItemArticle.articleId,
                 unitPrice: 0,
                 billArticleId: '',
-                isComanded: false,
+                isCommanded: false,
                 name: saleItemArticle.article?.name ?? '',
                 modifiers: linkedArticleModifiers,
               },
@@ -177,7 +177,7 @@ export const useBillItemStore = create<State>()(
                           modifierElement.quantity = linkedArticleModifierElement.quantity
                         }
                       } else {
-                        if (modifier.maxSelectable === 1) {
+                        if (modifier.maxSelect === 1) {
                           modifierElements = [linkedArticleModifierElement]
                         } else {
                           modifierElements.push(linkedArticleModifierElement)
@@ -255,11 +255,11 @@ export const useBillItemStore = create<State>()(
           itemArticle.linkedArticles?.forEach((linkedArticle) => {
             linkedArticle.modifiers?.forEach((modifier) => {
               const selectedElements = modifier.elements?.reduce((acc, element) => acc + element.quantity, 0) ?? 0
-              if (selectedElements < modifier.minSelectable) {
+              if (selectedElements < modifier.minSelect) {
                 isValid = false
                 return
               }
-              if (selectedElements > modifier.maxSelectable) {
+              if (selectedElements > modifier.maxSelect) {
                 isValid = false
               }
             })

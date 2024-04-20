@@ -1,3 +1,4 @@
+import { createBill } from '@/actions/bill/create-bill'
 import { AccountHistory, Bill, BillItem, DeliveryMethod } from '@/interfaces'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
@@ -13,8 +14,9 @@ interface State {
   setAddressId: (addressId: string) => void
   setDeliveryMethod: (deliveryMethod: DeliveryMethod) => void
   setCustomerId: (customerId: string) => void
-  saveBill: () => boolean
+  saveBill: () => Promise<boolean>
   getTotalBill: () => number
+  getTotalHistories: () => number
   getBillDiscount: () => number
   addDiscount: (discount: number) => void
   addBillAccountHistory: (tmpAccountHistory?: AccountHistory, index?: number) => void
@@ -133,16 +135,23 @@ export const useBillStore = create<State>()(
         const bill = get().bill
         set({ bill: { ...bill, clientId: customerId } })
       },
-      saveBill: () => {
-        const bill = get().bill
-        console.log('bill', bill)
-        return true
+      saveBill: async () => {
+        const { ok } = await createBill(get().bill)
+        return ok ?? false
       },
       getTotalBill: () => {
         const bill = get().bill
         let total = 0
         bill.items?.forEach((item) => {
           total += getCurrentBillItemTotal(bill, item.saleItemId)
+        })
+        return total
+      },
+      getTotalHistories: () => {
+        const bill = get().bill
+        let total = 0
+        bill.histories?.forEach((history) => {
+          total += history.accountHistory?.amount ?? 0
         })
         return total
       },
