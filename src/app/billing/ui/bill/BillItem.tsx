@@ -52,8 +52,8 @@ export const BillItemUI = ({ billItem, handleEditBillItem, currentKey }: Props) 
         />
       </div>
       <div
-        className={`w-full shadow-inner  bg-gray-100 overflow-x-hidden overflow-scroll transition-all ${
-          showArticles ? 'max-h-96 ' : 'max-h-0 p-0'
+        className={`w-full shadow-inner  bg-gray-100 overflow-x-hidden transition-all ${
+          showArticles ? 'max-h-[500px] ' : 'max-h-0 p-0'
         }`}
       >
         {billItem.itemArticles!.map((itemArticle, index) => (

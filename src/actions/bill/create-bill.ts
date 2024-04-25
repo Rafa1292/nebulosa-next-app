@@ -1,10 +1,11 @@
 'use server'
 
-import { Bill } from '@/interfaces'
+import { Bill, BillItem, BillItemLinkedArticle, LinkedArticle, LinkedArticleModifier, LinkedArticleModifierElement } from '@/interfaces'
 import prisma from '@/lib/prisma'
 import { z } from 'zod'
 
 const linkedArticleModifierelementSchema = z.object({
+  id: z.string().optional().default(''),
   modifierElementId: z.string().uuid(),
   linkedArticleModifierId: z.string(),
   price: z.number(),
@@ -13,6 +14,8 @@ const linkedArticleModifierelementSchema = z.object({
 })
 
 const linkedArticleModifierSchema = z.object({
+  id: z.string().optional().default(''),
+  linkedArticleId: z.string().optional().default(''),
   quantity: z.number(),
   maxSelect: z.number(),
   minSelect: z.number(),
@@ -23,6 +26,7 @@ const linkedArticleModifierSchema = z.object({
 })
 
 const linkedArticleSchema = z.object({
+  id: z.string().optional().default(''),
   name: z.string(),
   unitPrice: z.number(),
   isCommanded: z.boolean(),
@@ -32,6 +36,7 @@ const linkedArticleSchema = z.object({
 })
 
 const billItemLinkedArticleSchema = z.object({
+  id: z.string().optional().default(''),
   billItemId: z.string(),
   itemNumber: z.number(),
   saleItemArticleId: z.string().uuid(),
@@ -41,6 +46,7 @@ const billItemLinkedArticleSchema = z.object({
 })
 
 const billItemSchema = z.object({
+  id: z.string().optional().default(''),
   description: z.string(),
   quantity: z.number(),
   unitPrice: z.number(),
@@ -53,6 +59,7 @@ const billItemSchema = z.object({
 })
 
 const billSchema = z.object({
+  id: z.string().optional().default(''),
   closed: z.boolean(),
   tableNumber: z.number(),
   deliveryMethod: z.enum(['Mesa', 'Domicilio', 'Recoger']),
@@ -60,7 +67,7 @@ const billSchema = z.object({
   addressId: z.string(),
   openWorkDayId: z.string(),
   closeWorkDayId: z.string(),
-  commandTime: z.string(),
+  commandTime: z.date().optional().default(new Date()),
   isNull: z.boolean(),
   menuId: z.string(),
   isServed: z.boolean(),
@@ -70,61 +77,30 @@ const billSchema = z.object({
 
 export const createBill = async (data: Bill) => {
   try {
-    console.log(data)
     const parse = billSchema.safeParse(data)
     if (!parse.success) {
       throw new Error(parse.error.message)
     }
-    const { items, ...bill } = parse.data
+    const { items, id, ...bill } = parse.data
     // init transaction
     await prisma.$transaction(async (tx) => {
-      const billCreated = await tx.bill.create({
-        data: bill,
-      })
-      for (const item of items) {
-        const { itemArticles, ...billItem } = item
-        const billItemCreated = await tx.billItem.create({
-          data: {
-            ...billItem,
-            billId: billCreated.id,
-          },
+      let billId = ''
+      if (id === '') {
+        const billCreated = await tx.bill.create({
+          data: bill,
         })
-        for (const itemArticle of itemArticles) {
-          const { linkedArticles, ...billItemArticle } = itemArticle
-          const billItemArticleCreated = await tx.billItemLinkedArticle.create({
-            data: {
-              ...billItemArticle,
-              billItemId: billItemCreated.id,
-            },
-          })
-          for (const linkedArticle of linkedArticles) {
-            const { modifiers, ...linkedArticleData } = linkedArticle
-            const linkedArticleCreated = await tx.linkedArticle.create({
-              data: {
-                ...linkedArticleData,
-                billArticleId: billItemArticleCreated.id,
-              },
-            })
-            for (const modifier of modifiers) {
-              const { elements, ...modifierData } = modifier
-              const modifierCreated = await tx.linkedArticleModifier.create({
-                data: {
-                  ...modifierData,
-                  linkedArticleId: linkedArticleCreated.id,
-                },
-              })
-              for (const element of elements) {
-                await tx.linkedArticleModifierElement.create({
-                  data: {
-                    ...element,
-                    linkedArticleModifierId: modifierCreated.id,
-                  },
-                })
-              }
-            }
-          }
-        }
+        billId = billCreated.id
+      } else {
+        await tx.bill.update({
+          where: {
+            id: id,
+          },
+          data: bill,
+        })
+        billId = id ?? ''
       }
+      await createUpdateItem(items, billId, tx)
+
     })
 
     return {
@@ -136,6 +112,143 @@ export const createBill = async (data: Bill) => {
     return {
       ok: false,
       message: error.message,
+    }
+  }
+}
+
+const createUpdateItem = async (items: Partial<BillItem>[], billId: string, tx: any) => {
+  for (const item of items) {
+    const { itemArticles, id, ...itemData } = item
+    let itemId = ''
+    if (item.id === '') {
+      const itemCreated = await tx.billItem.create({
+        data: {
+          ...itemData,
+          billId: billId,
+        },
+      })
+      itemId = itemCreated.id
+    } else {
+      await tx.billItem.update({
+        where: {
+          id: item.id,
+        },
+        data: itemData,
+      })
+      itemId = item.id ?? ''
+    }
+    if (itemArticles) await createUpdateItemArticle(itemArticles, itemId, tx)
+  }
+}
+
+const createUpdateItemArticle = async (itemArticles: Partial<BillItemLinkedArticle>[], billItemId: string, tx: any) => {
+  for (const itemArticle of itemArticles) {
+    const { linkedArticles, id, ...itemArticleData } = itemArticle
+    let itemArticleId = ''
+    if (itemArticle.id === '') {
+
+      const itemArticleCreated = await tx.billItemLinkedArticle.create({
+        data: {
+          ...itemArticleData,
+          billItemId: billItemId,
+        },
+      })
+      itemArticleId = itemArticleCreated.id ?? ''
+    } else {
+      await tx.billItemLinkedArticle.update({
+        where: {
+          id: itemArticle.id,
+        },
+        data: itemArticleData,
+      })
+      itemArticleId = itemArticle.id ?? ''
+    }
+    if (linkedArticles) await createUpdateLinkedArticle(linkedArticles, itemArticleId, tx)
+  }
+}  
+
+const createUpdateLinkedArticle = async (
+  linkedArticles: Partial<LinkedArticle>[],
+  billItemArticleId: string,
+  tx: any
+) => {
+  for (const linkedArticle of linkedArticles) {
+    const { modifiers, id, ...linkedArticleData } = linkedArticle
+    let linkedArticleId = ''
+
+    if (linkedArticle.id === '') {
+      const linkedArticleCreated = await tx.linkedArticle.create({
+        data: {
+          ...linkedArticleData,
+          isCommanded: true,
+          billArticleId: billItemArticleId,
+        },
+      })
+      linkedArticleId = linkedArticleCreated.id
+    } else {
+      await tx.linkedArticle.update({
+        where: {
+          id: linkedArticle.id,
+        },
+        data: linkedArticleData,
+      })
+      linkedArticleId = linkedArticle.id ?? ''
+    }
+    if (modifiers) await createUpdateLinkedArticleModifier(modifiers, linkedArticleId, tx)
+  }
+}
+
+const createUpdateLinkedArticleModifier = async (
+  linkedArticleModifiers: Partial<LinkedArticleModifier>[],
+  linkedArticleId: string,
+  tx: any
+) => {
+  for (const modifier of linkedArticleModifiers) {
+    const { elements, id, ...modifierData } = modifier
+    let modifierId = ''
+    if (modifier.id === '') {
+      const modifierCreated = await tx.linkedArticleModifier.create({
+        data: {
+          ...modifierData,
+          linkedArticleId: linkedArticleId,
+        },
+      })
+      modifierId = modifierCreated.id
+    } else {
+      await tx.linkedArticleModifier.update({
+        where: {
+          id: modifier.id,
+        },
+        data: modifierData,
+      })
+      modifierId = modifier.id ?? ''
+    }
+
+    if (elements) await createUpdateLinkedArticleModifierElement(elements, modifierId, tx)
+  }
+}
+
+const createUpdateLinkedArticleModifierElement = async (
+  linkedArticleModifierElements: Partial<LinkedArticleModifierElement>[],
+  modifierId: string,
+  tx: any
+) => {
+  for (const element of linkedArticleModifierElements) {
+    const { id, ...elementData } = element
+    if (element.id === '') {
+      await tx.linkedArticleModifierElement.create({
+        data: {
+          ...elementData,
+          linkedArticleModifierId: modifierId,
+        },
+      })
+    } else {
+      await tx.linkedArticleModifierElement.update({
+        where: {
+          id: element.id,
+        },
+        data: element,
+      })
     }
   }
 }

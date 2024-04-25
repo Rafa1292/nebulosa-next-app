@@ -3,7 +3,7 @@
 import { titleFont } from '@/config/fonts'
 import { BillItem, Menu, SaleItem, SaleItemCategory } from '@/interfaces'
 import clsx from 'clsx'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { IoCloseCircleOutline } from 'react-icons/io5'
 import { useBillItemStore, useBillStore } from '@/store'
 import { currencyFormat } from '@/utils'
@@ -23,7 +23,7 @@ interface Props {
 }
 
 export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props) => {
-  const { bill, setMenuId, removeBillItem } = useBillStore()
+  const { bill, setMenuId, removeBillItem, getBillFromServer } = useBillStore()
   const { addBillItem, setBillItemForEdit } = useBillItemStore()
   const [saleItemCategory, setSaleItemCategory] = useState<SaleItemCategory | null>(null)
   const [saleItem, setSaleItem] = useState<SaleItem | null>(null)
@@ -122,6 +122,12 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props)
     }
   }
 
+  useEffect(() => {
+    if (show) {
+      getBillFromServer('', 0)
+    }
+  }, [show])
+
   return (
     <div
       style={{ height: '0vh', width: '0vw' }}
@@ -207,7 +213,7 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props)
         <BillDeliveryMethod />
         {/* client info 6%*/}
         <BillClient />
-        {bill.items!.length > 0 ? (
+        {(bill?.items?.length ?? 0) > 0 ? (
           <>
             {/* header 5%*/}
             <BillItemHeader />
@@ -228,9 +234,9 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props)
             <div className='text-3xl text-gray-500'>No hay items en la cuenta</div>
           </div>
         )}
-            {/* actions 20%*/}
+        {/* actions 20%*/}
         <div className='w-full absolute bottom-0 right-0 h-[15vh] bg-white '>
-          <BillActions setShowPayMethod={setShowPayMethod} showPayMethod={showPayMethod} setShow={setShow}/>
+          <BillActions setShowPayMethod={setShowPayMethod} showPayMethod={showPayMethod} setShow={setShow} />
         </div>
       </div>
       <BillPayMethodActions show={showPayMethod} />

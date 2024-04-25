@@ -1,4 +1,5 @@
 import { createBill } from '@/actions/bill/create-bill'
+import { getBillByTableNumber } from '@/actions/bill/get-bill-by-table-number'
 import { AccountHistory, Bill, BillItem, DeliveryMethod } from '@/interfaces'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
@@ -21,6 +22,8 @@ interface State {
   addDiscount: (discount: number) => void
   addBillAccountHistory: (tmpAccountHistory?: AccountHistory, index?: number) => void
   removeBillAccountHistory: (index: number) => void 
+  getBillFromServer: (billId: string, tableNumber: number) => void
+  needsCommand: () => boolean
 }
 
 const initialBill: Bill = {
@@ -71,7 +74,35 @@ export const useBillStore = create<State>()(
   persist(
     (set, get) => ({
       bill: initialBill,
+      getBillFromServer: async (billId: string, tableNumber: number) => {
+        const { bill } = await getBillByTableNumber(tableNumber)
+        if(bill) {
+          set({ bill })
+          return
+        } else {
+          set({ bill: initialBill })
+        }
 
+      },
+      needsCommand: () => {
+        const bill = get().bill
+        if(bill.id === '') return true
+        if(bill.items?.length === 0) return true
+        for (const item of bill.items?? []) {
+          let isCommanded = true
+          for (const itemArticle of item.itemArticles ?? []) {
+           for (const linkedArticle of itemArticle.linkedArticles ?? []) {
+            if(!linkedArticle.isCommanded) {
+              isCommanded = false
+              break
+            }            
+           }
+            if(!isCommanded) break
+          }
+          if(!isCommanded) return true
+        }
+        return false
+      },
       addItemToBill: (billItem: BillItem) => {
         const bill = get().bill
         const item = bill.items?.find((item) => item.saleItemId === billItem.saleItemId)
@@ -136,7 +167,11 @@ export const useBillStore = create<State>()(
         set({ bill: { ...bill, clientId: customerId } })
       },
       saveBill: async () => {
-        const { ok } = await createBill(get().bill)
+        const { ok, message } = await createBill(get().bill)
+        if(!ok)
+          {
+            alert(message)
+          }
         return ok ?? false
       },
       getTotalBill: () => {

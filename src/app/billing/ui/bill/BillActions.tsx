@@ -17,7 +17,7 @@ interface Props {
 }
 
 export const BillActions = ({ setShow, showPayMethod, setShowPayMethod }: Props) => {
-  const { bill, saveBill, getTotalBill, addDiscount, getBillDiscount } = useBillStore()
+  const { bill, saveBill, getTotalBill, addDiscount, getBillDiscount, needsCommand } = useBillStore()
   const [billSaved, setBillSaved] = useState(false)
   const [commandActionWait, setCommandActionWait] = useState(false)
   const [loaded, setLoaded] = useState(false)
@@ -97,112 +97,118 @@ export const BillActions = ({ setShow, showPayMethod, setShowPayMethod }: Props)
 
   return (
     <>
-      {bill.id === '' && !billSaved ? (
+      {!loaded ? (
+        <></>
+      ) : (
         <>
-          {commandActionWait ? (
-            <div className='w-full h-full content-start  flex-wrap flex justify-center'>
-              <span className='text-xl w-full text-center py-4 text-red-800 '>¿Deseas salir?</span>
-              <button
-                onClick={() => stayBill()}
-                className='w-1/3 mx-2 bg-gray-800 text-white hover:bg-gray-700 rounded-lg p-4'
-              >
-                Continuar
-              </button>
-              <button
-                onClick={() => closeBill()}
-                className='w-1/3 mx-2 bg-red-800 text-white hover:bg-red-700 rounded-lg p-2'
-              >
-                Salir
-              </button>
-            </div>
+          {needsCommand() ? (
+            <>
+              {commandActionWait ? (
+                <div className='w-full h-full content-start  flex-wrap flex justify-center'>
+                  <span className='text-xl w-full text-center py-4 text-red-800 '>¿Deseas salir?</span>
+                  <button
+                    onClick={() => stayBill()}
+                    className='w-1/3 mx-2 bg-gray-800 text-white hover:bg-gray-700 rounded-lg p-4'
+                  >
+                    Continuar
+                  </button>
+                  <button
+                    onClick={() => closeBill()}
+                    className='w-1/3 mx-2 bg-red-800 text-white hover:bg-red-700 rounded-lg p-2'
+                  >
+                    Salir
+                  </button>
+                </div>
+              ) : (
+                <div
+                  onClick={() => commandBill()}
+                  className='w-full text-8xl hover:text-9xl  rounded-t-lg h-full items-center flex justify-center bg-green-800 text-white hover:bg-green-700 cursor-pointer'
+                >
+                  <LuConciergeBell />
+                </div>
+              )}
+            </>
           ) : (
-            <div
-              onClick={() => commandBill()}
-              className='w-full text-8xl hover:text-9xl  rounded-t-lg h-full items-center flex justify-center bg-green-800 text-white hover:bg-green-700 cursor-pointer'
-            >
-              <LuConciergeBell />
+            <div className='w-full h-full items-center flex justify-center'>
+              <div className='w-2/5 flex items-center text-green-700 hover:text-white justify-center hover:bg-green-700 h-full'>
+                <div
+                  onClick={() => setShowPayMethod(!showPayMethod)}
+                  className='p-5 cursor-pointer border-2  rounded-xl border-green-700 hover:border-white'
+                >
+                  {!showPayMethod ? <FaCashRegister size={50} className='' /> : <MdOutlineRestaurantMenu size={50} />}
+                </div>
+              </div>
+              {!discountForm ? (
+                <div className='w-3/5 font-bold select-none shadow-lg py-4 content-end h-full'>
+                  {loaded && (
+                    <>
+                      <div className='w-full flex-wrap flex'>
+                        <div className='w-3/5 pr-4 text-right'>Subtotal:</div>
+                        <div className='w-2/5 text-left'>¢24 000</div>
+                      </div>
+                      <div className='w-full flex-wrap flex'>
+                        <div className='w-3/5 pr-4 text-right'>Impuesto:</div>
+                        <div className='w-2/5 text-left'>¢0</div>
+                      </div>
+                      <div className='w-full flex-wrap flex'>
+                        <div className='w-3/5 pr-4 text-right'>Descuento:</div>
+                        <div className='w-2/5 flex-wrap flex justify-between items-center pr-2'>
+                          {currencyFormat(getBillDiscount())}
+                          {!showPayMethod && (
+                            <HiMiniReceiptPercent
+                              onClick={() => setDiscountForm(true)}
+                              size={15}
+                              className=' text-green-700 cursor-pointer hover:text-green-600 '
+                            />
+                          )}
+                        </div>
+                      </div>
+                      <div className='w-full flex-wrap flex'>
+                        <div className='w-3/5 pr-4 text-right'>Total:</div>
+                        <div className='w-2/5 text-left'>{currencyFormat(getTotal())}</div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              ) : (
+                <div className='w-3/5 font-bold select-none shadow-lg py-4 justify-around flex flex-wrap content-end h-full'>
+                  <div className='w-full justify-around flex-wrap flex mb-6'>
+                    <div className='w-2/5 flex flex-wrap'>
+                      <span className='text-left text-xs text-gray-700'>Porcentage</span>
+                      <input
+                        value={discountPercent}
+                        onChange={(ev) => onSetDiscountPercent(ev.target.value)}
+                        type='number'
+                        className='w-full focus-visible:!outline-gray-400 select:border-gray-200 border text-xs p-2 text-gray-400 border-gray-300 rounded-lg'
+                      />
+                    </div>
+                    <div className='w-2/5 flex flex-wrap'>
+                      <span className='text-left text-xs text-gray-700'>Monto</span>
+                      <input
+                        value={discountAmount}
+                        onChange={(ev) => onSetDiscountAmount(ev.target.value)}
+                        type='number'
+                        className='w-full focus-visible:!outline-gray-400 select:border-gray-200 border text-xs p-2 text-gray-400 border-gray-300 rounded-lg'
+                      />
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleSetDiscount()}
+                    className='w-2/5 bg-green-800 text-white text-sm hover:bg-green-700 rounded-lg p-2'
+                  >
+                    Aplicar
+                  </button>
+                  <button
+                    onClick={() => setDiscountForm(false)}
+                    className='w-2/5 bg-red-800 text-white text-sm hover:bg-red-700 rounded-lg p-2'
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </>
-      ) : (
-        <div className='w-full h-full items-center flex justify-center'>
-          <div className='w-2/5 flex items-center text-green-700 hover:text-white justify-center hover:bg-green-700 h-full'>
-            <div
-              onClick={() => setShowPayMethod(!showPayMethod)}
-              className='p-5 cursor-pointer border-2  rounded-xl border-green-700 hover:border-white'
-            >
-              {!showPayMethod ? <FaCashRegister size={50} className='' /> : <MdOutlineRestaurantMenu size={50} />}
-            </div>
-          </div>
-          {!discountForm ? (
-            <div className='w-3/5 font-bold select-none shadow-lg py-4 content-end h-full'>
-              {loaded && (
-                <>
-                  <div className='w-full flex-wrap flex'>
-                    <div className='w-3/5 pr-4 text-right'>Subtotal:</div>
-                    <div className='w-2/5 text-left'>¢24 000</div>
-                  </div>
-                  <div className='w-full flex-wrap flex'>
-                    <div className='w-3/5 pr-4 text-right'>Impuesto:</div>
-                    <div className='w-2/5 text-left'>¢0</div>
-                  </div>
-                  <div className='w-full flex-wrap flex'>
-                    <div className='w-3/5 pr-4 text-right'>Descuento:</div>
-                    <div className='w-2/5 flex-wrap flex justify-between items-center pr-2'>
-                      {currencyFormat(getBillDiscount())}
-                      {!showPayMethod && (
-                        <HiMiniReceiptPercent
-                          onClick={() => setDiscountForm(true)}
-                          size={15}
-                          className=' text-green-700 cursor-pointer hover:text-green-600 '
-                        />
-                      )}
-                    </div>
-                  </div>
-                  <div className='w-full flex-wrap flex'>
-                    <div className='w-3/5 pr-4 text-right'>Total:</div>
-                    <div className='w-2/5 text-left'>{currencyFormat(getTotal())}</div>
-                  </div>
-                </>
-              )}
-            </div>
-          ) : (
-            <div className='w-3/5 font-bold select-none shadow-lg py-4 justify-around flex flex-wrap content-end h-full'>
-              <div className='w-full justify-around flex-wrap flex mb-6'>
-                <div className='w-2/5 flex flex-wrap'>
-                  <span className='text-left text-xs text-gray-700'>Porcentage</span>
-                  <input
-                    value={discountPercent}
-                    onChange={(ev) => onSetDiscountPercent(ev.target.value)}
-                    type='number'
-                    className='w-full focus-visible:!outline-gray-400 select:border-gray-200 border text-xs p-2 text-gray-400 border-gray-300 rounded-lg'
-                  />
-                </div>
-                <div className='w-2/5 flex flex-wrap'>
-                  <span className='text-left text-xs text-gray-700'>Monto</span>
-                  <input
-                    value={discountAmount}
-                    onChange={(ev) => onSetDiscountAmount(ev.target.value)}
-                    type='number'
-                    className='w-full focus-visible:!outline-gray-400 select:border-gray-200 border text-xs p-2 text-gray-400 border-gray-300 rounded-lg'
-                  />
-                </div>
-              </div>
-              <button
-                onClick={() => handleSetDiscount()}
-                className='w-2/5 bg-green-800 text-white text-sm hover:bg-green-700 rounded-lg p-2'
-              >
-                Aplicar
-              </button>
-              <button
-                onClick={() => setDiscountForm(false)}
-                className='w-2/5 bg-red-800 text-white text-sm hover:bg-red-700 rounded-lg p-2'
-              >
-                Cancelar
-              </button>
-            </div>
-          )}
-        </div>
       )}
     </>
   )
