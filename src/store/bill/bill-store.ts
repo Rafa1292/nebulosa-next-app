@@ -1,4 +1,4 @@
-import { createBill } from '@/actions/bill/create-bill'
+import { createBill, setAddresId, setDeliveryMethod } from '@/actions/bill/create-bill'
 import { getBillByTableNumber } from '@/actions/bill/get-bill-by-table-number'
 import { AccountHistory, Bill, BillItem, DeliveryMethod } from '@/interfaces'
 import { create } from 'zustand'
@@ -21,7 +21,7 @@ interface State {
   getBillDiscount: () => number
   addDiscount: (discount: number) => void
   addBillAccountHistory: (tmpAccountHistory?: AccountHistory, index?: number) => void
-  removeBillAccountHistory: (index: number) => void 
+  removeBillAccountHistory: (index: number) => void
   getBillFromServer: (billId: string, tableNumber: number) => void
   needsCommand: () => boolean
 }
@@ -69,37 +69,35 @@ const getCurrentBillItemTotal = (bill: Bill, saleItemId: string) => {
   return total
 }
 
-
 export const useBillStore = create<State>()(
   persist(
     (set, get) => ({
       bill: initialBill,
       getBillFromServer: async (billId: string, tableNumber: number) => {
         const { bill } = await getBillByTableNumber(tableNumber)
-        if(bill) {
+        if (bill) {
           set({ bill })
           return
         } else {
           set({ bill: initialBill })
         }
-
       },
       needsCommand: () => {
         const bill = get().bill
-        if(bill.id === '') return true
-        if(bill.items?.length === 0) return true
-        for (const item of bill.items?? []) {
+        if (bill.id === '') return true
+        if (bill.items?.length === 0) return true
+        for (const item of bill.items ?? []) {
           let isCommanded = true
           for (const itemArticle of item.itemArticles ?? []) {
-           for (const linkedArticle of itemArticle.linkedArticles ?? []) {
-            if(!linkedArticle.isCommanded) {
-              isCommanded = false
-              break
-            }            
-           }
-            if(!isCommanded) break
+            for (const linkedArticle of itemArticle.linkedArticles ?? []) {
+              if (!linkedArticle.isCommanded) {
+                isCommanded = false
+                break
+              }
+            }
+            if (!isCommanded) break
           }
-          if(!isCommanded) return true
+          if (!isCommanded) return true
         }
         return false
       },
@@ -119,11 +117,12 @@ export const useBillStore = create<State>()(
                 ...(currentItems ?? []),
                 {
                   ...item,
-                  quantity: item.itemArticles?.reduce((max, curr) => {
-                    if (curr.itemNumber > max.itemNumber) return curr
+                  quantity:
+                    item.itemArticles?.reduce((max, curr) => {
+                      if (curr.itemNumber > max.itemNumber) return curr
 
-                    return max
-                  }).itemNumber ?? 0,
+                      return max
+                    }).itemNumber ?? 0,
                 },
               ],
             },
@@ -154,12 +153,29 @@ export const useBillStore = create<State>()(
         const bill = get().bill
         set({ bill: { ...bill, menuId } })
       },
-      setAddressId: (addressId: string) => {
+      setAddressId: async (addressId: string) => {
         const bill = get().bill
-        set({ bill: { ...bill, addressId } })
+        if (bill.id !== '') {
+          const { ok } = await setAddresId(bill.id, addressId)
+          if (!ok) {
+            alert('Error al guardar la dirección')
+            return
+          }
+          set({ bill: { ...bill, addressId } })
+        } else {
+          set({ bill: { ...bill, addressId } })
+        }
       },
-      setDeliveryMethod: (deliveryMethod: DeliveryMethod) => {
+      setDeliveryMethod: async (deliveryMethod: DeliveryMethod) => {
         const bill = get().bill
+        if (bill.id !== '') {
+          const { ok } = await setDeliveryMethod(bill.id, deliveryMethod)
+          if (!ok) {
+            alert('Error al guardar el método de entrega')
+            return
+          }
+          set({ bill: { ...bill, deliveryMethod } })
+        }
         set({ bill: { ...bill, deliveryMethod } })
       },
       setCustomerId: (customerId: string) => {
@@ -168,10 +184,9 @@ export const useBillStore = create<State>()(
       },
       saveBill: async () => {
         const { ok, message } = await createBill(get().bill)
-        if(!ok)
-          {
-            alert(message)
-          }
+        if (!ok) {
+          alert(message)
+        }
         return ok ?? false
       },
       getTotalBill: () => {
@@ -198,8 +213,8 @@ export const useBillStore = create<State>()(
           const discountItem = discountPerItem
           return { ...item, discount: discountItem }
         })
-        const {ok} = await createBill({ ...bill, items })
-        if(!ok) {
+        const { ok } = await createBill({ ...bill, items })
+        if (!ok) {
           alert('Error al aplicar el descuento')
           return
         }
@@ -213,14 +228,30 @@ export const useBillStore = create<State>()(
         })
         return total
       },
-      addBillAccountHistory: (tmpAccountHistory?: AccountHistory, index?:number) => {
+      addBillAccountHistory: (tmpAccountHistory?: AccountHistory, index?: number) => {
         if (tmpAccountHistory) {
-          if(index !== undefined) {
+          if (index !== undefined) {
             const tmpAccountHistories = get().bill.histories?.filter((_, i) => i !== index)
-            set({ bill: { ...get().bill, histories: [...(tmpAccountHistories ?? []), {id:'', billId:'', accountHistoryId:'', accountHistory: tmpAccountHistory}] } })
+            set({
+              bill: {
+                ...get().bill,
+                histories: [
+                  ...(tmpAccountHistories ?? []),
+                  { id: '', billId: '', accountHistoryId: '', accountHistory: tmpAccountHistory },
+                ],
+              },
+            })
             return
           }
-          set({ bill: { ...get().bill, histories: [...(get().bill.histories ?? []), {id:'', billId:'', accountHistoryId:'', accountHistory: tmpAccountHistory}] } })
+          set({
+            bill: {
+              ...get().bill,
+              histories: [
+                ...(get().bill.histories ?? []),
+                { id: '', billId: '', accountHistoryId: '', accountHistory: tmpAccountHistory },
+              ],
+            },
+          })
           return
         }
       },
@@ -228,7 +259,7 @@ export const useBillStore = create<State>()(
         const bill = get().bill
         const histories = bill.histories?.filter((_, i) => i !== index)
         set({ bill: { ...bill, histories } })
-      }
+      },
     }),
     {
       name: 'bill-store',

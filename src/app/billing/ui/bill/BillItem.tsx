@@ -53,10 +53,10 @@ export const BillItemUI = ({ billItem, handleEditBillItem, currentKey }: Props) 
       </div>
       <div
         className={`w-full shadow-inner  bg-gray-100 overflow-x-hidden transition-all ${
-          showArticles ? 'max-h-[500px] ' : 'max-h-0 p-0'
+          showArticles ? 'max-h-[10000px] ' : 'max-h-0 p-0'
         }`}
       >
-        {billItem.itemArticles!.map((itemArticle, index) => (
+        {billItem.itemArticles!.sort((a, b) => a.itemNumber - b.itemNumber).map((itemArticle, index) => (
           <div
             key={index}
             className={clsx('flex flex-wrap w-full py-4', {

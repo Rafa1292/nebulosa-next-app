@@ -4,6 +4,7 @@ import {
   Bill,
   BillItem,
   BillItemLinkedArticle,
+  DeliveryMethod,
   LinkedArticle,
   LinkedArticleModifier,
   LinkedArticleModifierElement,
@@ -81,6 +82,50 @@ const billSchema = z.object({
   isCredit: z.boolean(),
   items: z.array(billItemSchema),
 })
+
+export const setAddresId = async (billId: string, addressId: string) => {
+  try {
+    await prisma.bill.update({
+      where: {
+        id: billId,
+      },
+      data: {
+        addressId: addressId,
+      },
+    })
+    return {
+      ok: true,
+      message: 'Dirección actualizada',
+    }
+  } catch (error: any) {
+    return {
+      ok: false,
+      message: error.message,
+    }
+  }
+}
+
+export const setDeliveryMethod = async (billId: string, deliveryMethod: DeliveryMethod) => {
+  try {
+    await prisma.bill.update({
+      where: {
+        id: billId,
+      },
+      data: {
+        deliveryMethod: deliveryMethod,
+      },
+    })
+    return {
+      ok: true,
+      message: 'Método de entrega actualizado',
+    }
+  } catch (error: any) {
+    return {
+      ok: false,
+      message: error.message,
+    }
+  }
+}
 
 export const createBill = async (data: Bill) => {
   try {
