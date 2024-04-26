@@ -144,7 +144,7 @@ export const BillActions = ({ setShow, showPayMethod, setShowPayMethod }: Props)
                     <>
                       <div className='w-full flex-wrap flex'>
                         <div className='w-3/5 pr-4 text-right'>Subtotal:</div>
-                        <div className='w-2/5 text-left'>¢24 000</div>
+                        <div className='w-2/5 text-left'>{currencyFormat(getTotalBill())}</div>
                       </div>
                       <div className='w-full flex-wrap flex'>
                         <div className='w-3/5 pr-4 text-right'>Impuesto:</div>

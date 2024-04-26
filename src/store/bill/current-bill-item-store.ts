@@ -268,7 +268,15 @@ export const useBillItemStore = create<State>()(
         return isValid
       },
       setBillItemForEdit: (billItem: BillItem) => {
-        set({ billItem })
+          //set field isCommanded on linkedArticle to false
+          const itemArticles = billItem.itemArticles?.map((itemArticle) => {
+            const linkedArticles = itemArticle.linkedArticles?.map((linkedArticle) => {
+              linkedArticle.isCommanded = false
+              return linkedArticle
+            })
+            return { ...itemArticle, linkedArticles }
+          })
+          set({ billItem: { ...billItem, itemArticles } })
       },
       initBillItem: () => {
         set({ billItem: null })

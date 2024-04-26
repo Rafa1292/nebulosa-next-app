@@ -34,7 +34,7 @@ export const BillItemUI = ({ billItem, handleEditBillItem, currentKey }: Props) 
         {currencyFormat(billItem.unitPrice)}
       </div>
       <div className={`${titleFont.className}  antialiased text-center w-1/6 text-xs font-bold`}>
-        {currencyFormat(getBillItemTotal(billItem.saleItemId))}
+        {currencyFormat(getBillItemTotal(billItem.saleItemId) - billItem.discount)}
       </div>
       <div className={`w-1/6 flex justify-center flex-wrap`}>
         <IoRemoveCircleOutline

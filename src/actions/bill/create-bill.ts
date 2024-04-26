@@ -1,6 +1,13 @@
 'use server'
 
-import { Bill, BillItem, BillItemLinkedArticle, LinkedArticle, LinkedArticleModifier, LinkedArticleModifierElement } from '@/interfaces'
+import {
+  Bill,
+  BillItem,
+  BillItemLinkedArticle,
+  LinkedArticle,
+  LinkedArticleModifier,
+  LinkedArticleModifierElement,
+} from '@/interfaces'
 import prisma from '@/lib/prisma'
 import { z } from 'zod'
 
@@ -22,7 +29,7 @@ const linkedArticleModifierSchema = z.object({
   showLabel: z.boolean(),
   name: z.string(),
   modifierGroupId: z.string().uuid(),
-  elements: z.array(linkedArticleModifierelementSchema),
+  elements: z.array(linkedArticleModifierelementSchema).optional().default([]),
 })
 
 const linkedArticleSchema = z.object({
@@ -83,6 +90,7 @@ export const createBill = async (data: Bill) => {
     }
     const { items, id, ...bill } = parse.data
     // init transaction
+    // increase transaction timeout
     await prisma.$transaction(async (tx) => {
       let billId = ''
       if (id === '') {
@@ -100,8 +108,7 @@ export const createBill = async (data: Bill) => {
         billId = id ?? ''
       }
       await createUpdateItem(items, billId, tx)
-
-    })
+    }, { timeout: 1000000 })
 
     return {
       ok: true,
@@ -146,7 +153,6 @@ const createUpdateItemArticle = async (itemArticles: Partial<BillItemLinkedArtic
     const { linkedArticles, id, ...itemArticleData } = itemArticle
     let itemArticleId = ''
     if (itemArticle.id === '') {
-
       const itemArticleCreated = await tx.billItemLinkedArticle.create({
         data: {
           ...itemArticleData,
@@ -165,7 +171,7 @@ const createUpdateItemArticle = async (itemArticles: Partial<BillItemLinkedArtic
     }
     if (linkedArticles) await createUpdateLinkedArticle(linkedArticles, itemArticleId, tx)
   }
-}  
+}
 
 const createUpdateLinkedArticle = async (
   linkedArticles: Partial<LinkedArticle>[],
@@ -176,6 +182,7 @@ const createUpdateLinkedArticle = async (
     const { modifiers, id, ...linkedArticleData } = linkedArticle
     let linkedArticleId = ''
 
+    // create linked article
     if (linkedArticle.id === '') {
       const linkedArticleCreated = await tx.linkedArticle.create({
         data: {
@@ -185,13 +192,35 @@ const createUpdateLinkedArticle = async (
         },
       })
       linkedArticleId = linkedArticleCreated.id
-    } else {
+    }
+    // update linked article
+    else {
       await tx.linkedArticle.update({
         where: {
           id: linkedArticle.id,
         },
-        data: linkedArticleData,
+        data: {
+          ...linkedArticleData,
+          isCommanded: true,
+        },
       })
+      // get current modifiers
+      const linkedArticleModifiers: LinkedArticleModifier[] = await tx.linkedArticleModifier.findMany({
+        where: {
+          linkedArticleId: linkedArticle.id,
+        },
+        include: {
+          elements: true,
+        },
+      })
+      for (const modifier of modifiers ?? []) {
+        const tmpModifier = linkedArticleModifiers.find((m: LinkedArticleModifier) => m.id === modifier.id)
+        if ((!tmpModifier || tmpModifier.elements?.length === 0) && modifier.id !== '') {
+          await removeLinkedArticleModifier(modifier.id, tx)
+        } else {
+          await createUpdateLinkedArticleModifier([modifier], linkedArticleId, tx)
+        }
+      }
       linkedArticleId = linkedArticle.id ?? ''
     }
     if (modifiers) await createUpdateLinkedArticleModifier(modifiers, linkedArticleId, tx)
@@ -203,28 +232,42 @@ const createUpdateLinkedArticleModifier = async (
   linkedArticleId: string,
   tx: any
 ) => {
-  for (const modifier of linkedArticleModifiers) {
-    const { elements, id, ...modifierData } = modifier
-    let modifierId = ''
-    if (modifier.id === '') {
-      const modifierCreated = await tx.linkedArticleModifier.create({
-        data: {
-          ...modifierData,
-          linkedArticleId: linkedArticleId,
-        },
-      })
-      modifierId = modifierCreated.id
-    } else {
-      await tx.linkedArticleModifier.update({
-        where: {
-          id: modifier.id,
-        },
-        data: modifierData,
-      })
-      modifierId = modifier.id ?? ''
-    }
+  for (const linkedArticleModifier of linkedArticleModifiers) {
+    const { elements, id, ...modifierData } = linkedArticleModifier
+    if ((elements?.length ?? 0) > 0) {
+      let modifierId = ''
+      if (linkedArticleModifier.id === '') {
+        const modifierCreated = await tx.linkedArticleModifier.create({
+          data: {
+            ...modifierData,
+            linkedArticleId: linkedArticleId,
+          },
+        })
+        modifierId = modifierCreated.id
+      } else {
+        await tx.linkedArticleModifier.update({
+          where: {
+            id: linkedArticleModifier.id,
+          },
+          data: modifierData,
+        })
+        modifierId = linkedArticleModifier.id ?? ''
+      }
+      const linkedArticleModifierElements: LinkedArticleModifierElement[] =
+        await tx.linkedArticleModifierElement.findMany({
+          where: {
+            linkedArticleModifierId: modifierId,
+          },
+        })
+        const elementsForDelete = linkedArticleModifierElements.filter(
+          (element) => !elements?.find((e) => e.id === element.id)
+        )
+        for (const element of elementsForDelete) {
+          await removeLinkedArticleModifierElement(element.id, tx)
+        }
+        if (elements) await createUpdateLinkedArticleModifierElement(elements, modifierId, tx)
 
-    if (elements) await createUpdateLinkedArticleModifierElement(elements, modifierId, tx)
+    }
   }
 }
 
@@ -251,4 +294,28 @@ const createUpdateLinkedArticleModifierElement = async (
       })
     }
   }
+}
+
+const removeLinkedArticleModifier = async (linkedArticleModifierId: string, tx: any) => {
+  const linkedArticleModifierElements = await tx.linkedArticleModifierElement.findMany({
+    where: {
+      linkedArticleModifierId: linkedArticleModifierId,
+    },
+  })
+  for (const element of linkedArticleModifierElements) {
+    await removeLinkedArticleModifierElement(element.id, tx)
+  }
+  await tx.linkedArticleModifier.delete({
+    where: {
+      id: linkedArticleModifierId,
+    },
+  })
+}
+
+const removeLinkedArticleModifierElement = async (linkedArticleModifierElementId: string, tx: any) => {
+  await tx.linkedArticleModifierElement.delete({
+    where: {
+      id: linkedArticleModifierElementId,
+    },
+  })
 }

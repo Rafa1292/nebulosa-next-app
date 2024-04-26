@@ -190,15 +190,19 @@ export const useBillStore = create<State>()(
         })
         return total
       },
-      addDiscount: (discountAmount: number) => {
+      addDiscount: async (discountAmount: number) => {
         //set discount amount for each item
         const bill = get().bill
         const discountPerItem = discountAmount / (bill.items?.length ?? 0)
         const items = bill.items?.map((item) => {
-          const itemTotal = get().getBillItemTotal(item.saleItemId)
           const discountItem = discountPerItem
           return { ...item, discount: discountItem }
         })
+        const {ok} = await createBill({ ...bill, items })
+        if(!ok) {
+          alert('Error al aplicar el descuento')
+          return
+        }
         set({ bill: { ...bill, items } })
       },
       getBillDiscount: () => {
