@@ -52,7 +52,7 @@ export const AccountHistoryForm = ({
 
   return (
     <>
-      {loaded ? (
+      {!loaded ? (
         <></>
       ) : (
         <div className={`shadow rounded-lg px-4 ${customClass}`}>
