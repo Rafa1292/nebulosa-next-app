@@ -34,7 +34,7 @@ try {
     })
     await prisma.$transaction(async (tx) => {
       await createBillAccountHistories(billAccountHistories, tx)
-      tx.bill.update({
+      const x = await tx.bill.update({
         where: { id: billId },
         data: {
           closed: true,

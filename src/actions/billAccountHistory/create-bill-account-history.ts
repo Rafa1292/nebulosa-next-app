@@ -31,9 +31,10 @@ export const createBillAccountHistories = async (billAccountHistories: BillAccou
           ...billAccountHistory.accountHistory,
         },
       })
+      const {accountHistory, ...billAccountHistoryData} = billAccountHistory
       await tx.billAccountHistory.create({
         data: {
-          ...billAccountHistory,
+          ...billAccountHistoryData,
           accountHistoryId: createdAccountHistory.id,
         },
       })
