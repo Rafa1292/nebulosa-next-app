@@ -1,3 +1,4 @@
+export * from './billAccountHistory/create-bill-account-history'
 
 export * from './pay-method/get-pay-method-paginated'
 export * from './pay-method/get-pay-method'

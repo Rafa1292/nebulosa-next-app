@@ -1,6 +1,8 @@
-import { createBill, setAddresId, setDeliveryMethod } from '@/actions/bill/create-bill'
-import { getBillByTableNumber } from '@/actions/bill/get-bill-by-table-number'
-import { AccountHistory, Bill, BillItem, DeliveryMethod } from '@/interfaces'
+import { createBill, setAddresId, setDeliveryMethod } from '@/actions/bill/create-update-bill'
+import { getBillByTableNumber } from '@/actions/bill/get-bill'
+import { payBill } from '@/actions/bill/pay-bill'
+import { AccountHistory, Bill, BillAccountHistory, BillItem, DeliveryMethod } from '@/interfaces'
+import { getCurrentBillItemTotal, getCurrentItemArticleTotal, getTotalBill } from '@/utils'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
@@ -23,7 +25,8 @@ interface State {
   addBillAccountHistory: (tmpAccountHistory?: AccountHistory, index?: number) => void
   removeBillAccountHistory: (index: number) => void
   getBillFromServer: (billId: string, tableNumber: number) => void
-  needsCommand: () => boolean
+  needsCommand: () => boolean,
+  payBill: () => Promise<Boolean>
 }
 
 const initialBill: Bill = {
@@ -41,32 +44,6 @@ const initialBill: Bill = {
   menuId: '',
   openWorkDayId: '',
   tableNumber: 0,
-}
-
-const getCurrentItemArticleTotal = (bill: Bill, itemNumber: number, saleItemId: string) => {
-  const item = bill.items?.find((item) => item.saleItemId === saleItemId)
-  const itemArticle = item?.itemArticles?.find((itemArticle) => itemArticle.itemNumber === itemNumber)
-  let total = item?.unitPrice ?? 0
-  if (itemArticle) {
-    itemArticle.linkedArticles?.forEach((linkedArticle) => {
-      linkedArticle.modifiers?.forEach((modifier) => {
-        total +=
-          modifier.elements?.reduce((acc, element) => {
-            return acc + element.price * element.quantity
-          }, 0) ?? 0
-      })
-    })
-  }
-  return total
-}
-
-const getCurrentBillItemTotal = (bill: Bill, saleItemId: string) => {
-  const item = bill.items?.find((item) => item.saleItemId === saleItemId)
-  let total = 0
-  item?.itemArticles?.forEach((itemArticle) => {
-    total += getCurrentItemArticleTotal(bill, itemArticle.itemNumber, saleItemId)
-  })
-  return total
 }
 
 export const useBillStore = create<State>()(
@@ -191,11 +168,8 @@ export const useBillStore = create<State>()(
       },
       getTotalBill: () => {
         const bill = get().bill
-        let total = 0
-        bill.items?.forEach((item) => {
-          total += getCurrentBillItemTotal(bill, item.saleItemId)
-        })
-        return total
+        return getTotalBill(bill)
+        
       },
       getTotalHistories: () => {
         const bill = get().bill
@@ -260,6 +234,17 @@ export const useBillStore = create<State>()(
         const histories = bill.histories?.filter((_, i) => i !== index)
         set({ bill: { ...bill, histories } })
       },
+      payBill: async () => {
+        const bill = get().bill
+        const {ok} = await payBill(bill.id, bill.histories ?? [])
+        if (!ok) {
+          alert('Error al pagar la factura')
+          return false
+        } else {
+          set({ bill: initialBill })      
+          return true    
+        }
+      }
     }),
     {
       name: 'bill-store',

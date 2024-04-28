@@ -48,3 +48,50 @@ export const getBillByTableNumber = async (tableNumber: number) => {
     }
   }
 }
+
+export const getBillById = async (id: string) => {
+  try {
+    const bill = await prisma.bill.findFirst({
+      where: {
+        id,
+        closed: false,
+      },
+      include: {
+        items: {
+          include: {
+            itemArticles: {
+              include: {
+                linkedArticles: {
+                  include: {
+                    modifiers: {
+                      include: {
+                        elements: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    })
+
+    if (!bill) {
+      return {
+        ok: false,
+        message: 'No se encontró la factura',
+      }
+    }
+
+    return {
+      ok: true,
+      bill
+    }
+  } catch (error) {
+    return {
+      ok: false,
+      message: 'No se pudo obtener la factura',
+    }
+  }
+}

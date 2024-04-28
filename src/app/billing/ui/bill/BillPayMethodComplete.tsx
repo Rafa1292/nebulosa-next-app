@@ -16,7 +16,7 @@ const newAccountHistory: AccountHistory = {
 }
 
 export const BillPayMethodComplete = () => {
-  const { bill, getTotalBill, getTotalHistories, addBillAccountHistory, removeBillAccountHistory } = useBillStore()
+  const { bill,payBill, getTotalBill, getTotalHistories, addBillAccountHistory, removeBillAccountHistory } = useBillStore()
   const [currentAccountHistory, setCurrentAccountHistory] = useState<AccountHistory>(newAccountHistory)
   const [loader, setLoader] = useState<boolean>(false)
 
@@ -41,6 +41,17 @@ export const BillPayMethodComplete = () => {
     await removeBillAccountHistory(index)
     setLoader(false)
   }
+
+  const payCurrentBill = async () => {
+    const isPaid = await payBill()
+    if (isPaid) {
+      alert('Factura pagada')
+    } else {
+      alert('Error al pagar la factura')
+    }
+  }
+
+
 
   return (
     <div className='w-full flex flex-wrap justify-left py-6 overflow-x-hidden max-h-[90%] overflow-scroll'>
@@ -84,7 +95,7 @@ export const BillPayMethodComplete = () => {
         <div className='w-full absolute bottom-0 left-0'>
           <button
             className='bg-green-600 w-full text-white p-2 hover:bg-green-800 select-none py-4'
-            // onClick={removeAccountHistory ? () => removeAccountHistory(currentIndex ?? 0) : () => {}}
+            onClick={getDiference() === 0 ? () => payBill() : () => {}}
           >
             Pagar
           </button>
