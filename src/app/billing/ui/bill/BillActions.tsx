@@ -17,8 +17,7 @@ interface Props {
 }
 
 export const BillActions = ({ setShow, showPayMethod, setShowPayMethod }: Props) => {
-  const { bill, saveBill, getTotalBill, addDiscount, getBillDiscount, needsCommand } = useBillStore()
-  const [billSaved, setBillSaved] = useState(false)
+  const { bill, saveBill, getTotalBill, addDiscount, getBillDiscount, needsCommand, getBillFromServer } = useBillStore()
   const [commandActionWait, setCommandActionWait] = useState(false)
   const [loaded, setLoaded] = useState(false)
   const [discountForm, setDiscountForm] = useState(false)
@@ -32,9 +31,9 @@ export const BillActions = ({ setShow, showPayMethod, setShowPayMethod }: Props)
     }
   }
 
-  const stayBill = () => {
+  const stayBill = async () => {
     setCommandActionWait(false)
-    setBillSaved(true)
+    await getBillFromServer(bill.id, 0)
   }
 
   const getTotal = () => {
@@ -89,7 +88,6 @@ export const BillActions = ({ setShow, showPayMethod, setShowPayMethod }: Props)
   const closeBill = () => {
     setShow(false)
     setCommandActionWait(false)
-    setBillSaved(true)
   }
   useEffect(() => {
     setLoaded(true)

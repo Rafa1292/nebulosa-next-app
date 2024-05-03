@@ -235,11 +235,13 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props)
           </div>
         )}
         {/* actions 20%*/}
-        <div className='w-full absolute bottom-0 right-0 h-[15vh] bg-white '>
-          <BillActions setShowPayMethod={setShowPayMethod} showPayMethod={showPayMethod} setShow={setShow} />
-        </div>
+        {(bill?.items?.length ?? 0) > 0 && (
+          <div className='w-full absolute bottom-0 right-0 h-[15vh] bg-white '>
+            <BillActions setShowPayMethod={setShowPayMethod} showPayMethod={showPayMethod} setShow={setShow} />
+          </div>
+        )}
       </div>
-      <BillPayMethodActions show={showPayMethod} />
+      {(bill?.items?.length ?? 0) > 0 && <BillPayMethodActions show={showPayMethod} />}
     </div>
   )
 }

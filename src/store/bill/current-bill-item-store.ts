@@ -153,7 +153,6 @@ export const useBillItemStore = create<State>()(
         itemNumber: number
       ) =>
         set((state) => {
-          console.log(saleItemArticleId, articleId, linkedArticleModifierElement, modifierGroupId, itemNumber)
           const itemArticles: BillItemLinkedArticle[] =
             state.billItem!.itemArticles?.map((itemArticle) => {
               if (itemArticle.saleItemArticleId !== saleItemArticleId) return itemArticle
@@ -207,7 +206,6 @@ export const useBillItemStore = create<State>()(
         itemNumber: number
       ) => {
         const billItemTmp = get().billItem
-        console.log(billItemTmp)
         if (billItemTmp) {
           const itemArticle = billItemTmp.itemArticles?.find(
             (itemArticle) =>

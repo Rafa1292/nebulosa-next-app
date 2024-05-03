@@ -3,10 +3,10 @@ import clsx from 'clsx'
 import { FaPersonWalkingLuggage } from 'react-icons/fa6'
 import { MdDeliveryDining, MdDinnerDining } from 'react-icons/md'
 import { useBillStore } from '@/store'
+import { useEffect } from 'react'
 
 export const BillDeliveryMethod = () => {
-    const { setDeliveryMethod, bill } = useBillStore()
-
+  const { setDeliveryMethod, bill } = useBillStore()
 
 
   return (
