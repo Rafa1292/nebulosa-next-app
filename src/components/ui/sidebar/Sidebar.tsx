@@ -27,7 +27,7 @@ export const Sidebar = () => {
       )}
       <nav
         className={clsx(
-          'fixed p-5 right-0 top-0 w-full sm:w-[500px] h-screen bg-white z-20 shadow-2xl fade-in transform transition-all duration-300',
+          'fixed p-5 right-0 top-0 w-full sm:w-[500px] h-screen bg-white z-20 shadow-2xl fade-in transform transition-all wrap duration-300',
           {
             'translate-x-full': !isMenuOpen,
           }
@@ -48,6 +48,13 @@ export const Sidebar = () => {
             className={` w-full text-left p-2 rounded focus:outline-none ${subTitleFont.className} duration-500 transition-all antialiased font-bold`}
           >
             Jornadas
+          </Link>
+        <Link
+            href={'/billing/edit-room'}
+            onClick={() => toggleMenu()}
+            className={` w-full flex text-left p-2 rounded focus:outline-none ${subTitleFont.className} duration-500 transition-all antialiased font-bold`}
+          >
+            Salon
           </Link>
         <Dropdown title='Mantenimiento'>
           <Link

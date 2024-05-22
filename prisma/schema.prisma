@@ -40,6 +40,16 @@ enum DeliveryMethod {
 
 // models--------------------------------------
 
+
+model RoomTable {
+    id     String  @id @default(uuid())
+    posX   Int
+    posY   Int
+    number Int
+    type   String
+    inUse  Boolean @default(false)
+}
+
 model AccountHistory {
     id                 String               @id @default(uuid())
     amount             Int
@@ -167,21 +177,21 @@ model ModifierElement {
 }
 
 model Bill {
-    id                 String               @id @default(uuid())
-    closed             Boolean              @default(false)
-    tableNumber        Int
-    deliveryMethod     DeliveryMethod
-    clientId           String
-    addressId          String
-    openWorkDayId      String
-    closeWorkDayId     String
-    commandTime        DateTime
-    isNull             Boolean              @default(false)
-    menuId             String
-    isServed           Boolean              @default(false)
-    isCredit           Boolean              @default(false)
-    items              BillItem[]
-    histories BillAccountHistory[]
+    id             String               @id @default(uuid())
+    closed         Boolean              @default(false)
+    tableNumber    Int
+    deliveryMethod DeliveryMethod
+    clientId       String
+    addressId      String
+    openWorkDayId  String
+    closeWorkDayId String
+    commandTime    DateTime
+    isNull         Boolean              @default(false)
+    menuId         String
+    isServed       Boolean              @default(false)
+    isCredit       Boolean              @default(false)
+    items          BillItem[]
+    histories      BillAccountHistory[]
 }
 
 model BillItem {

@@ -15,7 +15,7 @@ export const TmpBillContainer = ({saleItemCategories, menus}:Props) => {
     return (
         <>
         <button className="text-white font-bold py-2 px-4  rounded bg-blue-600 hover:bg-blue-500 cursor-pointer" onClick={() => setShow(!show)}>Show</button>
-        <Bill menus={menus} saleItemCategories={saleItemCategories} show={show} setShow={setShow}/>
+        <Bill menus={menus} saleItemCategories={saleItemCategories} show={show} setShow={setShow} tableNumber={0}/>
         </>
     )
 

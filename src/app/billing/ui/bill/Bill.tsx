@@ -20,9 +20,10 @@ interface Props {
   menus: Menu[]
   show?: boolean
   setShow: (show: boolean) => void
+  tableNumber: number | null
 }
 
-export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props) => {
+export const Bill = ({ show = true, setShow, menus, saleItemCategories,  tableNumber }: Props) => {
   const { bill, setMenuId, removeBillItem, getBillFromServer } = useBillStore()
   const { addBillItem, setBillItemForEdit } = useBillItemStore()
   const [saleItemCategory, setSaleItemCategory] = useState<SaleItemCategory | null>(null)
@@ -123,8 +124,8 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props)
   }
 
   useEffect(() => {
-    if (show) {
-      getBillFromServer('', 0)
+    if (show && tableNumber !== null) {
+      getBillFromServer('', tableNumber)
     }
   }, [show])
 
@@ -132,14 +133,16 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props)
     <div
       style={{ height: '0vh', width: '0vw' }}
       className={clsx('bg-white absolute top-0 left-0 overflow-hidden transition-all flex ', {
-        '!h-screen !w-screen': show,
+        '!h-screen !w-screen': show && tableNumber !== null,
       })}
     >
+      {/* <span>{tableNumber}</span> */}
       <IoCloseCircleOutline
         onClick={() => setShow(false)}
         className=' cursor-pointer text-4xl z-50 absolute text-red-800 right-3 top-3 hover:text-red-700'
       />
       <div className='w-3/5 bg-gray-100'>
+        <span>{tableNumber}</span>
         {/* -------------menus--------------------- */}
         <div className='w-full flex gap-3 px-2 border-b-2 justify-center py-2'>
           {menus.map((menu, index) => (
@@ -212,7 +215,11 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories }: Props)
         {/* delivery method 10%*/}
         <BillDeliveryMethod />
         {/* client info 6%*/}
-        <BillClient />
+        {
+          show && (
+            <BillClient />
+          )
+        }
         {(bill?.items?.length ?? 0) > 0 ? (
           <>
             {/* header 5%*/}

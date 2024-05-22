@@ -1,3 +1,6 @@
+export * from './table/create-update-tables'
+export * from './table/get-tables'
+
 export * from './billAccountHistory/create-bill-account-history'
 
 export * from './pay-method/get-pay-method-paginated'

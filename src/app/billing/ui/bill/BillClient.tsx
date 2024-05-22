@@ -99,6 +99,10 @@ export const BillClient = () => {
       setName(currentCustomer.name)
       setPhone(currentCustomer.phone)
       setAddresses(currentCustomer.addresses)
+    } else {
+      setCustomer(null)
+      setName('')
+      setPhone('')
     }
   }
 
