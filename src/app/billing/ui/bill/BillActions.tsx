@@ -8,16 +8,16 @@ import { FaCashRegister } from 'react-icons/fa6'
 import { HiMiniReceiptPercent } from 'react-icons/hi2'
 import { LuConciergeBell } from 'react-icons/lu'
 import { MdOutlineRestaurantMenu } from 'react-icons/md'
-import { nan } from 'zod'
 
 interface Props {
+  tableNumber: number
   setShow: (show: boolean) => void
   showPayMethod: boolean
   setShowPayMethod: (show: boolean) => void
 }
 
-export const BillActions = ({ setShow, showPayMethod, setShowPayMethod }: Props) => {
-  const { bill, saveBill, getTotalBill, addDiscount, getBillDiscount, needsCommand, getBillFromServer } = useBillStore()
+export const BillActions = ({ setShow, showPayMethod, setShowPayMethod, tableNumber }: Props) => {
+  const { bill, saveBill, getTotalBill, addDiscount, getBillDiscount, needsCommand, getBillFromServer, initBill } = useBillStore()
   const [commandActionWait, setCommandActionWait] = useState(false)
   const [loaded, setLoaded] = useState(false)
   const [discountForm, setDiscountForm] = useState(false)
@@ -87,6 +87,7 @@ export const BillActions = ({ setShow, showPayMethod, setShowPayMethod }: Props)
 
   const closeBill = () => {
     setShow(false)
+    initBill()
     setCommandActionWait(false)
   }
   useEffect(() => {

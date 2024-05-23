@@ -26,7 +26,8 @@ interface State {
   removeBillAccountHistory: (index: number) => void
   getBillFromServer: (billId: string, tableNumber: number) => void
   needsCommand: () => boolean,
-  payBill: () => Promise<Boolean>
+  payBill: () => Promise<Boolean>,
+  setTableNumber: (tableNumber: number) => void
 }
 
 const initialBill: Bill = {
@@ -56,7 +57,8 @@ export const useBillStore = create<State>()(
           set({ bill })
           return
         } else {
-          set({ bill: initialBill })
+          //set initial bill with tableNumber
+          set({ bill: { ...initialBill, tableNumber } })
         }
       },
       needsCommand: () => {
@@ -244,7 +246,11 @@ export const useBillStore = create<State>()(
           set({ bill: initialBill })      
           return true    
         }
-      }
+      },
+      setTableNumber: (tableNumber: number) => {
+        const bill = get().bill
+        set({ bill: { ...bill, tableNumber } })
+      },
     }),
     {
       name: 'bill-store',

@@ -136,13 +136,11 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories,  tableNu
         '!h-screen !w-screen': show && tableNumber !== null,
       })}
     >
-      {/* <span>{tableNumber}</span> */}
       <IoCloseCircleOutline
         onClick={() => setShow(false)}
         className=' cursor-pointer text-4xl z-50 absolute text-red-800 right-3 top-3 hover:text-red-700'
       />
       <div className='w-3/5 bg-gray-100'>
-        <span>{tableNumber}</span>
         {/* -------------menus--------------------- */}
         <div className='w-full flex gap-3 px-2 border-b-2 justify-center py-2'>
           {menus.map((menu, index) => (
@@ -216,9 +214,10 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories,  tableNu
         <BillDeliveryMethod />
         {/* client info 6%*/}
         {
-          show && (
+          show ?(
             <BillClient />
           )
+          :null
         }
         {(bill?.items?.length ?? 0) > 0 ? (
           <>
@@ -244,7 +243,7 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories,  tableNu
         {/* actions 20%*/}
         {(bill?.items?.length ?? 0) > 0 && (
           <div className='w-full absolute bottom-0 right-0 h-[15vh] bg-white '>
-            <BillActions setShowPayMethod={setShowPayMethod} showPayMethod={showPayMethod} setShow={setShow} />
+            <BillActions tableNumber={tableNumber ?? 0} setShowPayMethod={setShowPayMethod} showPayMethod={showPayMethod} setShow={setShow} />
           </div>
         )}
       </div>

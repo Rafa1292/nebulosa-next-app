@@ -93,13 +93,17 @@ export const BillClient = () => {
   }
 
   const initializeComponent = async () => {
+    console.log(bill)
     const { customer: currentCustomer } = await getCustomerById(bill.clientId)
+    console.log(currentCustomer)
     if (currentCustomer) {
+      console.log('exist')
       setCustomer(currentCustomer)
       setName(currentCustomer.name)
       setPhone(currentCustomer.phone)
       setAddresses(currentCustomer.addresses)
     } else {
+      console.log('not exist')
       setCustomer(null)
       setName('')
       setPhone('')
@@ -107,9 +111,7 @@ export const BillClient = () => {
   }
 
   useEffect(() => {
-    if (bill.clientId) {
-      initializeComponent()
-    }
+    initializeComponent()
   }, [bill.clientId])
 
   return (
@@ -142,15 +144,13 @@ export const BillClient = () => {
           {!addDirection && addresses.length > 0 ? (
             <>
               <select
-              onChange={(ev) => setAddressId(ev.target.value)}
+                onChange={(ev) => setAddressId(ev.target.value)}
                 disabled={!phoneIsValid()}
                 className='p-2 text-gray-500 text-xs w-1/3 border rounded-md bg-gray-100'
               >
                 <option value=''>Direccion</option>
                 {addresses.map((address) => (
-                  <option
-                  selected={address.id === bill?.addressId}
-                  key={address.id} value={address.id}>
+                  <option selected={address.id === bill?.addressId} key={address.id} value={address.id}>
                     {address.description}
                   </option>
                 ))}
