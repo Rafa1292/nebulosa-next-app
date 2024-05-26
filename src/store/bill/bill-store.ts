@@ -6,6 +6,7 @@ import { getCurrentBillItemTotal, getCurrentItemArticleTotal, getTotalBill } fro
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
+
 interface State {
   bill: Bill
   setMenuId: (menuId: string) => void
@@ -24,11 +25,14 @@ interface State {
   addDiscount: (discount: number) => void
   addBillAccountHistory: (tmpAccountHistory?: AccountHistory, index?: number) => void
   removeBillAccountHistory: (index: number) => void
-  getBillFromServer: (billId: string, tableNumber: number) => void
+  getBillFromServer: (billId: string, tableNumber: number, workDayId: string) => void
   needsCommand: () => boolean,
-  payBill: () => Promise<Boolean>,
+  payBill: () => Promise<Boolean>
   setTableNumber: (tableNumber: number) => void
+  setWorkdayId: (workDayId: string) => void
 }
+
+
 
 const initialBill: Bill = {
   addressId: '',
@@ -51,14 +55,14 @@ export const useBillStore = create<State>()(
   persist(
     (set, get) => ({
       bill: initialBill,
-      getBillFromServer: async (billId: string, tableNumber: number) => {
+      getBillFromServer: async (billId: string, tableNumber: number, workdayId: string) => {
         const { bill } = await getBillByTableNumber(tableNumber)
         if (bill) {
           set({ bill })
           return
         } else {
           //set initial bill with tableNumber
-          set({ bill: { ...initialBill, tableNumber } })
+          set({ bill: { ...initialBill, tableNumber, openWorkDayId: workdayId } })
         }
       },
       needsCommand: () => {
@@ -114,6 +118,9 @@ export const useBillStore = create<State>()(
       },
       initBill: () => {
         set({ bill: initialBill })
+      },
+      setWorkdayId: (workDayId: string) => {
+        set({ bill: { ...get().bill, openWorkDayId: workDayId } })
       },
       removeBillItem: (saleItemId: string) => {
         const bill = get().bill

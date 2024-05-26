@@ -2,10 +2,11 @@ import { getMenus, getSaleItemCategoriesWithRelations, getWorkDayByEmail } from 
 import { auth } from '@/auth.config'
 import { redirect } from 'next/navigation'
 import { WorkDay } from './ui/WorkDay'
-import { TmpBillContainer } from './ui/bill/TmpBillContainer'
 import { Room } from './ui/room/Room'
 
+
 export default async function BillingPage() {
+  
   const session = await auth()
   const allowedUserRoles = ['user', 'admin']
   const { saleItemCategories } = await getSaleItemCategoriesWithRelations()
@@ -35,7 +36,7 @@ export default async function BillingPage() {
 
   return (
     <div className='w-full wrap h-screen'>
-      <Room menus={menus ?? []} saleItemCategories={saleItemCategories ?? []}/>
+      <Room email={session.user.email} menus={menus ?? []} saleItemCategories={saleItemCategories ?? []}/>
     </div>
   )
 }

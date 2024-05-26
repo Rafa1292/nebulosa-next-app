@@ -1,17 +1,19 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Table } from '../../edit-room/ui/Table'
 import { useRoomTableStore } from '@/store'
 import { Bill } from '../bill/Bill'
 import { Menu, SaleItemCategory } from '@/interfaces'
+import { useWorkDayStore } from '@/store'
 
 interface Props {
   saleItemCategories: SaleItemCategory[]
   menus: Menu[]
+  email: string
 }
 
-export const Room = ({ menus, saleItemCategories }: Props) => {
+export const Room = ({ menus, saleItemCategories, email }: Props) => {
   const { tables } = useRoomTableStore()
   const [show, setShow] = React.useState(false)
   const [tableNumber, setTableNumber] = React.useState<number | null>(null)
@@ -20,6 +22,13 @@ export const Room = ({ menus, saleItemCategories }: Props) => {
     setTableNumber(tableNumber)
     setShow(true)
   }
+
+  useEffect(() => {
+    const workDayId = useWorkDayStore.getState().workDayId
+    if (!workDayId) {
+      useWorkDayStore.getState().getWorkDayByEmail(email)
+    }
+  }, [])
 
   return (
     <>

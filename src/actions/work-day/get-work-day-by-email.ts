@@ -1,3 +1,5 @@
+'use server'
+
 import prisma from "@/lib/prisma"
 
 
@@ -21,6 +23,7 @@ export const getWorkDayByEmail = async (email: string) => {
         closed: false
       }
     })
+    console.log(workDay)
 
     if (!workDay) {
       throw new Error('No se encontro el dia de trabajo')

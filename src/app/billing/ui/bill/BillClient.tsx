@@ -93,17 +93,13 @@ export const BillClient = () => {
   }
 
   const initializeComponent = async () => {
-    console.log(bill)
     const { customer: currentCustomer } = await getCustomerById(bill.clientId)
-    console.log(currentCustomer)
     if (currentCustomer) {
-      console.log('exist')
       setCustomer(currentCustomer)
       setName(currentCustomer.name)
       setPhone(currentCustomer.phone)
       setAddresses(currentCustomer.addresses)
     } else {
-      console.log('not exist')
       setCustomer(null)
       setName('')
       setPhone('')

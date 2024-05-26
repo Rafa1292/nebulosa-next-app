@@ -5,7 +5,7 @@ import { BillItem, Menu, SaleItem, SaleItemCategory } from '@/interfaces'
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 import { IoCloseCircleOutline } from 'react-icons/io5'
-import { useBillItemStore, useBillStore } from '@/store'
+import { useBillItemStore, useBillStore, useWorkDayStore } from '@/store'
 import { currencyFormat } from '@/utils'
 import { BillSaleItem } from './BillSaleItem'
 import { BillItemUI } from './BillItem'
@@ -24,13 +24,14 @@ interface Props {
 }
 
 export const Bill = ({ show = true, setShow, menus, saleItemCategories,  tableNumber }: Props) => {
-  const { bill, setMenuId, removeBillItem, getBillFromServer } = useBillStore()
+  const { bill, setMenuId, removeBillItem, getBillFromServer, setWorkdayId } = useBillStore()
   const { addBillItem, setBillItemForEdit } = useBillItemStore()
   const [saleItemCategory, setSaleItemCategory] = useState<SaleItemCategory | null>(null)
   const [saleItem, setSaleItem] = useState<SaleItem | null>(null)
   const [selectedMenu, setSelectedMenu] = useState<Menu | null>(null)
   const [saleItemCategoriesWithPrice, setSaleItemCategoriesWithPrice] = useState<SaleItemCategory[]>([])
   const [showPayMethod, setShowPayMethod] = useState(false)
+  const { workDayId} = useWorkDayStore()
 
   const handleSetSaleItem = (saleItem: SaleItem) => {
     addBillItem(saleItem, 1)
@@ -124,8 +125,8 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories,  tableNu
   }
 
   useEffect(() => {
-    if (show && tableNumber !== null) {
-      getBillFromServer('', tableNumber)
+    if (show && tableNumber !== null && workDayId !== null) {
+      getBillFromServer('', tableNumber, workDayId)
     }
   }, [show])
 
