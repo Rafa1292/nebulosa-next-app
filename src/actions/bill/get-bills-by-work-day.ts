@@ -1,10 +1,26 @@
+import { auth } from "@/auth.config"
 import prisma from "@/lib/prisma"
+import { getWorkDayByEmail } from "../work-day/get-work-day-by-email"
 
-export const getBillsByWorkDayId = async (id: string) => {
+export const getBillsByWorkDayId = async () => {
     try {
+        const session = await auth()
+        if (!session) {
+          return {
+            ok: false,
+            message: 'No se pudo obtener la sesión',
+          }
+        }
+        const {workDay} = await getWorkDayByEmail(session.user.email)
+        if (!workDay) {
+            return {
+            ok: false,
+            message: 'No se encontró la jornada laboral',
+            }
+        }
         const bills = await prisma.bill.findMany({
             where: {
-            openWorkDayId: id
+            openWorkDayId: workDay.id,
             },
             include: {
             items: {
@@ -26,6 +42,7 @@ export const getBillsByWorkDayId = async (id: string) => {
             },
             },
         })
+        console.log(bills)
     
         if (!bills) {
             return {
