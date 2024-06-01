@@ -52,8 +52,8 @@ export default async function BillsPage() {
                     <td className='px-6 py-4'>
                       <span
                         className={clsx('h-[10px] w-[10px] rounded-full flex', {
-                          'bg-green-500': !bill.closed,
-                          'bg-red-900': bill.closed,
+                          'bg-green-500 shadow-[0px_0px_8px_-1px_#22c55e]': !bill.closed,
+                          'bg-red-900 shadow-[0px_0px_8px_-1px_#7f1d1d]': bill.closed,
                         })}
                       ></span>
                     </td>
