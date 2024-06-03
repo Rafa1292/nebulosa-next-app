@@ -1,7 +1,7 @@
 'use client'
 
 import { ProgressBar } from '@/components'
-import { useBillStore } from '@/store'
+import { useBillStore, useWorkDayStore } from '@/store'
 import { currencyFormat } from '@/utils'
 import { useEffect, useState } from 'react'
 import { FaCashRegister } from 'react-icons/fa6'
@@ -23,6 +23,7 @@ export const BillActions = ({ setShow, showPayMethod, setShowPayMethod, tableNum
   const [discountForm, setDiscountForm] = useState(false)
   const [discountPercent, setDiscountPercent] = useState(0)
   const [discountAmount, setDiscountAmount] = useState(0)
+  const { workDayId } = useWorkDayStore()
 
   const commandBill = async () => {
     const state = await saveBill()
@@ -33,14 +34,13 @@ export const BillActions = ({ setShow, showPayMethod, setShowPayMethod, tableNum
 
   const stayBill = async () => {
     setCommandActionWait(false)
-    await getBillFromServer(bill.id, 0)
+    await getBillFromServer(bill.id, 0, workDayId ?? '')
   }
 
   const getTotal = () => {
     const total = getTotalBill()
-    const discount = getBillDiscount()
 
-    return total - discount
+    return total
   }
 
   const onSetDiscountAmount = (value: string) => {

@@ -18,12 +18,11 @@ export const payBill = async (billId: string, tmpBillAccountHistories: BillAccou
 try {
     const { bill } = await getBillById(billId)
     if (!bill) {
-      alert('Factura no encontrada')
       return { ok: false, message: 'Factura no encontrada' }
     }
     const total = getTotalBill(bill)
+    console.log(total)
     if (!validateAccountHistories(tmpBillAccountHistories, total)) {
-      alert('El monto de los pagos no coincide con el total de la factura')
       return { ok: false, message: 'El monto de los pagos no coincide con el total de la factura' }
     }
     const billAccountHistories = tmpBillAccountHistories.map((billAccountHistory) => {

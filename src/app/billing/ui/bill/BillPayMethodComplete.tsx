@@ -16,7 +16,7 @@ const newAccountHistory: AccountHistory = {
 }
 
 export const BillPayMethodComplete = () => {
-  const { bill,payBill, getTotalBill, getTotalHistories, addBillAccountHistory, removeBillAccountHistory } = useBillStore()
+  const { bill,payBill, getBillDiscount, getTotalBill, getTotalHistories, addBillAccountHistory, removeBillAccountHistory } = useBillStore()
   const [currentAccountHistory, setCurrentAccountHistory] = useState<AccountHistory>(newAccountHistory)
   const [loader, setLoader] = useState<boolean>(false)
 
@@ -68,6 +68,7 @@ export const BillPayMethodComplete = () => {
             <>
               <div className=' w-[44%] mx-[3%] flex flex-col justify-center items-center mb-6'>
                 <AccountHistoryForm
+                defaultAmount={getTotalBill()}
                   setAccountHistory={(accountHistory) =>
                     addAccountHistory(accountHistory, bill.histories?.length ?? +1 ?? 0)
                   }

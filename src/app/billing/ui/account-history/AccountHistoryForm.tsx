@@ -9,6 +9,7 @@ interface Props {
   index?: number
   accountHistory: AccountHistory
   allowAction?: boolean
+  defaultAmount?: number
   setAccountHistory: (accountHistory: AccountHistory, index?: number) => void
   removeAccountHistory?: (index: number) => void
 }
@@ -19,6 +20,7 @@ export const AccountHistoryForm = ({
   setAccountHistory,
   index,
   allowAction = true,
+  defaultAmount,
   removeAccountHistory,
 }: Props) => {
   const [payMethods, setPayMethods] = useState<PayMethod[]>([])
@@ -78,6 +80,7 @@ export const AccountHistoryForm = ({
           <div className='flex flex-col mb-4'>
             <span className='font-bold antialiased text-sm select-none'>Monto</span>
             <input
+            onDoubleClick={() => setAmount(defaultAmount || 0)}
               disabled={!allowAction}
               type='number'
               className='p-2 border rounded-md bg-white select-none'

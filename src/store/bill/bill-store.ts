@@ -244,8 +244,10 @@ export const useBillStore = create<State>()(
         set({ bill: { ...bill, histories } })
       },
       payBill: async () => {
+        console.log('paying')
         const bill = get().bill
-        const {ok} = await payBill(bill.id, bill.histories ?? [])
+        const {ok, message} = await payBill(bill.id, bill.histories ?? [])
+        console.log(message)
         if (!ok) {
           alert('Error al pagar la factura')
           return false
