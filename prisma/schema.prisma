@@ -40,6 +40,30 @@ enum DeliveryMethod {
 
 // models--------------------------------------
 
+model Entry {
+    id               String         @id @default(uuid())
+    workDayId        String         @unique
+    description      String
+    accountHistoryId String         @unique
+    accountHistory   AccountHistory @relation(fields: [accountHistoryId], references: [id])
+}
+
+model Expense {
+    id          String @id @default(uuid())
+    amount      Int
+    isNull     Boolean @default(false)
+    description String
+    providerId  String
+    workDayId   String
+    pendingPay  Boolean @default(true)
+}
+
+model ExpenseAccountHistory {
+    id String @id @default(uuid())
+    accountHistoryId String @unique
+    expenseId String 
+}
+
 model RoomTable {
     id     String  @id @default(uuid())
     posX   Int
@@ -58,6 +82,7 @@ model AccountHistory {
     payMethodId        String
     PayMethod          PayMethod            @relation(fields: [payMethodId], references: [id])
     BillAccountHistory BillAccountHistory[]
+    Entry              Entry?
 }
 
 model BillAccountHistory {
