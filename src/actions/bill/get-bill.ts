@@ -54,9 +54,13 @@ export const getBillById = async (id: string) => {
     const bill = await prisma.bill.findFirst({
       where: {
         id,
-        closed: false,
       },
       include: {
+        customer: {
+          include: {
+            addresses: true,
+          },
+        },
         items: {
           include: {
             itemArticles: {
@@ -83,6 +87,7 @@ export const getBillById = async (id: string) => {
         message: 'No se encontró la factura',
       }
     }
+
 
     return {
       ok: true,

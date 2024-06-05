@@ -40,7 +40,6 @@ enum DeliveryMethod {
 
 // models--------------------------------------
 
-
 model RoomTable {
     id     String  @id @default(uuid())
     posX   Int
@@ -99,6 +98,7 @@ model Customer {
     creditState Boolean   @default(false)
     creditLimit Int       @default(0)
     addresses   Address[]
+    Bill        Bill[]
 }
 
 model Address {
@@ -190,6 +190,7 @@ model Bill {
     menuId         String
     isServed       Boolean              @default(false)
     isCredit       Boolean              @default(false)
+    customer       Customer             @relation(fields: [clientId], references: [id])
     items          BillItem[]
     histories      BillAccountHistory[]
 }

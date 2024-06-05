@@ -3,15 +3,13 @@
 import { getBillsByWorkDayId } from '@/actions/bill/get-bills-by-work-day'
 import { currencyFormat, getTotalBill } from '@/utils'
 import clsx from 'clsx'
-import { FaTrashAlt } from 'react-icons/fa'
-import { FaEye } from 'react-icons/fa6'
-import { IoMdPrint } from 'react-icons/io'
+import { BillActions } from './ui/BillActions'
 
 export default async function BillsPage() {
   const { bills } = await getBillsByWorkDayId()
-  console.log(bills)
+
   return (
-    <div className='w-full wrap h-screen'>
+    <div className='w-full wrap h-screen overflow-scroll pb-10'>
       <div className='w-full flex justify-center'>
         <h1 className='text-2xl font-bold py-8'>Facturas</h1>
       </div>
@@ -41,14 +39,17 @@ export default async function BillsPage() {
                   <th scope='col' className='px-6 py-3'>
                     Total
                   </th>
-                  <th scope='col' className='px-6 py-3'>
-                    
-                  </th>
+                  <th scope='col' className='px-6 py-3'></th>
                 </tr>
               </thead>
               <tbody>
                 {bills.map((bill) => (
-                  <tr className='bg-white border-b dark:bg-gray-800 dark:border-gray-700' key={bill.id}>
+                  <tr
+                    className={clsx('bg-white border-b dark:bg-gray-800 dark:border-gray-700', {
+                      'line-through text-red-600': bill.isNull,
+                    })}
+                    key={bill.id}
+                  >
                     <td className='px-6 py-4'>
                       <span
                         className={clsx('h-[10px] w-[10px] rounded-full flex', {
@@ -58,19 +59,15 @@ export default async function BillsPage() {
                       ></span>
                     </td>
                     <td className='px-6 py-4'>{bill.tableNumber}</td>
-                    <th scope='row' className='px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white'>
+                    <th scope='row' className='px-6 py-4 font-medium whitespace-nowrap '>
                       Rafa
                     </th>
                     <td className='px-6 py-4'>{bill.commandTime.toLocaleTimeString()}</td>
-                    <td className='px-6 py-4'>{bill.closed ? 'Cerrada' : 'Abierta'}</td>
-                    <th scope='row' className='px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white'>
+                    <td className='px-6 py-4'>{ bill.isNull ? 'Anulada' : bill.closed ? 'Cerrada' : 'Abierta'}</td>
+                    <th scope='row' className='px-6 py-4 font-medium whitespace-nowrap '>
                       {currencyFormat(getTotalBill(bill))}
                     </th>
-                    <td className='px-6 py-4 flex-wrap flex items-center justify-between'>
-                      <FaEye className='text-white cursor-pointer text-xl hover:text-black'/>
-                      <FaTrashAlt className='text-white cursor-pointer text-xl hover:text-red-800'/>
-                      <IoMdPrint  className='text-white cursor-pointer text-xl hover:text-blue-800'/>
-                      </td>
+                    <BillActions billId={bill.id} />
                   </tr>
                 ))}
               </tbody>

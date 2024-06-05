@@ -1,4 +1,4 @@
-import { BillAccountHistory, BillItem } from ".";
+import { BillAccountHistory, BillItem, Customer } from ".";
 
 
 
@@ -18,6 +18,7 @@ export interface Bill {
     isCredit: boolean;
     items?: BillItem[];
     histories?: BillAccountHistory[];
+    customer?: Customer
 }
 
 export type DeliveryMethod = 'Mesa' | 'Domicilio' | 'Recoger';
