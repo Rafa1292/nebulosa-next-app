@@ -1,6 +1,6 @@
 
 
-export interface EntrytPrice {
+export interface Entry {
     id: string;
     workDayId: string;
     description: string;
