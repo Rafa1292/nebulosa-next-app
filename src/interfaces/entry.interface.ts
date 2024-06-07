@@ -1,3 +1,4 @@
+import { AccountHistory } from "./account-history.interface";
 
 
 export interface Entry {
@@ -5,4 +6,5 @@ export interface Entry {
     workDayId: string;
     description: string;
     accountHistoryId: string;
+    accountHistory?: AccountHistory
 }

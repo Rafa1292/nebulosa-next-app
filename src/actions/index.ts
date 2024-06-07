@@ -1,3 +1,11 @@
+export * from './entry/create-entry'
+export * from './entry/get-entries-by-work-day'
+
+export * from './expense/create-expense'
+export * from './expense/get-expenses-by-work-day'
+
+export * from './expense-account-history/create-expense-account-history'
+
 export * from './table/create-update-tables'
 export * from './table/get-tables'
 

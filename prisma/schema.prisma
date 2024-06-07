@@ -42,7 +42,7 @@ enum DeliveryMethod {
 
 model Entry {
     id               String         @id @default(uuid())
-    workDayId        String         @unique
+    workDayId        String         
     description      String
     accountHistoryId String         @unique
     accountHistory   AccountHistory @relation(fields: [accountHistoryId], references: [id])

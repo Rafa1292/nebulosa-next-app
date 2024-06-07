@@ -30,7 +30,7 @@ export const AccountHistoryForm = ({
   const [loaded, setLoaded] = useState(false)
 
   const addAccountHistory = async () => {
-    if (!payMethodId || !amount) return
+    if (!payMethodId || !amount) return alert('Debe seleccionar un metodo de pago y un monto')
     if (amount <= 0) return alert('El monto debe ser mayor a cero')
     const newAccountHistory: AccountHistory = {
       id: accountHistory.id,

@@ -8,6 +8,9 @@ export const getEntriesByWorkDay = async (workDayId: string) => {
       where: {
         workDayId,
       },
+      include: {
+        accountHistory: true,
+      },
     })
 
     return {

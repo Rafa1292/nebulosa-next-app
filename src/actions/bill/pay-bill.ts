@@ -21,7 +21,6 @@ try {
       return { ok: false, message: 'Factura no encontrada' }
     }
     const total = getTotalBill(bill)
-    console.log(total)
     if (!validateAccountHistories(tmpBillAccountHistories, total)) {
       return { ok: false, message: 'El monto de los pagos no coincide con el total de la factura' }
     }
