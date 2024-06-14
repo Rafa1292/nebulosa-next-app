@@ -5,11 +5,6 @@ import { AccountHistoryForm } from '../../ui/account-history/AccountHistoryForm'
 import { useState } from 'react'
 import { AccountHistory } from '@/interfaces'
 
-interface FormInputs {
-  description: string
-  amount: number
-}
-
 const initialAccountHistory: AccountHistory = {
   id: '',
   amount: 0,

@@ -16,7 +16,7 @@ const newAccountHistory: AccountHistory = {
 }
 
 export const BillPayMethodComplete = () => {
-  const { bill,payBill, getBillDiscount, getTotalBill, getTotalHistories, addBillAccountHistory, removeBillAccountHistory } = useBillStore()
+  const { bill,payBill, getTotalBill, getTotalHistories, addBillAccountHistory, removeBillAccountHistory } = useBillStore()
   const [currentAccountHistory, setCurrentAccountHistory] = useState<AccountHistory>(newAccountHistory)
   const [loader, setLoader] = useState<boolean>(false)
 

@@ -39,6 +39,7 @@ export const AccountHistoryForm = ({
       currentBalance: 0,
       pay: false,
       previousBalance: 0,
+      payMethod: payMethods.find((x) => x.id === payMethodId),
     }
     setAccountHistory(newAccountHistory, index)
   }

@@ -14,13 +14,13 @@ export default async function EntriesPage({ params }: Props) {
 
   return (
     <div className='w-full flex-wrap relative h-screen justify-center flex'>
-                <span className=' absolute top-[20vh] text-xl w-full mb-10 text-center font-semibold h-fit italic'>Entradas</span>
+      <span className=' absolute top-[20vh] text-xl w-full mb-10 text-center font-semibold h-fit italic'>Entradas</span>
 
       <div className='absolute left-2 top-[30vh]'>
         <EntryForm />
       </div>
       {!entries || entries.length === 0 ? (
-        <div className='text-center ml-[320px] font-bold'>No hay ingresos en esta jornada</div>
+        <div className='text-center ml-[320px] font-bold pt-[30vh]'>No hay ingresos en esta jornada</div>
       ) : (
         <div className='w-full pl-[320px] flex-wrap justify-center flex pt-[30vh] h-fit'>
           <div className='w-1/4 font-semibold border-b border-gray-600 mb-2 text-right pr-1 italic'>Detalle</div>

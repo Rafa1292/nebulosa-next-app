@@ -50,8 +50,9 @@ export const Room = ({ menus, saleItemCategories, email }: Props) => {
         <Link href={`/billing/entries/${useWorkDayStore.getState().workDayId}`}>
           <div className='py-2 font-bold cursor-pointer hover:text-gray-500'>Entradas</div>
         </Link>
+        <Link href={`/billing/expenses/${useWorkDayStore.getState().workDayId}`}>
           <div className='py-2 font-bold cursor-pointer hover:text-gray-500'>Gastos</div>
-
+          </Link>
         </div>
       <Bill tableNumber={tableNumber} menus={menus} saleItemCategories={saleItemCategories} show={show} setShow={setShow} />
     </>

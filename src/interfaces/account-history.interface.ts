@@ -1,3 +1,4 @@
+import { PayMethod } from "./pay-method.interface"
 
 export interface AccountHistory{
     id: string
@@ -6,4 +7,5 @@ export interface AccountHistory{
     currentBalance: number
     pay: boolean
     payMethodId: string
+    payMethod?: PayMethod
 }

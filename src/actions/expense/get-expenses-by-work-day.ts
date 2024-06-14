@@ -8,11 +8,22 @@ export const getExpensesByWorkDay = async (workDayId: string) => {
       where: {
         workDayId,
       },
+      include: {
+        expenseAccountHistories: {
+          include: {
+            AccountHistory: {
+              include: {
+                PayMethod: true,
+              },
+            },
+          },
+        },
+      },
     })
 
     return {
       ok: true,
-      entries: expenses,
+      expenses,
     }
   } catch (error) {
     console.log(error)

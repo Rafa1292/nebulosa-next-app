@@ -42,26 +42,29 @@ enum DeliveryMethod {
 
 model Entry {
     id               String         @id @default(uuid())
-    workDayId        String         
+    workDayId        String
     description      String
     accountHistoryId String         @unique
     accountHistory   AccountHistory @relation(fields: [accountHistoryId], references: [id])
 }
 
 model Expense {
-    id          String @id @default(uuid())
-    amount      Int
-    isNull     Boolean @default(false)
-    description String
-    providerId  String
-    workDayId   String
-    pendingPay  Boolean @default(true)
+    id                    String                  @id @default(uuid())
+    amount                Int
+    isNull                Boolean                 @default(false)
+    description           String
+    providerId            String
+    workDayId             String
+    pendingPay            Boolean                 @default(true)
+    expenseAccountHistories ExpenseAccountHistory[]
 }
 
 model ExpenseAccountHistory {
-    id String @id @default(uuid())
-    accountHistoryId String @unique
-    expenseId String 
+    id               String         @id @default(uuid())
+    accountHistoryId String         @unique
+    expenseId        String
+    Expense          Expense        @relation(fields: [expenseId], references: [id])
+    AccountHistory   AccountHistory @relation(fields: [accountHistoryId], references: [id])
 }
 
 model RoomTable {
@@ -74,15 +77,16 @@ model RoomTable {
 }
 
 model AccountHistory {
-    id                 String               @id @default(uuid())
-    amount             Int
-    previousBalance    Int
-    currentBalance     Int
-    pay                Boolean
-    payMethodId        String
-    PayMethod          PayMethod            @relation(fields: [payMethodId], references: [id])
-    BillAccountHistory BillAccountHistory[]
-    Entry              Entry?
+    id                    String                 @id @default(uuid())
+    amount                Int
+    previousBalance       Int
+    currentBalance        Int
+    pay                   Boolean
+    payMethodId           String
+    PayMethod             PayMethod              @relation(fields: [payMethodId], references: [id])
+    BillAccountHistory    BillAccountHistory[]
+    Entry                 Entry?
+    ExpenseAccountHistory ExpenseAccountHistory?
 }
 
 model BillAccountHistory {

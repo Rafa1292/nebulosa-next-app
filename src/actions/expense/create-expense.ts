@@ -4,6 +4,14 @@ import {  Expense } from '@/interfaces'
 import prisma from '@/lib/prisma'
 import { z } from 'zod'
 
+const accountHistorySchema = z.object({
+  amount: z.number(),
+  previousBalance: z.number(),
+  currentBalance: z.number(),
+  pay: z.boolean(),
+  payMethodId: z.string(),
+})
+
 
 const expenseSchema = z.object({
     amount: z.number(),
@@ -11,12 +19,13 @@ const expenseSchema = z.object({
     description: z.string(),
     providerId: z.string().uuid(),    
     workDayId: z.string().uuid(),
-    pendingPay: z.boolean()
+    pendingPay: z.boolean(),
+    expenseAccountHistories: z.array(accountHistorySchema),
 })
 
-export const createExpense = async (expense: Expense) => {
+export const createExpense = async (expense: Partial<Expense>) => {
   try {
-    const validExpense = expenseSchema.parse(expense)
+    const { expenseAccountHistories, ...validExpense} = expenseSchema.parse(expense)
     await prisma.expense.create({
       data: {
         ...validExpense,

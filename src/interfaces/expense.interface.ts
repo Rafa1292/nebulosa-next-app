@@ -1,3 +1,4 @@
+import { ExpenseAccountHistory } from "./expense-account-history.interface";
 
 
 export interface Expense {
@@ -8,4 +9,5 @@ export interface Expense {
     providerId: string;
     workDayId: string;
     pendingPay: boolean;
+    expenseAccountHistories?: ExpenseAccountHistory[];
 }
