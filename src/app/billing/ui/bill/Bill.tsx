@@ -14,104 +14,40 @@ import { BillDeliveryMethod } from './BillDeliveryMethod'
 import { BillItemHeader } from './BillItemHeader'
 import { BillActions } from './BillActions'
 import { BillPayMethodActions } from './BillPayMethodActions'
+import { MenuSelection } from '../menu/MenuSelection'
+import { useMenuStore } from '@/store/menu/menu-store'
 
 interface Props {
-  saleItemCategories: SaleItemCategory[]
   menus: Menu[]
+  saleItemCategories: SaleItemCategory[]
   show?: boolean
   setShow: (show: boolean) => void
   tableNumber: number | null
 }
 
-export const Bill = ({ show = true, setShow, menus, saleItemCategories,  tableNumber }: Props) => {
-  const { bill, setMenuId, removeBillItem, getBillFromServer, setWorkdayId } = useBillStore()
+export const Bill = ({ show = true, setShow, menus,  tableNumber }: Props) => {
+  // stores
+  const { bill, setMenuId, removeBillItem, getBillFromServer } = useBillStore()
   const { addBillItem, setBillItemForEdit } = useBillItemStore()
+  const { workDayId} = useWorkDayStore()
+  const { saleItemCategoriesWithPrice, setSaleItemCategoriesWithPriceFromMenu } = useMenuStore()
+
+  // states
+  const [selectedMenu, setSelectedMenu] = useState<Menu | null>(null)
   const [saleItemCategory, setSaleItemCategory] = useState<SaleItemCategory | null>(null)
   const [saleItem, setSaleItem] = useState<SaleItem | null>(null)
-  const [selectedMenu, setSelectedMenu] = useState<Menu | null>(null)
-  const [saleItemCategoriesWithPrice, setSaleItemCategoriesWithPrice] = useState<SaleItemCategory[]>([])
   const [showPayMethod, setShowPayMethod] = useState(false)
-  const { workDayId} = useWorkDayStore()
 
   const handleSetSaleItem = (saleItem: SaleItem) => {
     addBillItem(saleItem, 1)
     setSaleItem(saleItem)
   }
 
-  const handleChangeMenu = (menu: Menu) => {
-    let isValid = true
-    if (bill.menuId !== '') {
-      if (bill.items!.length > 0) {
-        if (bill.menuId !== menu.id) {
-          alert('No puedes agregar items de diferentes menus en la misma cuenta')
-          isValid = false
-        }
-      }
-    }
-    if (isValid) {
-      setSelectedMenu(menu)
-      setMenuId(menu.id)
-      const tmpSaleItemCategories: SaleItemCategory[] = saleItemCategories.map((saleItemCategory) => {
-        return {
-          ...saleItemCategory,
-          saleItems: saleItemCategory?.saleItems?.map((saleItem) => {
-            return {
-              ...saleItem,
-              currentMenuPrice: saleItem?.prices?.find((price) => price.menuId === menu.id)?.price ?? 0,
-              saleItemArticles: saleItem?.saleItemArticles?.map((saleItemArticle) => {
-                return {
-                  ...saleItemArticle,
-                  article: {
-                    id: saleItemArticle.article?.id ?? '',
-                    name: saleItemArticle.article?.name ?? '',
-                    description: saleItemArticle.article?.description ?? '',
-                    needsCommand: saleItemArticle.article?.needsCommand ?? false,
-                    active: saleItemArticle.article?.active ?? false,
-                    articleModifiers: saleItemArticle.article?.articleModifiers?.map((articleModifier) => {
-                      return {
-                        id: articleModifier.id,
-                        articleId: articleModifier.articleId,
-                        modifierGroupId: articleModifier.modifierGroupId,
-                        order: articleModifier.order,
-                        minSelect: articleModifier.minSelect,
-                        maxSelect: articleModifier.maxSelect,
-                        priceByGroup: articleModifier.priceByGroup,
-                        currentMenuPrice: articleModifier.prices?.find((price) => price.menuId === menu.id)?.price ?? 0,
-                        modifierGroup: {
-                          id: articleModifier.modifierGroup?.id ?? '',
-                          name: articleModifier.modifierGroup?.name ?? '',
-                          showLabel: articleModifier.modifierGroup?.showLabel ?? false,
-                          elements: articleModifier.modifierGroup?.elements?.map((element) => {
-                            return {
-                              id: element.id,
-                              name: element.name,
-                              defaultRecipeId: element.defaultRecipeId,
-                              combinable: element.combinable,
-                              combinableModifierGroupId: element.combinableModifierGroupId,
-                              modifierGroupId: element.modifierGroupId,
-                              currentMenuPrice: element.prices?.find((price) => price.menuId === menu.id)?.price ?? 0,
-                            }
-                          }),
-                        },
-                      }
-                    }),
-                  },
-                }
-              }),
-            }
-          }),
-        }
-      })
-      setSaleItemCategoriesWithPrice(tmpSaleItemCategories)
-      setSaleItemCategory(tmpSaleItemCategories[0])
-      return tmpSaleItemCategories
-    }
-  }
 
   const handleEditBillItem = (billItem: BillItem) => {
     const currentMenu = menus.find((menu) => menu.id === bill.menuId)
     if (currentMenu) {
-      const tmpSaleItemCategories = handleChangeMenu(currentMenu) ?? []
+      const tmpSaleItemCategories = setSaleItemCategoriesWithPriceFromMenu(currentMenu) ?? []
       tmpSaleItemCategories.forEach((saleItemCategory) => {
         const item = saleItemCategory.saleItems?.find((saleItem) => saleItem.id === billItem.saleItemId)
         if (item) {
@@ -143,22 +79,7 @@ export const Bill = ({ show = true, setShow, menus, saleItemCategories,  tableNu
       />
       <div className='w-3/5 bg-gray-100'>
         {/* -------------menus--------------------- */}
-        <div className='w-full flex gap-3 px-2 border-b-2 justify-center py-2'>
-          {menus.map((menu, index) => (
-            <div
-              onClick={() => handleChangeMenu(menu)}
-              key={index}
-              className={clsx(
-                'flex bg-red-800 text-white cursor-pointer select-none hover:bg-white hover:border-gray-900 hover:!text-black justify-between px-3 py-1 border-y-2 shadow-xl rounded-xl border-white',
-                {
-                  'bg-white border-gray-900 !text-black': selectedMenu?.id === menu.id,
-                }
-              )}
-            >
-              <div className={`${titleFont.className}  antialiased text-xs font-bold`}>{menu.name}</div>
-            </div>
-          ))}
-        </div>
+        <MenuSelection />
         {/* -------------Categorias--------------------- */}
         {saleItemCategoriesWithPrice.length > 0 && (
           <div className='w-full flex gap-2 px-2 shadow-md py-3'>
