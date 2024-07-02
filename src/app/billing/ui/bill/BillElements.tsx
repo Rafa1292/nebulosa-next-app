@@ -53,7 +53,8 @@ export const BillElements = ({ articleModifierGroup, closeModal, saleItemArticle
       articleModifierGroup?.articleId ?? '',
       linkedArticleModifierElement,
       articleModifierGroup!.modifierGroup?.id ?? '',
-      itemNumber
+      itemNumber,
+      articleModifierGroup
     )
     const currentElements = getLinkedArticleModifierElement(
       saleItemArticleId,

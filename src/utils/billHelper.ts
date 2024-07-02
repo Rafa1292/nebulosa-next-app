@@ -23,12 +23,10 @@ export const getCurrentItemArticleTotal = (bill: Bill, itemNumber: number, saleI
     item?.itemArticles?.forEach((itemArticle) => {
       total += getCurrentItemArticleTotal(bill, itemArticle.itemNumber, saleItemId)
     })
-    console.log(total)
     return total
   }
   
   export const getTotalBill = (bill: Bill) => {
-    console.log(bill.items)
     let total = 0
     bill.items?.forEach((item) => {
       total += getCurrentBillItemTotal(bill, item.saleItemId) - (item.discount ?? 0)

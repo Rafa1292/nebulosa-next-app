@@ -9,4 +9,5 @@ export interface LinkedArticle {
     articleId: string;
     billArticleId: string;
     modifiers?: LinkedArticleModifier[]
+    needsCommand?: boolean;
 }

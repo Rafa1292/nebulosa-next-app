@@ -1,7 +1,7 @@
 import { createBill, setAddresId, setDeliveryMethod } from '@/actions/bill/create-update-bill'
 import { getBillByTableNumber } from '@/actions/bill/get-bill'
 import { payBill } from '@/actions/bill/pay-bill'
-import { AccountHistory, Bill, BillAccountHistory, BillItem, DeliveryMethod } from '@/interfaces'
+import { AccountHistory, Bill, BillAccountHistory, BillItem, Customer, DeliveryMethod } from '@/interfaces'
 import { getCurrentBillItemTotal, getCurrentItemArticleTotal, getTotalBill } from '@/utils'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
@@ -17,8 +17,8 @@ interface State {
   getBillItemTotal: (saleItemId: string) => number
   setAddressId: (addressId: string) => void
   setDeliveryMethod: (deliveryMethod: DeliveryMethod) => void
-  setCustomerId: (customerId: string) => void
-  saveBill: () => Promise<boolean>
+  setCustomer: (customer: Customer) => void
+  saveBill: () => Promise<{error:boolean, needsReprint: boolean}>
   getTotalBill: () => number
   getTotalHistories: () => number
   getBillDiscount: () => number
@@ -164,16 +164,19 @@ export const useBillStore = create<State>()(
         }
         set({ bill: { ...bill, deliveryMethod } })
       },
-      setCustomerId: (customerId: string) => {
+      setCustomer: (customer: Customer) => {
         const bill = get().bill
-        set({ bill: { ...bill, clientId: customerId } })
+        set({ bill: { ...bill, customer, clientId: customer.id } })
       },
       saveBill: async () => {
-        const { ok, message } = await createBill(get().bill)
+        const { ok, message, needsReprint } = await createBill(get().bill)
         if (!ok) {
           alert(message)
         }
-        return ok ?? false
+        return {
+          error: !ok,
+          needsReprint
+        }
       },
       getTotalBill: () => {
         const bill = get().bill

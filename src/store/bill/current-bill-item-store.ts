@@ -1,9 +1,11 @@
 import {
+  ArticleModifierGroup,
   BillItem,
   BillItemLinkedArticle,
   LinkedArticle,
   LinkedArticleModifier,
   LinkedArticleModifierElement,
+  ModifierGroup,
   SaleItem,
 } from '@/interfaces'
 import { create } from 'zustand'
@@ -18,7 +20,8 @@ interface State {
     articleId: string,
     modifierElement: LinkedArticleModifierElement,
     modifierGroupId: string,
-    itemNumber: number
+    itemNumber: number,
+    modifierGroup?: ArticleModifierGroup
   ) => void
   getLinkedArticleModifierElement: (
     saleItemArticleId: string,
@@ -64,6 +67,7 @@ export const useBillItemStore = create<State>()(
                 isCommanded: false,
                 name: saleItemArticle.article?.name ?? '',
                 modifiers: linkedArticleModifiers,
+                needsCommand: true,
               },
             ]
             const billItemLinkedArticle: BillItemLinkedArticle = {
@@ -87,6 +91,7 @@ export const useBillItemStore = create<State>()(
         set({ billItem: { ...billItem, quantity: currentQuantity + 1 } })
       },
       addBillItem: (saleItem: SaleItem, itemNumber: number) => {
+        console.log(saleItem)
         const billItem: BillItem = {
           id: '',
           description: saleItem.name,
@@ -125,6 +130,7 @@ export const useBillItemStore = create<State>()(
                 isCommanded: false,
                 name: saleItemArticle.article?.name ?? '',
                 modifiers: linkedArticleModifiers,
+                needsCommand: true,
               },
             ]
             const billItemLinkedArticle: BillItemLinkedArticle = {
@@ -143,6 +149,7 @@ export const useBillItemStore = create<State>()(
         } else {
           billItem.itemArticles = [...billItem.itemArticles!, ...billItemLinkedArticles]
         }
+        console.log(billItem)
         set({ billItem })
       },
       addLinkedArticleModifierElement: (
@@ -150,24 +157,52 @@ export const useBillItemStore = create<State>()(
         articleId: string,
         linkedArticleModifierElement: LinkedArticleModifierElement,
         modifierGroupId: string,
-        itemNumber: number
+        itemNumber: number,
+        articleModifierGroup?: ArticleModifierGroup
       ) =>
         set((state) => {
+          console.log(saleItemArticleId)
+          console.log(articleId)
+          console.log(linkedArticleModifierElement)
+          console.log(modifierGroupId)
+          console.log(itemNumber)
           const itemArticles: BillItemLinkedArticle[] =
             state.billItem!.itemArticles?.map((itemArticle) => {
               if (itemArticle.saleItemArticleId !== saleItemArticleId) return itemArticle
               if (itemArticle.itemNumber !== itemNumber) return itemArticle
+              console.log(itemArticle)
               const linkedArticles: LinkedArticle[] =
                 itemArticle.linkedArticles?.map((linkedArticle) => {
                   if (linkedArticle.articleId !== articleId) return linkedArticle
+                  if(!linkedArticle.modifiers?.some(x => x.modifierGroupId === modifierGroupId))
+                    {
+                      linkedArticle.modifiers?.push({
+                        id: '',
+                        linkedArticleId: '',
+                        maxSelect: articleModifierGroup?.maxSelect ?? 0,
+                        minSelect: articleModifierGroup?.minSelect ?? 0,
+                        modifierGroupId: modifierGroupId,
+                        showLabel: articleModifierGroup?.modifierGroup?.showLabel ?? false,
+                        quantity: 1,
+                        name: articleModifierGroup?.modifierGroup?.name ?? '',
+                      }
+                      )
+                    }
+                  console.log('aqui tambien')
                   const modifiers: LinkedArticleModifier[] =
                     linkedArticle.modifiers?.map((modifier) => {
+                      console.log(modifier.modifierGroupId)
+                      console.log(modifier.name)
+                      console.log(modifierGroupId)
                       if (modifier.modifierGroupId !== modifierGroupId) return modifier
+
+                      console.log('aqui tambien')
                       let modifierElements: LinkedArticleModifierElement[] = modifier.elements ?? []
                       const modifierElement = modifierElements.find(
                         (element) => element.modifierElementId === linkedArticleModifierElement.modifierElementId
                       )
                       if (modifierElement) {
+                        console.log('actualizando cantidad')
                         if (linkedArticleModifierElement.quantity === 0) {
                           modifierElements = modifierElements.filter(
                             (element) => element.modifierElementId !== linkedArticleModifierElement.modifierElementId
@@ -176,6 +211,7 @@ export const useBillItemStore = create<State>()(
                           modifierElement.quantity = linkedArticleModifierElement.quantity
                         }
                       } else {
+                        console.log('subiendo cantidad')
                         if (modifier.maxSelect === 1) {
                           modifierElements = [linkedArticleModifierElement]
                         } else {

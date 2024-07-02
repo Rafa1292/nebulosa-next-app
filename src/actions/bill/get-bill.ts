@@ -10,6 +10,7 @@ export const getBillByTableNumber = async (tableNumber: number) => {
         closed: false,
       },
       include: {
+        customer: true,
         items: {
           include: {
             itemArticles: {

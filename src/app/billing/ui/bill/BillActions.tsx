@@ -1,6 +1,8 @@
 'use client'
 
 import { ProgressBar } from '@/components'
+import { commandBillApi } from '@/hooks/useApi'
+import { PayMethod } from '@/interfaces'
 import { useBillStore, useWorkDayStore } from '@/store'
 import { currencyFormat } from '@/utils'
 import { useEffect, useState } from 'react'
@@ -17,7 +19,8 @@ interface Props {
 }
 
 export const BillActions = ({ setShow, showPayMethod, setShowPayMethod, tableNumber }: Props) => {
-  const { bill, saveBill, getTotalBill, addDiscount, getBillDiscount, needsCommand, getBillFromServer, initBill } = useBillStore()
+  const { bill, saveBill, getTotalBill, addDiscount, getBillDiscount, needsCommand, getBillFromServer, initBill } =
+    useBillStore()
   const [commandActionWait, setCommandActionWait] = useState(false)
   const [loaded, setLoaded] = useState(false)
   const [discountForm, setDiscountForm] = useState(false)
@@ -26,9 +29,24 @@ export const BillActions = ({ setShow, showPayMethod, setShowPayMethod, tableNum
   const { workDayId } = useWorkDayStore()
 
   const commandBill = async () => {
-    const state = await saveBill()
-    if (state) {
+    const { error, needsReprint } = await saveBill()
+    //make a post  to http://localhost:5000/command and send the bill
+    if (!error) {
       setCommandActionWait(true)
+      if (needsReprint) {
+        await getBillFromServer(bill.id, tableNumber, workDayId ?? '')
+      }
+      const response = await commandBillApi(
+        '',
+        'Mariela',
+        getTotalBill(),
+        { name: 'Efectivo' } as PayMethod,
+        bill,
+        needsReprint
+      )
+      if (response.error) {
+        alert(response.message)
+      }
     }
   }
 

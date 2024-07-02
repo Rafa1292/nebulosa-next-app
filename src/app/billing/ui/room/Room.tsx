@@ -18,6 +18,7 @@ export const Room = ({ menus, saleItemCategories, email }: Props) => {
   const { tables } = useRoomTableStore()
   const [show, setShow] = React.useState(false)
   const [tableNumber, setTableNumber] = React.useState<number | null>(null)
+  const [loading, setLoading] = React.useState(true)
 
   const handleTableClick = (tableNumber: number) => {
     setTableNumber(tableNumber)
@@ -29,6 +30,7 @@ export const Room = ({ menus, saleItemCategories, email }: Props) => {
     if (!workDayId) {
       useWorkDayStore.getState().getWorkDayByEmail(email)
     }
+    setLoading(false)
   }, [])
 
   return (
@@ -43,18 +45,24 @@ export const Room = ({ menus, saleItemCategories, email }: Props) => {
             <Table onClickEvent={() => handleTableClick(table.number)} tableNumber={table.number} />
           </div>
         ))}
-
       </div>
-      <div 
-      className='absolute border-2 bg-gray-200 p-6 border-gray-600 shadow-lg right-2 top-[35vh] rounded-bl-2xl rounded-tr-2xl'>
-        <Link href={`/billing/entries/${useWorkDayStore.getState().workDayId}`}>
-          <div className='py-2 font-bold cursor-pointer hover:text-gray-500'>Entradas</div>
-        </Link>
-        <Link href={`/billing/expenses/${useWorkDayStore.getState().workDayId}`}>
-          <div className='py-2 font-bold cursor-pointer hover:text-gray-500'>Gastos</div>
+      {loading ? null : (
+        <div className='absolute border-2 bg-gray-200 p-6 border-gray-600 shadow-lg right-2 top-[35vh] rounded-bl-2xl rounded-tr-2xl'>
+          <Link href={`/billing/entries/${useWorkDayStore.getState().workDayId}`}>
+            <div className='py-2 font-bold cursor-pointer hover:text-gray-500'>Entradas</div>
+          </Link>
+          <Link href={`/billing/expenses/${useWorkDayStore.getState().workDayId}`}>
+            <div className='py-2 font-bold cursor-pointer hover:text-gray-500'>Gastos</div>
           </Link>
         </div>
-      <Bill tableNumber={tableNumber} menus={menus} saleItemCategories={saleItemCategories} show={show} setShow={setShow} />
+      )}
+      <Bill
+        tableNumber={tableNumber}
+        menus={menus}
+        saleItemCategories={saleItemCategories}
+        show={show}
+        setShow={setShow}
+      />
     </>
   )
 }

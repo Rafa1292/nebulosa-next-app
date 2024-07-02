@@ -11,7 +11,7 @@ import { MdCancel } from 'react-icons/md'
 import { useBillStore } from '@/store'
 
 export const BillClient = () => {
-  const { setAddressId, bill, setCustomerId } = useBillStore()
+  const { setAddressId, bill, setCustomer: setCustomerOnBill } = useBillStore()
   const [phone, setPhone] = useState('')
   const [name, setName] = useState('')
   const [addDirection, setAddDirection] = useState(false)
@@ -32,7 +32,7 @@ export const BillClient = () => {
     if (phone.length > 7) {
       const { customer: currentCustomer } = await getCustomerByPhone(phone)
       if (currentCustomer) {
-        setCustomerId(currentCustomer.id)
+        setCustomerOnBill(currentCustomer)
         setCustomer(currentCustomer)
         setName(currentCustomer.name)
         setAddresses(currentCustomer.addresses)

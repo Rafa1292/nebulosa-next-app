@@ -133,42 +133,50 @@ export const createBill = async (data: Bill) => {
     if (!parse.success) {
       throw new Error(parse.error.message)
     }
+
     const { items, id, ...bill } = parse.data
+    let needsReprint = false
     // init transaction
     // increase transaction timeout
-    await prisma.$transaction(async (tx) => {
-      let billId = ''
-      if (id === '') {
-        const billCreated = await tx.bill.create({
-          data: bill,
-        })
-        billId = billCreated.id
-      } else {
-        await tx.bill.update({
-          where: {
-            id: id,
-          },
-          data: bill,
-        })
-        billId = id ?? ''
-      }
-      await createUpdateItem(items, billId, tx)
-    }, { timeout: 1000000 })
+    await prisma.$transaction(
+      async (tx) => {
+        let billId = ''
+        if (id === '') {
+          const billCreated = await tx.bill.create({
+            data: bill,
+          })
+          billId = billCreated.id
+        } else {
+          await tx.bill.update({
+            where: {
+              id: id,
+            },
+            data: bill,
+          })
+          billId = id ?? ''
+        }
+        needsReprint = await createUpdateItem(items, billId, tx)
+      },
+      { timeout: 1000000 }
+    )
 
     return {
       ok: true,
+      needsReprint,
       message: 'Factura creada',
     }
   } catch (error: any) {
     console.log(error.message)
     return {
       ok: false,
+      needsReprint: false,
       message: error.message,
     }
   }
 }
 
-const createUpdateItem = async (items: Partial<BillItem>[], billId: string, tx: any) => {
+const createUpdateItem = async (items: Partial<BillItem>[], billId: string, tx: any): Promise<boolean> => {
+  let needsReprint = false
   for (const item of items) {
     const { itemArticles, id, ...itemData } = item
     let itemId = ''
@@ -189,11 +197,21 @@ const createUpdateItem = async (items: Partial<BillItem>[], billId: string, tx: 
       })
       itemId = item.id ?? ''
     }
-    if (itemArticles) await createUpdateItemArticle(itemArticles, itemId, tx)
+
+    if (itemArticles) {
+      const tmpRePrint = await createUpdateItemArticle(itemArticles, itemId, tx)
+      if (tmpRePrint) needsReprint = true
+    }
   }
+  return needsReprint
 }
 
-const createUpdateItemArticle = async (itemArticles: Partial<BillItemLinkedArticle>[], billItemId: string, tx: any) => {
+const createUpdateItemArticle = async (
+  itemArticles: Partial<BillItemLinkedArticle>[],
+  billItemId: string,
+  tx: any
+): Promise<boolean> => {
+  let needsReprint = false
   for (const itemArticle of itemArticles) {
     const { linkedArticles, id, ...itemArticleData } = itemArticle
     let itemArticleId = ''
@@ -214,15 +232,21 @@ const createUpdateItemArticle = async (itemArticles: Partial<BillItemLinkedArtic
       })
       itemArticleId = itemArticle.id ?? ''
     }
-    if (linkedArticles) await createUpdateLinkedArticle(linkedArticles, itemArticleId, tx)
+    if (linkedArticles) {
+      const tmpRePrint = await createUpdateLinkedArticle(linkedArticles, itemArticleId, tx)
+      if (tmpRePrint) needsReprint = true
+    }
   }
+  return needsReprint
 }
 
 const createUpdateLinkedArticle = async (
   linkedArticles: Partial<LinkedArticle>[],
   billItemArticleId: string,
   tx: any
-) => {
+): Promise<boolean> => {
+  let needsReprint = false
+
   for (const linkedArticle of linkedArticles) {
     const { modifiers, id, ...linkedArticleData } = linkedArticle
     let linkedArticleId = ''
@@ -249,39 +273,41 @@ const createUpdateLinkedArticle = async (
           isCommanded: true,
         },
       })
-      // get current modifiers
-      const linkedArticleModifiers: LinkedArticleModifier[] = await tx.linkedArticleModifier.findMany({
-        where: {
-          linkedArticleId: linkedArticle.id,
-        },
-        include: {
-          elements: true,
-        },
-      })
-      for (const modifier of modifiers ?? []) {
-        const tmpModifier = linkedArticleModifiers.find((m: LinkedArticleModifier) => m.id === modifier.id)
-        if ((!tmpModifier || tmpModifier.elements?.length === 0) && modifier.id !== '') {
-          await removeLinkedArticleModifier(modifier.id, tx)
-        } else {
-          await createUpdateLinkedArticleModifier([modifier], linkedArticleId, tx)
-        }
-      }
       linkedArticleId = linkedArticle.id ?? ''
     }
-    if (modifiers) await createUpdateLinkedArticleModifier(modifiers, linkedArticleId, tx)
+    if (modifiers) {
+      const tmpRePrint = await createUpdateLinkedArticleModifier(modifiers, linkedArticleId, tx)
+      if (tmpRePrint) needsReprint = true
+    }
   }
+  return needsReprint
 }
 
 const createUpdateLinkedArticleModifier = async (
   linkedArticleModifiers: Partial<LinkedArticleModifier>[],
   linkedArticleId: string,
   tx: any
-) => {
+): Promise<boolean> => {
+  let needsReprint = false
   for (const linkedArticleModifier of linkedArticleModifiers) {
     const { elements, id, ...modifierData } = linkedArticleModifier
-    if ((elements?.length ?? 0) > 0) {
-      let modifierId = ''
-      if (linkedArticleModifier.id === '') {
+    let modifierId = id ?? ''
+
+    if (elements?.length === 0 && id !== undefined) {
+      // remove linked article modifier and elements
+      tx.linkedArticleModifierElement.deleteMany({
+        where: {
+          linkedArticleModifierId: id,
+        },
+      })
+      tx.linkedArticleModifier.delete({
+        where: {
+          id,
+        },
+      })
+      needsReprint = true
+    } else {
+      if (id === '') {
         const modifierCreated = await tx.linkedArticleModifier.create({
           data: {
             ...modifierData,
@@ -298,32 +324,38 @@ const createUpdateLinkedArticleModifier = async (
         })
         modifierId = linkedArticleModifier.id ?? ''
       }
-      const linkedArticleModifierElements: LinkedArticleModifierElement[] =
-        await tx.linkedArticleModifierElement.findMany({
-          where: {
-            linkedArticleModifierId: modifierId,
-          },
-        })
-        const elementsForDelete = linkedArticleModifierElements.filter(
-          (element) => !elements?.find((e) => e.id === element.id)
-        )
-        for (const element of elementsForDelete) {
-          await removeLinkedArticleModifierElement(element.id, tx)
-        }
-        if (elements) await createUpdateLinkedArticleModifierElement(elements, modifierId, tx)
+    }
 
+    if (elements) {
+      const tmpRePrint = await createUpdateLinkedArticleModifierElement(elements, modifierId, tx)
+      if (tmpRePrint) needsReprint = true
     }
   }
+  return needsReprint
 }
 
 const createUpdateLinkedArticleModifierElement = async (
   linkedArticleModifierElements: Partial<LinkedArticleModifierElement>[],
   modifierId: string,
   tx: any
-) => {
+): Promise<boolean> => {
+  let needsReprint = false
+  const currentElements: LinkedArticleModifierElement[] = await tx.linkedArticleModifierElement.findMany({
+    where: {
+      linkedArticleModifierId: modifierId,
+    },
+  })
+  currentElements.map((element) => {
+    const tmpElement = linkedArticleModifierElements.find((e) => e.id === element.id)
+    if (!tmpElement) {
+      needsReprint = true
+      removeLinkedArticleModifierElement(element.id, tx)
+    }
+  })
+
   for (const element of linkedArticleModifierElements) {
     const { id, ...elementData } = element
-    if (element.id === '') {
+    if (id === '') {
       await tx.linkedArticleModifierElement.create({
         data: {
           ...elementData,
@@ -331,6 +363,7 @@ const createUpdateLinkedArticleModifierElement = async (
         },
       })
     } else {
+      needsReprint = true
       await tx.linkedArticleModifierElement.update({
         where: {
           id: element.id,
@@ -339,6 +372,8 @@ const createUpdateLinkedArticleModifierElement = async (
       })
     }
   }
+
+  return needsReprint
 }
 
 const removeLinkedArticleModifier = async (linkedArticleModifierId: string, tx: any) => {
